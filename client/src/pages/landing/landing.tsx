@@ -1,4 +1,4 @@
-import Navbar from "@/components/ui/navbar"
+import Navbar from "@/components/sections/navbar"
 import { Link } from "react-router-dom"
 
 export default function LandingPage() {

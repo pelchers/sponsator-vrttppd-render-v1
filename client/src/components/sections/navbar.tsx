@@ -4,7 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { Settings } from "lucide-react"
 import { Link } from "react-router-dom"
 

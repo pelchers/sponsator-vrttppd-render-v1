@@ -1,11 +1,24 @@
 {
+  "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "dev": {
       "cache": false,
-      "dependsOn": ["^dev"]
+      "persistent": true
     },
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "lint": {
+      "outputs": []
     }
+  },
+  "globalDependencies": [".env"],
+  "globalEnv": ["NODE_ENV"],
+  "globalPassThroughEnv": ["CI"],
+  "verboseOutput": true,
+  "logPrefix": {
+    "client": "CLIENT",
+    "server": "SERVER"
   }
 } 

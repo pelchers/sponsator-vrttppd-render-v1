@@ -3,15 +3,19 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import log from './utils/logger'
+import logger from './utils/logger'
 import LandingPage from './pages/landing/landing'
 
 function App() {
   const [count, setCount] = useState(0)
 
-  const handleClick = () => {
-    log(`Count incremented to ${count + 1}`);
-    setCount((count) => count + 1);
+  const handleIncrement = () => {
+    logger.info('Button clicked: Incrementing count');
+    setCount((count) => {
+      const newCount = count + 1;
+      logger.info(`Count updated to: ${newCount}`);
+      return newCount;
+    });
   }
 
   return (
@@ -21,16 +25,16 @@ function App() {
         <Route path="/" element={
           <>
             <div>
-              <a href="https://vite.dev" target="_blank" rel="noopener">
+              <a href="https://vitejs.dev" target="_blank">
                 <img src={viteLogo} className="logo" alt="Vite logo" />
               </a>
-              <a href="https://react.dev" target="_blank" rel="noopener">
+              <a href="https://react.dev" target="_blank">
                 <img src={reactLogo} className="logo react" alt="React logo" />
               </a>
             </div>
             <h1>Vite + React</h1>
             <div className="card">
-              <button onClick={handleClick}>
+              <button onClick={handleIncrement}>
                 count is {count}
               </button>
               <p>
