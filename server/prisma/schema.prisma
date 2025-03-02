@@ -20,7 +20,7 @@ model users {
   id                             String    @id @default(uuid())
   profile_image                  String?
   username                       String?
-  email                         String
+  email                         String    @unique
   bio                           String?
   user_type                     String?
   career_title                  String?
