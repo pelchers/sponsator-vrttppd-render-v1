@@ -63,11 +63,13 @@ When moving v0-dev components from a Next.js project to a Vite + React setup, yo
 ### **2.1. Creating or Copying Component Files**
 
 1. **Identify each shadcn (v0) component** in your old Next.js project. (For instance, `form.tsx`, `button.tsx`, etc.)  
-2. **Copy** those files into `client/src/components/ui/`.  
+2. **cli/Copy** those files into `client/src/components/ui/`.  the cli is the primary means of creation, but if failed, you can manually create the files.
 3. **Update** the file paths and names if needed (e.g., `import { Button } from "@/components/ui/button"` in Next.js might become a local relative path or use a Vite alias).
 
-```bash
-# Example:
+```bash (but use powershell as that is what our project uses)
+use the cli to create the components as primary means of creation
+
+# Example for manual creation:
 mkdir -p client/src/components/ui
 touch client/src/components/ui/form.tsx
 ```
