@@ -1,9 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom'
-import Home from '../pages/home/Home'
-import Login from '../pages/auth/Login'
-import ProfilePage from '../pages/profile/profile'
-import ProfileEditPage from '../pages/profile/editprofile'
-import Layout from '../components/layout/layout'
+import Home from '../../home/Home'
+import Login from '../Login'
+import Signup from '../signup'
+import ProfilePage from '../../profile/profile'
+import ProfileEditPage from '../../profile/editprofile'
+import Layout from '../../../components/layout/layout'
 
 // Remove the duplicate Layout component definition
 // const Layout = ({ children }: { children: React.ReactNode }) => (
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Layout><Login /></Layout>,
+  },
+  {
+    path: "/signup",
+    element: <Layout><Signup /></Layout>,
   },
   {
     path: "profile/:id",

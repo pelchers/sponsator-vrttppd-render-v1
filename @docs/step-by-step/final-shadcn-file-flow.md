@@ -33,11 +33,17 @@ Below is a **revised guide** incorporating the need to **modify labels, values, 
    cd client
    npm install @radix-ui/react-slot @radix-ui/react-label ...
    ```
-5. **Adjust Field Names & Labels to Match Prisma**:  
+5a. **Adjust Field Names & Labels to Match Prisma**:  
    - If your Prisma schema uses `bio` instead of `description`, rename fields accordingly in the **form code** (labels, input `name` attributes, default values, etc.).  
    - If you have additional fields (like `username`), add them here as well.
 
 **Example** if your `users` table in Prisma has `bio` and `username`:
+
+5b. **cli install missing shadcn components**:
+```powershell
+npx shadcn@latest add button
+```
+
 ```tsx
 // client/src/components/ui/form.tsx (simplified)
 import React from "react";

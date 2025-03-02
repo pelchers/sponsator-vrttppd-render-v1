@@ -1,134 +1,67 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import PageSection from "./PageSection"
-import CategorySection from "./CategorySection"
+import { useEffect } from "react"
+import { useParams, useNavigate } from 'react-router-dom'
+import { useProfileForm } from '@/hooks/useProfileForm'
+import PageSection from "@/components/sections/PageSection"
+import CategorySection from "@/components/sections/CategorySection"
 import TagInput from "./TagInput"
 import ImageUpload from "./ImageUpload"
+import { Button } from "@/components/ui/button"
 
 export default function ProfileEditForm() {
-  const [formData, setFormData] = useState({
-    // Basic Information
-    profile_image: null as File | null,
-    username: "",
-    email: "",
-    bio: "",
-    user_type: "",
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  
+  // Check authentication
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    
+    if (!token || !userId) {
+      navigate('/login');
+      return;
+    }
+    
+    // Ensure the user is editing their own profile
+    if (id && id !== userId) {
+      navigate(`/profile/${userId}/edit`);
+      return;
+    }
+  }, [id, navigate]);
+  
+  const {
+    formData,
+    setFormData,
+    loading,
+    saving,
+    error,
+    success,
+    handleInputChange,
+    handleImageSelect,
+    handleAddTag,
+    handleRemoveTag,
+    handleSubmit
+  } = useProfileForm(id || localStorage.getItem('userId') || undefined)
 
-    // Professional Information
-    career_title: "",
-    career_experience: 0,
-    social_media_handle: "",
-    social_media_followers: 0,
-    company: "",
-    company_location: "",
-    company_website: "",
-    contract_type: "",
-    contract_duration: "",
-    contract_rate: "",
+  // Handle success - redirect to profile page
+  useEffect(() => {
+    if (success && id) {
+      navigate(`/profile/${id}`);
+    }
+  }, [success, id, navigate])
 
-    // Availability & Preferences
-    availability_status: "",
-    preferred_work_type: "",
-    rate_range: "",
-    currency: "USD",
-    standard_service_rate: "",
-    standard_rate_type: "",
-    compensation_type: "",
-
-    // Skills & Expertise
-    skills: [] as string[],
-    expertise: [] as string[],
-
-    // Focus
-    target_audience: [] as string[],
-    solutions_offered: [] as string[],
-
-    // Tags & Categories
-    interest_tags: [] as string[],
-    experience_tags: [] as string[],
-    education_tags: [] as string[],
-    work_status: "",
-    seeking: "",
-
-    // Contact & Availability
-    social_links: {
-      youtube: "",
-      instagram: "",
-      github: "",
-      twitter: "",
-      linkedin: "",
-    },
-    website_links: [] as string[],
-
-    // Experience & Education
-    work_experience: [] as { title: string; company: string; years: string; media?: File }[],
-    education: [] as { degree: string; school: string; year: string; media?: File }[],
-    certifications: [] as { name: string; issuer: string; year: string; media?: File }[],
-    accolades: [] as { title: string; issuer: string; year: string; media?: File }[],
-    endorsements: [] as { name: string; position: string; company: string; text: string; media?: File }[],
-
-    // Collaboration & Goals
-    short_term_goals: "",
-    long_term_goals: "",
-
-    // Portfolio
-    featured_projects: [] as { title: string; description: string; url: string; media?: File }[],
-    case_studies: [] as { title: string; description: string; url: string; media?: File }[],
-
-    // Privacy
-    profile_visibility: "public",
-    search_visibility: true,
-    notification_preferences: {
-      email: true,
-      push: true,
-      digest: true,
-    },
-  })
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }))
-  }
-
-  const handleImageSelect = (file: File) => {
-    setFormData((prev) => ({
-      ...prev,
-      profile_image: file,
-    }))
-  }
-
-  const handleAddTag = (section: keyof typeof formData) => (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: [...(prev[section] as string[]), tag],
-    }))
-  }
-
-  const handleRemoveTag = (section: keyof typeof formData) => (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: (prev[section] as string[]).filter((t) => t !== tag),
-    }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-  }
+  if (loading) return <div className="text-center py-8">Loading profile data...</div>
+  if (error) return <div className="text-center py-8 text-red-500">{error}</div>
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Basic Information */}
       <PageSection title="Basic Information">
-        <CategorySection>
+        <CategorySection title="Personal Information">
           <div className="space-y-6 w-full">
-            <ImageUpload onImageSelect={handleImageSelect} />
+            <ImageUpload onImageSelect={handleImageSelect} initialImage={formData.profile_image as string} />
 
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -567,6 +500,7 @@ export default function ProfileEditForm() {
                 name="work_status"
                 value={formData.work_status}
                 onChange={handleInputChange}
+                aria-label="Work Status"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >
                 <option value="">Select work status...</option>
@@ -586,6 +520,7 @@ export default function ProfileEditForm() {
                 name="seeking"
                 value={formData.seeking}
                 onChange={handleInputChange}
+                aria-label="Seeking"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >
                 <option value="">Select what you're seeking...</option>
@@ -743,6 +678,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="work_experience_media"
+                    aria-label="Work Experience Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -838,6 +775,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="education_media"
+                    aria-label="Education Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -935,6 +874,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="certification_media"
+                    aria-label="Certification Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1030,6 +971,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="accolade_media"
+                    aria-label="Accolade Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1142,6 +1085,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="endorsement_media"
+                    aria-label="Endorsement Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1260,6 +1205,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="featured_project_media"
+                    aria-label="Featured Project Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1355,6 +1302,8 @@ export default function ProfileEditForm() {
                   />
                   <input
                     type="file"
+                    id="case_study_media"
+                    aria-label="Case Study Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1487,12 +1436,13 @@ export default function ProfileEditForm() {
       </PageSection>
 
       <div className="flex justify-center">
-        <button
-          type="submit"
+        <Button 
+          type="submit" 
+          disabled={saving}
           className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Save Changes
-        </button>
+          {saving ? "Saving..." : "Save Changes"}
+        </Button>
       </div>
     </form>
   )
