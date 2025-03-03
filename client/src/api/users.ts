@@ -29,6 +29,14 @@ export async function fetchUserProfile(userId: string, token?: string) {
     const userData = response.data;
     return {
       ...userData,
+      // Transform flattened social links into object
+      social_links: {
+        youtube: userData.social_links_youtube || '',
+        instagram: userData.social_links_instagram || '',
+        github: userData.social_links_github || '',
+        twitter: userData.social_links_twitter || '',
+        linkedin: userData.social_links_linkedin || '',
+      },
       // Map related data from the nested tables
       work_experience: userData.user_work_experience || [],
       education: userData.user_education || [],

@@ -151,7 +151,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Professional Information</h2>
               <div className="form-grid">
                 {/* Career Details */}
-              <div>
+                <div>
                   <h3 className="section-title">Career Details</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="career_title">Career Title</label>
@@ -179,10 +179,10 @@ export default function ProfileEditForm() {
             </div>
 
                 {/* Social Media Details */}
-              <div>
-                  <h3 className="section-title">Social Media Details</h3>
+                <div>
+                  <h3 className="section-title">Social Media</h3>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="social_media_handle">Social Media Handle</label>
+                    <label className="form-label" htmlFor="social_media_handle">Handle</label>
                 <input
                   type="text"
                   id="social_media_handle"
@@ -194,7 +194,7 @@ export default function ProfileEditForm() {
               </div>
 
                   <div className="form-group">
-                    <label className="form-label" htmlFor="social_media_followers">Social Media Followers</label>
+                    <label className="form-label" htmlFor="social_media_followers">Followers</label>
                 <input
                   type="number"
                   id="social_media_followers"
@@ -205,15 +205,102 @@ export default function ProfileEditForm() {
                 />
               </div>
             </div>
-        </div>
+          </div>
+
+          {/* Add Professional Affiliation and Contract Specifications */}
+          <div className="form-grid mt-6">
+            {/* Professional Affiliation */}
+            <div>
+              <h3 className="section-title">Professional Affiliation</h3>
+              <div className="form-group">
+                <label className="form-label" htmlFor="company">Company</label>
+                <input
+                  type="text"
+                  id="company"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                      className="form-input"
+                />
               </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="company_location">Company Location</label>
+                <input
+                  type="text"
+                  id="company_location"
+                  name="company_location"
+                  value={formData.company_location}
+                  onChange={handleInputChange}
+                      className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="company_website">Company Website</label>
+                <input
+                  type="url"
+                  id="company_website"
+                  name="company_website"
+                  value={formData.company_website}
+                  onChange={handleInputChange}
+                      className="form-input"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            {/* Contract Specifications */}
+            <div>
+              <h3 className="section-title">Contract Specifications</h3>
+              <div className="form-group">
+                <label className="form-label" htmlFor="contract_type">Contract Type</label>
+                <select
+                  id="contract_type"
+                  name="contract_type"
+                  value={formData.contract_type}
+                  onChange={handleInputChange}
+                      className="form-input"
+                >
+                  <option value="">Select contract type...</option>
+                  <option value="full-time">Full Time</option>
+                  <option value="part-time">Part Time</option>
+                  <option value="contract">Contract</option>
+                  <option value="freelance">Freelance</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="contract_duration">Contract Duration</label>
+                <input
+                  type="text"
+                  id="contract_duration"
+                  name="contract_duration"
+                  value={formData.contract_duration}
+                  onChange={handleInputChange}
+                      className="form-input"
+                  placeholder="e.g., 6 months, 1 year"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="contract_rate">Contract Rate</label>
+                <input
+                  type="text"
+                  id="contract_rate"
+                  name="contract_rate"
+                  value={formData.contract_rate}
+                  onChange={handleInputChange}
+                      className="form-input"
+                  placeholder="e.g., $50/hour, $5000/month"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* Availability & Work Preferences */}
             <div className="form-section">
               <h2 className="section-title">Availability & Work Preferences</h2>
               <div className="form-grid">
                 {/* Availability */}
-              <div>
+                <div>
                   <h3 className="section-title">Availability</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="availability_status">Availability Status</label>
@@ -251,7 +338,7 @@ export default function ProfileEditForm() {
             </div>
 
                 {/* Compensation */}
-              <div>
+                <div>
                   <h3 className="section-title">Compensation</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="standard_service_rate">Standard Service Rate</label>
@@ -1030,7 +1117,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Collaboration & Goals</h2>
               <div className="form-grid">
                 {/* Short Term Goals */}
-              <div>
+                <div>
                   <h3 className="section-title">Short Term Goals</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="short_term_goals">Short Term Goals</label>
@@ -1047,7 +1134,7 @@ export default function ProfileEditForm() {
             </div>
 
                 {/* Long Term Goals */}
-              <div>
+                <div>
                   <h3 className="section-title">Long Term Goals</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="long_term_goals">Long Term Goals</label>
@@ -1270,7 +1357,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Privacy & Notifications</h2>
               <div className="form-grid">
                 {/* Privacy Settings */}
-              <div>
+                <div>
                   <h3 className="section-title">Privacy Settings</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="profile_visibility">Profile Visibility</label>

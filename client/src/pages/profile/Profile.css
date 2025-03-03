@@ -111,4 +111,28 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   color: #4a5568;
+}
+
+/* Add these styles for social links */
+.capitalize {
+  text-transform: capitalize;
+}
+
+.info-value a {
+  color: #4a5568;
+  text-decoration: none;
+}
+
+.info-value a:hover {
+  color: #2d3748;
+  text-decoration: underline;
+}
+
+.tag-container a.tag {
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.tag-container a.tag:hover {
+  background-color: #cbd5e0;
 } 

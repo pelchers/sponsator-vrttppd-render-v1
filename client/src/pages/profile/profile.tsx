@@ -146,6 +146,56 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
+
+              {/* Add Professional Affiliation and Contract Specifications */}
+              <div className="profile-grid mt-6">
+                {/* Professional Affiliation */}
+                <div>
+                  <h3 className="section-title">Professional Affiliation</h3>
+                  <div className="info-group">
+                    <label className="info-label">Company</label>
+                    <div className="info-value">{user.company || 'Not specified'}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Company Location</label>
+                    <div className="info-value">{user.company_location || 'Not specified'}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Company Website</label>
+                    <div className="info-value">
+                      {user.company_website ? (
+                        <a 
+                          href={user.company_website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {user.company_website}
+                        </a>
+                      ) : (
+                        'Not specified'
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contract Specifications */}
+                <div>
+                  <h3 className="section-title">Contract Specifications</h3>
+                  <div className="info-group">
+                    <label className="info-label">Contract Type</label>
+                    <div className="info-value">{user.contract_type || 'Not specified'}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Contract Duration</label>
+                    <div className="info-value">{user.contract_duration || 'Not specified'}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Contract Rate</label>
+                    <div className="info-value">{user.contract_rate || 'Not specified'}</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Availability & Work Preferences */}
@@ -257,7 +307,18 @@ export default function Profile() {
                     <div key={platform} className="info-group">
                       <label className="info-label capitalize">{platform}</label>
                       <div className="info-value">
-                        {url ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : 'Not provided'}
+                        {url ? (
+                          <a 
+                            href={url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            {url}
+                          </a>
+                        ) : (
+                          'Not provided'
+                        )}
                       </div>
                     </div>
                   ))}
@@ -267,7 +328,13 @@ export default function Profile() {
                   <div className="info-group">
                     <div className="tag-container">
                       {user.website_links.map((link, index) => (
-                        <a key={index} href={link} target="_blank" rel="noopener noreferrer" className="tag">
+                        <a 
+                          key={index} 
+                          href={link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="tag hover:bg-gray-300"
+                        >
                           {new URL(link).hostname}
                         </a>
                       ))}
