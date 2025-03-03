@@ -9,10 +9,35 @@ export async function fetchUserProfile(userId: string, token?: string) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
+    // Make sure we're requesting all related data
     const response = await axios.get(`${API_BASE_URL}/users/${userId}`, {
-      headers
+      headers,
+      params: {
+        include: [
+          'user_work_experience',
+          'user_education',
+          'user_certifications',
+          'user_accolades',
+          'user_endorsements',
+          'user_featured_projects',
+          'user_case_studies'
+        ].join(',')
+      }
     });
-    return response.data;
+
+    // Transform the response data to match our frontend structure
+    const userData = response.data;
+    return {
+      ...userData,
+      // Map related data from the nested tables
+      work_experience: userData.user_work_experience || [],
+      education: userData.user_education || [],
+      certifications: userData.user_certifications || [],
+      accolades: userData.user_accolades || [],
+      endorsements: userData.user_endorsements || [],
+      featured_projects: userData.user_featured_projects || [],
+      case_studies: userData.user_case_studies || []
+    };
   } catch (error) {
     console.error('Error fetching user profile:', error);
     throw error;

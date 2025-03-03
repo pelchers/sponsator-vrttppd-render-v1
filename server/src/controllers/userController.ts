@@ -2,62 +2,39 @@ import { Request, Response } from 'express';
 import * as userService from '../services/userService';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function getUserById(req: Request, res: Response) {
   try {
     const { id } = req.params;
     
-    // Special case for our hardcoded user IDs
-    if (id === '123' || id === '1') {
-      // Return a mock user for the hardcoded ID
-      return res.json({
-        id: id,
-        profile_image: '/placeholder.svg',
-        username: 'pelchers',
-        email: 'pelycluk@gmail.com',
-        bio: 'New user',
-        user_type: 'user',
-        skills: [],
-        expertise: [],
-        target_audience: [],
-        solutions_offered: [],
-        interest_tags: [],
-        experience_tags: [],
-        education_tags: [],
-        website_links: [],
-        work_experience: [],
-        education: [],
-        certifications: [],
-        accolades: [],
-        endorsements: [],
-        featured_projects: [],
-        case_studies: [],
-        social_links: {
-          youtube: '',
-          instagram: '',
-          github: '',
-          twitter: '',
-          linkedin: ''
-        },
-        notification_preferences: {
-          email: true,
-          push: true,
-          digest: true
-        }
-      });
-    }
-    
-    // Normal case - fetch from database
-    const user = await userService.getUserById(id);
-    
+    // Fetch user from database with all related data
+    const user = await prisma.users.findUnique({
+      where: { id },
+      include: {
+        user_work_experience: true,
+        user_education: true,
+        user_certifications: true,
+        user_accolades: true,
+        user_endorsements: true,
+        user_featured_projects: true,
+        user_case_studies: true
+      }
+    });
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Remove sensitive data
+    const { password_hash, ...userWithoutPassword } = user;
     
-    res.json(user);
+    res.json(userWithoutPassword);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Error fetching user' });
+    console.error('Error in getUserById:', error);
+    res.status(500).json({ message: 'Failed to fetch user' });
   }
 }
 
