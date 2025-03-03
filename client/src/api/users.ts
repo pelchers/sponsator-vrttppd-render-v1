@@ -52,4 +52,89 @@ export async function uploadProfileImage(userId: string, file: File, token: stri
     console.error('Error uploading profile image:', error);
     throw error;
   }
+}
+
+// Add these new endpoints
+export async function deleteWorkExperience(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/work-experience/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete work experience');
+  return response.json();
+}
+
+export async function deleteEducation(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/education/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete education');
+  return response.json();
+}
+
+export async function deleteCertification(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/certifications/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete certification');
+  return response.json();
+}
+
+export async function deleteAccolade(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/accolades/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete accolade');
+  return response.json();
+}
+
+export async function deleteEndorsement(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/endorsements/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete endorsement');
+  return response.json();
+}
+
+export async function deleteFeaturedProject(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/featured-projects/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete featured project');
+  return response.json();
+}
+
+export async function deleteCaseStudy(userId: string, id: string) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/users/${userId}/case-studies/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete case study');
+  return response.json();
 } 

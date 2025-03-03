@@ -5,8 +5,10 @@ import PageSection from "@/components/sections/PageSection"
 import CategorySection from "@/components/sections/CategorySection"
 import PillTag from "@/components/input/forms/PillTag"
 import { Button } from "@/components/ui/button"
+import Layout from "@/components/layout/Layout"
+import './Profile.css'
 
-export default function ProfilePage() {
+export default function Profile() {
   const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -80,548 +82,343 @@ export default function ProfilePage() {
   if (!user) return <div className="container mx-auto px-4 py-8">User not found</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">User Profile</h1>
-
-      {/* Basic Information */}
-      <PageSection title="Basic Information">
-        <CategorySection>
-          <div className="space-y-6 w-full">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative w-32 h-32">
-                <img
-                  src={user.profile_image || "/placeholder.svg"}
-                  alt="Profile"
-                  className="w-full h-full rounded-full object-cover"
+    <Layout>
+      <div className="w-full">
+        <div className="profile-container">
+          <div className="profile-sections-container">
+            {/* Basic Information */}
+            <div className="profile-section">
+              <h1 className="profile-header">{user.username}'s Profile</h1>
+              <div className="image-container">
+                <img 
+                  src={user.profile_image || '/placeholder.svg'} 
+                  alt="Profile" 
+                  className="profile-image"
                 />
               </div>
+              <div className="profile-grid">
+                <div className="info-group">
+                  <label className="info-label">Username</label>
+                  <div className="info-value">{user.username}</div>
+                </div>
+                <div className="info-group">
+                  <label className="info-label">Email</label>
+                  <div className="info-value">{user.email}</div>
+                </div>
+                <div className="info-group">
+                  <label className="info-label">Bio</label>
+                  <div className="info-value" style={{ minHeight: '100px' }}>{user.bio}</div>
+                </div>
+                <div className="info-group">
+                  <label className="info-label">User Type</label>
+                  <div className="info-value">{user.user_type}</div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h3 className="block text-sm font-medium text-gray-700">Username</h3>
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                {user.username || 'No username set'}
-              </p>
+            {/* Professional Information */}
+            <div className="profile-section">
+              <h2 className="section-title">Professional Information</h2>
+              <div className="profile-grid">
+                {/* Career Details */}
+                <div>
+                  <h3 className="section-title">Career Details</h3>
+                  <div className="info-group">
+                    <label className="info-label">Career Title</label>
+                    <div className="info-value">{user.career_title}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Experience</label>
+                    <div className="info-value">{user.career_experience} years</div>
+                  </div>
+                </div>
+
+                {/* Social Media Details */}
+                <div>
+                  <h3 className="section-title">Social Media</h3>
+                  <div className="info-group">
+                    <label className="info-label">Handle</label>
+                    <div className="info-value">{user.social_media_handle}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Followers</label>
+                    <div className="info-value">{user.social_media_followers}</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h3 className="block text-sm font-medium text-gray-700">Email</h3>
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.email}</p>
+            {/* Availability & Work Preferences */}
+            <div className="profile-section">
+              <h2 className="section-title">Availability & Work Preferences</h2>
+              <div className="profile-grid">
+                {/* Availability */}
+                <div>
+                  <h3 className="section-title">Availability</h3>
+                  <div className="info-group">
+                    <label className="info-label">Status</label>
+                    <div className="info-value">{user.availability_status}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Preferred Work Type</label>
+                    <div className="info-value">{user.preferred_work_type}</div>
+                  </div>
+                </div>
+
+                {/* Compensation */}
+                <div>
+                  <h3 className="section-title">Compensation</h3>
+                  <div className="info-group">
+                    <label className="info-label">Standard Rate</label>
+                    <div className="info-value">{user.standard_service_rate}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Rate Range</label>
+                    <div className="info-value">{user.rate_range}</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h3 className="block text-sm font-medium text-gray-700">Bio</h3>
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.bio}</p>
+            {/* Focus */}
+            <div className="profile-section">
+              <h2 className="section-title">Focus</h2>
+              <div className="profile-grid">
+                <div>
+                  <h3 className="section-title">Target Audience</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {user.target_audience.map((tag: string, index: number) => (
+                      <PillTag key={index} text={tag} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="section-title">Solutions Offered</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {user.solutions_offered.map((tag: string, index: number) => (
+                      <PillTag key={index} text={tag} />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h3 className="block text-sm font-medium text-gray-700">User Type</h3>
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.user_type}</p>
+            {/* Tags & Categories */}
+            <div className="profile-section">
+              <h2 className="section-title">Skills & Expertise</h2>
+              <div className="profile-grid">
+                <div className="info-group">
+                  <label className="info-label">Skills</label>
+                  <div className="tag-container">
+                    {user.skills.map((skill, index) => (
+                      <span key={index} className="tag">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="info-group">
+                  <label className="info-label">Expertise</label>
+                  <div className="tag-container">
+                    {user.expertise.map((item, index) => (
+                      <span key={index} className="tag">{item}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="profile-section">
+              <h2 className="section-title">Status</h2>
+              <div className="profile-grid">
+                <div>
+                  <h3 className="section-title">Work Status</h3>
+                  <div className="info-group">
+                    <label className="info-label">Current Status</label>
+                    <div className="info-value">{user.work_status}</div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="section-title">Seeking</h3>
+                  <div className="info-group">
+                    <label className="info-label">Looking For</label>
+                    <div className="info-value">{user.seeking}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact & Availability */}
+            <div className="profile-section">
+              <h2 className="section-title">Contact & Availability</h2>
+              <div className="profile-grid">
+                <div>
+                  <h3 className="section-title">Social Links</h3>
+                  {Object.entries(user.social_links).map(([platform, url]) => (
+                    <div key={platform} className="info-group">
+                      <label className="info-label capitalize">{platform}</label>
+                      <div className="info-value">
+                        {url ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : 'Not provided'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <h3 className="section-title">Website Links</h3>
+                  <div className="info-group">
+                    <div className="tag-container">
+                      {user.website_links.map((link, index) => (
+                        <a key={index} href={link} target="_blank" rel="noopener noreferrer" className="tag">
+                          {new URL(link).hostname}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Qualifications */}
+            <div className="profile-section">
+              <h2 className="section-title">Qualifications</h2>
+              <div className="space-y-6">
+                {/* Work Experience */}
+                <div className="info-group">
+                  <h3 className="section-title">Work Experience</h3>
+                  {user.work_experience.map((exp, index) => (
+                    <div key={index} className="info-value mb-4">
+                      <div className="font-medium">{exp.title}</div>
+                      <div>{exp.company}</div>
+                      <div className="text-sm text-gray-500">{exp.years}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Education */}
+                <div className="info-group">
+                  <h3 className="section-title">Education</h3>
+                  {user.education.map((edu, index) => (
+                    <div key={index} className="info-value mb-4">
+                      <div className="font-medium">{edu.degree}</div>
+                      <div>{edu.school}</div>
+                      <div className="text-sm text-gray-500">{edu.year}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Certifications */}
+                <div className="info-group">
+                  <h3 className="section-title">Certifications</h3>
+                  {user.certifications.map((cert, index) => (
+                    <div key={index} className="info-value mb-4">
+                      <div className="font-medium">{cert.name}</div>
+                      <div>{cert.issuer}</div>
+                      <div className="text-sm text-gray-500">{cert.year}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Collaboration & Goals */}
+            <div className="profile-section">
+              <h2 className="section-title">Collaboration & Goals</h2>
+              <div className="profile-grid">
+                <div>
+                  <h3 className="section-title">Short Term Goals</h3>
+                  <div className="info-group">
+                    <div className="info-value" style={{ minHeight: '100px' }}>
+                      {user.short_term_goals}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="section-title">Long Term Goals</h3>
+                  <div className="info-group">
+                    <div className="info-value" style={{ minHeight: '100px' }}>
+                      {user.long_term_goals}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Portfolio & Showcase */}
+            <div className="profile-section">
+              <h2 className="section-title">Portfolio & Showcase</h2>
+              <div className="profile-grid">
+                <div>
+                  <h3 className="section-title">Featured Projects</h3>
+                  {user.featured_projects.map((project, index) => (
+                    <div key={index} className="info-value mb-4">
+                      <div className="font-medium">{project.title}</div>
+                      <div className="text-sm">{project.description}</div>
+                      {project.url && (
+                        <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          View Project
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <h3 className="section-title">Case Studies</h3>
+                  {user.case_studies.map((study, index) => (
+                    <div key={index} className="info-value mb-4">
+                      <div className="font-medium">{study.title}</div>
+                      <div className="text-sm">{study.description}</div>
+                      {study.url && (
+                        <a href={study.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          View Case Study
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Privacy & Notifications */}
+            <div className="profile-section">
+              <h2 className="section-title">Privacy & Notifications</h2>
+              <div className="profile-grid">
+                <div>
+                  <h3 className="section-title">Privacy Settings</h3>
+                  <div className="info-group">
+                    <label className="info-label">Profile Visibility</label>
+                    <div className="info-value">{user.profile_visibility}</div>
+                  </div>
+                  <div className="info-group">
+                    <label className="info-label">Search Visibility</label>
+                    <div className="info-value">{user.search_visibility ? 'Visible' : 'Hidden'}</div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="section-title">Notification Preferences</h3>
+                  {Object.entries(user.notification_preferences).map(([key, value]) => (
+                    <div key={key} className="info-group">
+                      <label className="info-label capitalize">{key.replace('_', ' ')}</label>
+                      <div className="info-value">{value ? 'Enabled' : 'Disabled'}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Add an Edit Profile button at the bottom */}
+            <div className="profile-section">
+              <div className="flex justify-center">
+                <Button 
+                  onClick={() => navigate(`/profile/${id}/edit`)}
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full md:w-auto"
+                >
+                  Edit Profile
+                </Button>
+              </div>
             </div>
           </div>
-        </CategorySection>
-      </PageSection>
-
-      {/* Professional Information */}
-      <PageSection title="Professional Information">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Career Details">
-            <div className="space-y-4 w-full">
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Career Title</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.career_title}</p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Career Experience (Years)</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.career_experience}
-                </p>
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Social Media Details">
-            <div className="space-y-4 w-full">
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Social Media Handle</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.social_media_handle}
-                </p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Social Media Followers</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.social_media_followers}
-                </p>
-              </div>
-            </div>
-          </CategorySection>
         </div>
-        <div className="md:grid md:grid-cols-2 md:gap-6 mt-6">
-          <CategorySection title="Company Info">
-            <div className="space-y-4 w-full">
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Company</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.company}</p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Company Location</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.company_location}
-                </p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Company Website</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.company_website}
-                </p>
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Contract Info">
-            <div className="space-y-4 w-full">
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Contract Type</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.contract_type}</p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Contract Duration</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.contract_duration}
-                </p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Contract Rate</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.contract_rate}</p>
-              </div>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Availability & Work Preferences */}
-      <PageSection title="Availability & Work Preferences">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Availability">
-            <div className="space-y-4 w-full">
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Availability Status</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.availability_status}
-                </p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Preferred Work Type</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.preferred_work_type}
-                </p>
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Compensation">
-            <div className="space-y-4 w-full">
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Standard Service Rate</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.standard_service_rate}
-                </p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">General Rate Range</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.rate_range}</p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Standard Rate Type</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.standard_rate_type}
-                </p>
-              </div>
-              <div>
-                <h3 className="block text-sm font-medium text-gray-700">Compensation Type</h3>
-                <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                  {user.compensation_type}
-                </p>
-              </div>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Focus */}
-      <PageSection title="Focus">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Target Audience">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.target_audience && user.target_audience.length > 0 ? (
-                  user.target_audience.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No target audience added</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Solutions Offered">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.solutions_offered && user.solutions_offered.length > 0 ? (
-                  user.solutions_offered.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No solutions offered added</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Tags & Categories */}
-      <PageSection title="Tags & Categories">
-        <div className="space-y-6">
-          <CategorySection title="Skills">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.skills && user.skills.length > 0 ? (
-                  user.skills.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No skills added yet</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Expertise">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.expertise && user.expertise.length > 0 ? (
-                  user.expertise.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No expertise added</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Interest Tags">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.interest_tags && user.interest_tags.length > 0 ? (
-                  user.interest_tags.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No interest tags added</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Experience">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.experience_tags && user.experience_tags.length > 0 ? (
-                  user.experience_tags.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No experience tags added</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-
-          <CategorySection title="Education">
-            <div className="w-full">
-              <div className="flex flex-wrap gap-2">
-                {user.education_tags && user.education_tags.length > 0 ? (
-                  user.education_tags.map((tag: string) => (
-                    <PillTag key={tag} text={tag} onRemove={() => {}} />
-                  ))
-                ) : (
-                  <p className="text-gray-500 italic">No education tags added</p>
-                )}
-              </div>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Status */}
-      <PageSection title="Status">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Work Status">
-            <div className="w-full">
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.work_status}</p>
-            </div>
-          </CategorySection>
-
-          <CategorySection title="Seeking">
-            <div className="w-full">
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.seeking}</p>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Contact & Availability */}
-      <PageSection title="Contact & Availability">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Social Links">
-            <div className="space-y-4 w-full">
-              {Object.entries(user.social_links || {}).map(([platform, url]) => (
-                <div key={platform}>
-                  <h3 className="block text-sm font-medium text-gray-700 capitalize">{platform}</h3>
-                  <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">
-                    {url || `No ${platform} link added`}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CategorySection>
-          <CategorySection title="Website Links">
-            <div className="space-y-4 w-full">
-              {user.website_links && user.website_links.length > 0 ? (
-                user.website_links.map((link: string, index: number) => (
-                  <div key={index}>
-                    <h3 className="block text-sm font-medium text-gray-700">Website {index + 1}</h3>
-                    <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{link}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No website links added</p>
-              )}
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Qualifications */}
-      <PageSection title="Qualifications">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Work Experience">
-            <div className="space-y-4 w-full">
-              {user.work_experience && user.work_experience.length > 0 ? (
-                user.work_experience.map((exp: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{exp.title}</h3>
-                    <p>{exp.company}</p>
-                    <p>{exp.years}</p>
-                    {exp.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={exp.media || "/placeholder.svg"}
-                          alt={exp.title}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No work experience added</p>
-              )}
-            </div>
-          </CategorySection>
-          <CategorySection title="Education">
-            <div className="space-y-4 w-full">
-              {user.education && user.education.length > 0 ? (
-                user.education.map((edu: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{edu.degree}</h3>
-                    <p>{edu.school}</p>
-                    <p>{edu.year}</p>
-                    {edu.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={edu.media || "/placeholder.svg"}
-                          alt={edu.degree}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No education added</p>
-              )}
-            </div>
-          </CategorySection>
-        </div>
-        <div className="md:grid md:grid-cols-2 md:gap-6 mt-6">
-          <CategorySection title="Certifications">
-            <div className="space-y-4 w-full">
-              {user.certifications && user.certifications.length > 0 ? (
-                user.certifications.map((cert: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{cert.name}</h3>
-                    <p>{cert.issuer}</p>
-                    <p>{cert.year}</p>
-                    {cert.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={cert.media || "/placeholder.svg"}
-                          alt={cert.name}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No certifications added</p>
-              )}
-            </div>
-          </CategorySection>
-          <CategorySection title="Accolades">
-            <div className="space-y-4 w-full">
-              {user.accolades && user.accolades.length > 0 ? (
-                user.accolades.map((accolade: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{accolade.title}</h3>
-                    <p>{accolade.issuer}</p>
-                    <p>{accolade.year}</p>
-                    {accolade.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={accolade.media || "/placeholder.svg"}
-                          alt={accolade.title}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No accolades added</p>
-              )}
-            </div>
-          </CategorySection>
-          <CategorySection title="Endorsements">
-            <div className="space-y-4 w-full">
-              {user.endorsements && user.endorsements.length > 0 ? (
-                user.endorsements.map((endorsement: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{endorsement.name}</h3>
-                    <p>
-                      {endorsement.position} at {endorsement.company}
-                    </p>
-                    <p className="italic">"{endorsement.text}"</p>
-                    {endorsement.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={endorsement.media || "/placeholder.svg"}
-                          alt={endorsement.name}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No endorsements added</p>
-              )}
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Collaboration & Goals */}
-      <PageSection title="Collaboration & Goals">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Short Term Goals">
-            <div className="space-y-4 w-full">
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.short_term_goals}</p>
-            </div>
-          </CategorySection>
-          <CategorySection title="Long Term Goals">
-            <div className="space-y-4 w-full">
-              <p className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 p-2">{user.long_term_goals}</p>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Portfolio & Showcase */}
-      <PageSection title="Portfolio & Showcase">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Featured Projects">
-            <div className="space-y-4 w-full">
-              {user.featured_projects && user.featured_projects.length > 0 ? (
-                user.featured_projects.map((project: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{project.title}</h3>
-                    <p>{project.description}</p>
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      View Project
-                    </a>
-                    {project.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={project.media || "/placeholder.svg"}
-                          alt={project.title}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No featured projects added</p>
-              )}
-            </div>
-          </CategorySection>
-          <CategorySection title="Case Studies">
-            <div className="space-y-4 w-full">
-              {user.case_studies && user.case_studies.length > 0 ? (
-                user.case_studies.map((study: any, index: number) => (
-                  <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <h3 className="font-medium">{study.title}</h3>
-                    <p>{study.description}</p>
-                    <a
-                      href={study.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      View Case Study
-                    </a>
-                    {study.media && (
-                      <div className="relative w-full h-40">
-                        <img
-                          src={study.media || "/placeholder.svg"}
-                          alt={study.title}
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No case studies added</p>
-              )}
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
-
-      {/* Add Edit button */}
-      <div className="mt-8 flex justify-end">
-        <Link to={`/profile/${id}/edit`}>
-          <Button variant="default">
-            Edit Profile
-          </Button>
-        </Link>
       </div>
-    </div>
+    </Layout>
   )
 }
 

@@ -37,8 +37,22 @@ function mapUserToFrontend(user: any) {
 
 // Add this function to map frontend data to database format
 function mapFrontendToUser(userData: any) {
-  // Extract nested objects
-  const { social_links, notification_preferences, ...rest } = userData;
+  console.log('Processing update data');
+  
+  // Extract nested objects and related data
+  const { 
+    social_links, 
+    notification_preferences,
+    // Keep these in the data instead of removing them
+    // work_experience,
+    // education,
+    // certifications,
+    // accolades,
+    // endorsements,
+    // featured_projects,
+    // case_studies,
+    ...rest 
+  } = userData;
 
   // Flatten social links
   const flattenedSocialLinks = social_links ? {
@@ -56,9 +70,19 @@ function mapFrontendToUser(userData: any) {
     notification_preferences_digest: notification_preferences.digest || false,
   } : {};
 
-  // Return flattened data
-  return {
+  // Convert numeric fields to the correct type
+  const convertedData = {
     ...rest,
+    // Convert string numbers to integers
+    career_experience: rest.career_experience !== undefined ? 
+      parseInt(rest.career_experience, 10) || 0 : undefined,
+    social_media_followers: rest.social_media_followers !== undefined ? 
+      parseInt(rest.social_media_followers, 10) || 0 : undefined,
+  };
+
+  // Return data with flattened fields and keeping related data
+  return {
+    ...convertedData,
     ...flattenedSocialLinks,
     ...flattenedNotificationPrefs,
   };
@@ -94,25 +118,36 @@ export async function getUserById(id: string) {
 
 export async function updateUser(id: string, data: any) {
   try {
-    // Map frontend data to database format
-    const dbData = mapFrontendToUser(data);
+    console.log('Updating user with ID:', id);
+    console.log('Update data:', data);
     
-    // Extract related data from the main update
+    // Extract all related data before mapping
     const {
-      user_work_experience,
-      user_education,
-      user_certifications,
-      user_accolades,
-      user_endorsements,
-      user_featured_projects,
-      user_case_studies,
+      work_experience,
+      education,
+      certifications,
+      accolades,
+      endorsements,
+      featured_projects,
+      case_studies,
+      ...mainData
+    } = data;
+
+    // Map frontend data to database format for main user fields
+    const dbData = mapFrontendToUser(mainData);
+    console.log('Mapped data for database:', dbData);
+    
+    // Extract fields that shouldn't be directly updated
+    const {
       password_hash,
       created_at,
       ...updateData
     } = dbData;
-    
+
     // Add updated_at timestamp
     updateData.updated_at = new Date();
+    
+    console.log('Final update data for main user record:', updateData);
     
     // Start a transaction to update the user and related data
     const result = await prisma.$transaction(async (tx) => {
@@ -120,6 +155,145 @@ export async function updateUser(id: string, data: any) {
       const updatedUser = await tx.users.update({
         where: { id },
         data: updateData,
+      });
+
+      // Update work experience
+      if (work_experience) {
+        await tx.user_work_experience.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (work_experience.length > 0) {
+          await tx.user_work_experience.createMany({
+            data: work_experience.map(exp => ({
+              user_id: id,
+              title: exp.title || '',
+              company: exp.company || '',
+              years: exp.years || '',
+              media: exp.media || null
+            }))
+          });
+        }
+      }
+
+      // Update education
+      if (education) {
+        await tx.user_education.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (education.length > 0) {
+          await tx.user_education.createMany({
+            data: education.map(edu => ({
+              user_id: id,
+              degree: edu.degree || '',
+              school: edu.school || '',
+              year: edu.year || '',
+              media: edu.media || null
+            }))
+          });
+        }
+      }
+
+      // Update certifications
+      if (certifications) {
+        await tx.user_certifications.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (certifications.length > 0) {
+          await tx.user_certifications.createMany({
+            data: certifications.map(cert => ({
+              user_id: id,
+              name: cert.name || '',
+              issuer: cert.issuer || '',
+              year: cert.year || '',
+              media: cert.media || null
+            }))
+          });
+        }
+      }
+
+      // Update accolades
+      if (accolades) {
+        await tx.user_accolades.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (accolades.length > 0) {
+          await tx.user_accolades.createMany({
+            data: accolades.map(accolade => ({
+              user_id: id,
+              title: accolade.title || '',
+              issuer: accolade.issuer || '',
+              year: accolade.year || '',
+              media: accolade.media || null
+            }))
+          });
+        }
+      }
+
+      // Update endorsements
+      if (endorsements) {
+        await tx.user_endorsements.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (endorsements.length > 0) {
+          await tx.user_endorsements.createMany({
+            data: endorsements.map(endorsement => ({
+              user_id: id,
+              name: endorsement.name || '',
+              position: endorsement.position || '',
+              company: endorsement.company || '',
+              text: endorsement.text || '',
+              media: endorsement.media || null
+            }))
+          });
+        }
+      }
+
+      // Update featured projects
+      if (featured_projects) {
+        await tx.user_featured_projects.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (featured_projects.length > 0) {
+          await tx.user_featured_projects.createMany({
+            data: featured_projects.map(project => ({
+              user_id: id,
+              title: project.title || '',
+              description: project.description || '',
+              url: project.url || '',
+              media: project.media || null
+            }))
+          });
+        }
+      }
+
+      // Update case studies
+      if (case_studies) {
+        await tx.user_case_studies.deleteMany({
+          where: { user_id: id }
+        });
+        
+        if (case_studies.length > 0) {
+          await tx.user_case_studies.createMany({
+            data: case_studies.map(study => ({
+              user_id: id,
+              title: study.title || '',
+              description: study.description || '',
+              url: study.url || '',
+              media: study.media || null
+            }))
+          });
+        }
+      }
+
+      // Fetch the updated user with all related data
+      return await tx.users.findUnique({
+        where: { id },
         include: {
           user_work_experience: true,
           user_education: true,
@@ -130,12 +304,9 @@ export async function updateUser(id: string, data: any) {
           user_case_studies: true
         }
       });
-      
-      // Update related records if provided
-      // This is a simplified example - you would need to handle creates, updates, and deletes
-      
-      return updatedUser;
     });
+
+    console.log('User updated successfully');
     
     // Remove sensitive data
     const { password_hash: _, ...userWithoutPassword } = result;

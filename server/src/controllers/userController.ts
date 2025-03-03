@@ -66,21 +66,27 @@ export async function updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const userData = req.body;
     
+    console.log('Update user request received for ID:', id);
+    console.log('Update data:', userData);
+    
     // Validate input
     if (Object.keys(userData).length === 0) {
       return res.status(400).json({ message: 'No update data provided' });
     }
     
     // Check if the user exists
+    console.log('Checking if user exists');
     const existingUser = await userService.getUserById(id);
     if (!existingUser) {
       return res.status(404).json({ message: 'User not found' });
     }
     
     // Update the user
+    console.log('Updating user in database');
     const updatedUser = await userService.updateUser(id, userData);
     
     // Return the updated user
+    console.log('User updated successfully');
     res.json(updatedUser);
   } catch (error) {
     console.error('Error updating user:', error);

@@ -9,6 +9,8 @@ import CategorySection from "@/components/sections/CategorySection"
 import TagInput from "./TagInput"
 import ImageUpload from "./ImageUpload"
 import { Button } from "@/components/ui/button"
+import Layout from "@/components/layout/Layout"
+import './ProfileEditForm.css'
 
 export default function ProfileEditForm() {
   const { id } = useParams<{ id: string }>()
@@ -42,7 +44,8 @@ export default function ProfileEditForm() {
     handleImageSelect,
     handleAddTag,
     handleRemoveTag,
-    handleSubmit
+    handleSubmit,
+    handleDeleteFeaturedProject
   } = useProfileForm(id || localStorage.getItem('userId') || undefined)
 
   // Handle success - redirect to profile page
@@ -52,69 +55,86 @@ export default function ProfileEditForm() {
     }
   }, [success, id, navigate])
 
-  if (loading) return <div className="text-center py-8">Loading profile data...</div>
-  if (error) return <div className="text-center py-8 text-red-500">{error}</div>
+  if (loading) {
+    return (
+      <Layout>
+        <div className="profile-edit-container">
+          <div className="form-section">Loading profile data...</div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Basic Information */}
-      <PageSection title="Basic Information">
-        <CategorySection title="Personal Information">
-          <div className="space-y-6 w-full">
-            <ImageUpload onImageSelect={handleImageSelect} initialImage={formData.profile_image as string} />
+    <Layout>
+      <div className="w-full">
+        <form onSubmit={handleSubmit} className="profile-edit-container">
+          <div className="form-sections-container">
+            <div className="form-section">
+              <h1 className="profile-edit-header">Edit Profile</h1>
+              {error && (
+                <div className="error-message">{error}</div>
+              )}
+              {success && (
+                <div className="success-message">Profile updated successfully!</div>
+              )}
+            </div>
 
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
+      {/* Basic Information */}
+            <div className="form-section">
+              <h2 className="section-title">Basic Information</h2>
+              <div className="image-upload-container">
+                <ImageUpload 
+                  onImageSelect={handleImageSelect} 
+                  initialImage={formData.profile_image as string}
+                />
+              </div>
+
+              <div className="form-grid">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="username">Username</label>
               <input
                 type="text"
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="form-input"
               />
             </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="form-input"
               />
             </div>
 
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-                Bio
-              </label>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="bio">Bio</label>
               <textarea
                 id="bio"
                 name="bio"
                 value={formData.bio}
                 onChange={handleInputChange}
                 rows={4}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              ></textarea>
+                    className="form-input"
+                  />
             </div>
 
-            <div>
-              <label htmlFor="user_type" className="block text-sm font-medium text-gray-700">
-                User Type
-              </label>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="user_type">User Type</label>
               <select
                 id="user_type"
                 name="user_type"
                 value={formData.user_type}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="form-input"
               >
                 <option value="">Select user type...</option>
                 <option value="creator">Creator</option>
@@ -124,180 +144,85 @@ export default function ProfileEditForm() {
               </select>
             </div>
           </div>
-        </CategorySection>
-      </PageSection>
+            </div>
 
       {/* Professional Information */}
-      <PageSection title="Professional Information">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Career Details">
-            <div className="space-y-4 w-full">
+            <div className="form-section">
+              <h2 className="section-title">Professional Information</h2>
+              <div className="form-grid">
+                {/* Career Details */}
               <div>
-                <label htmlFor="career_title" className="block text-sm font-medium text-gray-700">
-                  Career Title
-                </label>
+                  <h3 className="section-title">Career Details</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="career_title">Career Title</label>
                 <input
                   type="text"
                   id="career_title"
                   name="career_title"
                   value={formData.career_title}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
               </div>
-              <div>
-                <label htmlFor="career_experience" className="block text-sm font-medium text-gray-700">
-                  Career Experience (Years)
-                </label>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="career_experience">Career Experience (Years)</label>
                 <input
                   type="number"
                   id="career_experience"
                   name="career_experience"
                   value={formData.career_experience}
                   onChange={handleInputChange}
-                  min="0"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
               </div>
             </div>
-          </CategorySection>
-          <CategorySection title="Social Media Details">
-            <div className="space-y-4 w-full">
+
+                {/* Social Media Details */}
               <div>
-                <label htmlFor="social_media_handle" className="block text-sm font-medium text-gray-700">
-                  Social Media Handle
-                </label>
+                  <h3 className="section-title">Social Media Details</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="social_media_handle">Social Media Handle</label>
                 <input
                   type="text"
                   id="social_media_handle"
                   name="social_media_handle"
                   value={formData.social_media_handle}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
               </div>
-              <div>
-                <label htmlFor="social_media_followers" className="block text-sm font-medium text-gray-700">
-                  Social Media Followers
-                </label>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="social_media_followers">Social Media Followers</label>
                 <input
                   type="number"
                   id="social_media_followers"
                   name="social_media_followers"
                   value={formData.social_media_followers}
                   onChange={handleInputChange}
-                  min="0"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
               </div>
             </div>
-          </CategorySection>
         </div>
-        <div className="md:grid md:grid-cols-2 md:gap-6 mt-6">
-          <CategorySection title="Company Info">
-            <div className="space-y-4 w-full">
-              <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                  Company
-                </label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
               </div>
-              <div>
-                <label htmlFor="company_location" className="block text-sm font-medium text-gray-700">
-                  Company Location
-                </label>
-                <input
-                  type="text"
-                  id="company_location"
-                  name="company_location"
-                  value={formData.company_location}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label htmlFor="company_website" className="block text-sm font-medium text-gray-700">
-                  Company Website
-                </label>
-                <input
-                  type="url"
-                  id="company_website"
-                  name="company_website"
-                  value={formData.company_website}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-            </div>
-          </CategorySection>
-          <CategorySection title="Contract Info">
-            <div className="space-y-4 w-full">
-              <div>
-                <label htmlFor="contract_type" className="block text-sm font-medium text-gray-700">
-                  Contract Type
-                </label>
-                <input
-                  type="text"
-                  id="contract_type"
-                  name="contract_type"
-                  value={formData.contract_type}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label htmlFor="contract_duration" className="block text-sm font-medium text-gray-700">
-                  Contract Duration
-                </label>
-                <input
-                  type="text"
-                  id="contract_duration"
-                  name="contract_duration"
-                  value={formData.contract_duration}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label htmlFor="contract_rate" className="block text-sm font-medium text-gray-700">
-                  Contract Rate
-                </label>
-                <input
-                  type="text"
-                  id="contract_rate"
-                  name="contract_rate"
-                  value={formData.contract_rate}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-            </div>
-          </CategorySection>
-        </div>
-      </PageSection>
 
       {/* Availability & Work Preferences */}
-      <PageSection title="Availability & Work Preferences">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Availability">
-            <div className="space-y-4 w-full">
+            <div className="form-section">
+              <h2 className="section-title">Availability & Work Preferences</h2>
+              <div className="form-grid">
+                {/* Availability */}
               <div>
-                <label htmlFor="availability_status" className="block text-sm font-medium text-gray-700">
-                  Availability Status
-                </label>
+                  <h3 className="section-title">Availability</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="availability_status">Availability Status</label>
                 <select
                   id="availability_status"
                   name="availability_status"
                   value={formData.availability_status}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 >
                   <option value="">Select availability...</option>
                   <option value="available">Available</option>
@@ -305,16 +230,14 @@ export default function ProfileEditForm() {
                   <option value="not_available">Not Available</option>
                 </select>
               </div>
-              <div>
-                <label htmlFor="preferred_work_type" className="block text-sm font-medium text-gray-700">
-                  Preferred Work Type
-                </label>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="preferred_work_type">Preferred Work Type</label>
                 <select
                   id="preferred_work_type"
                   name="preferred_work_type"
                   value={formData.preferred_work_type}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 >
                   <option value="">Select work type...</option>
                   <option value="part_time_employment">Part Time Employment</option>
@@ -326,13 +249,12 @@ export default function ProfileEditForm() {
                 </select>
               </div>
             </div>
-          </CategorySection>
-          <CategorySection title="Compensation">
-            <div className="space-y-4 w-full">
+
+                {/* Compensation */}
               <div>
-                <label htmlFor="standard_service_rate" className="block text-sm font-medium text-gray-700">
-                  Standard Service Rate
-                </label>
+                  <h3 className="section-title">Compensation</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="standard_service_rate">Standard Service Rate</label>
                 <input
                   type="text"
                   id="standard_service_rate"
@@ -340,13 +262,11 @@ export default function ProfileEditForm() {
                   value={formData.standard_service_rate}
                   onChange={handleInputChange}
                   placeholder="e.g. $100"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
               </div>
-              <div>
-                <label htmlFor="rate_range" className="block text-sm font-medium text-gray-700">
-                  General Rate Range
-                </label>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="rate_range">General Rate Range</label>
                 <input
                   type="text"
                   id="rate_range"
@@ -354,19 +274,17 @@ export default function ProfileEditForm() {
                   value={formData.rate_range}
                   onChange={handleInputChange}
                   placeholder="e.g. $50-100"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
               </div>
-              <div>
-                <label htmlFor="standard_rate_type" className="block text-sm font-medium text-gray-700">
-                  Standard Rate Type
-                </label>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="standard_rate_type">Standard Rate Type</label>
                 <select
                   id="standard_rate_type"
                   name="standard_rate_type"
                   value={formData.standard_rate_type}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 >
                   <option value="">Select rate type...</option>
                   <option value="hourly">Hourly</option>
@@ -376,16 +294,14 @@ export default function ProfileEditForm() {
                   <option value="pro_bono">Pro Bono</option>
                 </select>
               </div>
-              <div>
-                <label htmlFor="compensation_type" className="block text-sm font-medium text-gray-700">
-                  Compensation Type
-                </label>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="compensation_type">Compensation Type</label>
                 <select
                   id="compensation_type"
                   name="compensation_type"
                   value={formData.compensation_type}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 >
                   <option value="">Select compensation type...</option>
                   <option value="usd">USD</option>
@@ -395,15 +311,17 @@ export default function ProfileEditForm() {
                 </select>
               </div>
             </div>
-          </CategorySection>
         </div>
-      </PageSection>
+            </div>
 
       {/* Focus */}
-      <PageSection title="Focus">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Target Audience">
-            <div className="w-full">
+            <div className="form-section">
+              <h2 className="section-title">Focus</h2>
+              <div className="form-grid">
+                {/* Target Audience */}
+                <div>
+                  <h3 className="section-title">Target Audience</h3>
+                  <div className="form-group">
               <TagInput
                 label="Target Audience"
                 tags={formData.target_audience}
@@ -412,9 +330,12 @@ export default function ProfileEditForm() {
                 placeholder="Add target audience..."
               />
             </div>
-          </CategorySection>
-          <CategorySection title="Solutions Offered">
-            <div className="w-full">
+                </div>
+
+                {/* Solutions Offered */}
+                <div>
+                  <h3 className="section-title">Solutions Offered</h3>
+                  <div className="form-group">
               <TagInput
                 label="Solutions Offered"
                 tags={formData.solutions_offered}
@@ -423,12 +344,13 @@ export default function ProfileEditForm() {
                 placeholder="Add a solution..."
               />
             </div>
-          </CategorySection>
         </div>
-      </PageSection>
+              </div>
+            </div>
 
       {/* Tags & Categories */}
-      <PageSection title="Tags & Categories">
+            <div className="form-section">
+              <h2 className="section-title">Tags & Categories</h2>
         <div className="space-y-6">
           <CategorySection title="Skills">
             <div className="w-full">
@@ -488,11 +410,12 @@ export default function ProfileEditForm() {
             </div>
           </CategorySection>
         </div>
-      </PageSection>
+            </div>
 
       {/* Status */}
-      <PageSection title="Status">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
+            <div className="form-section">
+              <h2 className="section-title">Status</h2>
+              <div className="form-grid">
           <CategorySection title="Work Status">
             <div className="w-full">
               <select
@@ -500,8 +423,8 @@ export default function ProfileEditForm() {
                 name="work_status"
                 value={formData.work_status}
                 onChange={handleInputChange}
-                aria-label="Work Status"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      aria-label="Work Status"
+                      className="form-input"
               >
                 <option value="">Select work status...</option>
                 <option value="full_time">Full Time</option>
@@ -520,8 +443,8 @@ export default function ProfileEditForm() {
                 name="seeking"
                 value={formData.seeking}
                 onChange={handleInputChange}
-                aria-label="Seeking"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      aria-label="Seeking"
+                      className="form-input"
               >
                 <option value="">Select what you're seeking...</option>
                 <option value="full_time">Full Time Work</option>
@@ -533,16 +456,17 @@ export default function ProfileEditForm() {
             </div>
           </CategorySection>
         </div>
-      </PageSection>
+            </div>
 
       {/* Contact & Availability */}
-      <PageSection title="Contact & Availability">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
+            <div className="form-section">
+              <h2 className="section-title">Contact & Availability</h2>
+              <div className="form-grid">
           <CategorySection title="Social Links">
             <div className="space-y-4 w-full">
               {Object.entries(formData.social_links).map(([platform, url]) => (
-                <div key={platform}>
-                  <label htmlFor={platform} className="block text-sm font-medium text-gray-700 capitalize">
+                      <div key={platform} className="form-group">
+                        <label className="form-label capitalize" htmlFor={platform}>
                     {platform}
                   </label>
                   <input
@@ -560,7 +484,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder={`Enter your ${platform} URL`}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                 </div>
               ))}
@@ -576,7 +500,7 @@ export default function ProfileEditForm() {
                     website_links: [...prev.website_links, ""],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Website Link
               </button>
@@ -594,7 +518,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Enter website URL"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -604,7 +528,7 @@ export default function ProfileEditForm() {
                         website_links: prev.website_links.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
@@ -613,11 +537,12 @@ export default function ProfileEditForm() {
             </div>
           </CategorySection>
         </div>
-      </PageSection>
+            </div>
 
       {/* Qualifications */}
-      <PageSection title="Qualifications">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
+            <div className="form-section">
+              <h2 className="section-title">Qualifications</h2>
+              <div className="form-grid">
           <CategorySection title="Work Experience">
             <div className="space-y-4 w-full">
               <button
@@ -628,7 +553,7 @@ export default function ProfileEditForm() {
                     work_experience: [...prev.work_experience, { title: "", company: "", years: "", media: undefined }],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Work Experience
               </button>
@@ -646,7 +571,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Job Title"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -660,7 +585,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Company"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -674,12 +599,12 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Years"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="work_experience_media"
-                    aria-label="Work Experience Media"
+                          id="work_experience_media"
+                          aria-label="Work Experience Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -692,12 +617,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -707,7 +627,7 @@ export default function ProfileEditForm() {
                         work_experience: prev.work_experience.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
@@ -725,7 +645,7 @@ export default function ProfileEditForm() {
                     education: [...prev.education, { degree: "", school: "", year: "", media: undefined }],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Education
               </button>
@@ -743,7 +663,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Degree"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -757,7 +677,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="School"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -771,12 +691,12 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Year"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="education_media"
-                    aria-label="Education Media"
+                          id="education_media"
+                          aria-label="Education Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -789,12 +709,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -804,7 +719,7 @@ export default function ProfileEditForm() {
                         education: prev.education.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
@@ -813,7 +728,7 @@ export default function ProfileEditForm() {
             </div>
           </CategorySection>
         </div>
-        <div className="md:grid md:grid-cols-2 md:gap-6 mt-6">
+              <div className="form-grid mt-6">
           <CategorySection title="Certifications">
             <div className="space-y-4 w-full">
               <button
@@ -824,7 +739,7 @@ export default function ProfileEditForm() {
                     certifications: [...prev.certifications, { name: "", issuer: "", year: "", media: undefined }],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Certification
               </button>
@@ -842,7 +757,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Certification Name"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -856,7 +771,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Issuer"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -870,12 +785,12 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Year"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="certification_media"
-                    aria-label="Certification Media"
+                          id="certification_media"
+                          aria-label="Certification Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -888,12 +803,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -903,7 +813,7 @@ export default function ProfileEditForm() {
                         certifications: prev.certifications.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
@@ -921,7 +831,7 @@ export default function ProfileEditForm() {
                     accolades: [...prev.accolades, { title: "", issuer: "", year: "", media: undefined }],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Accolade
               </button>
@@ -939,7 +849,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Accolade Title"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -953,7 +863,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Issuer"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -967,12 +877,12 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Year"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="accolade_media"
-                    aria-label="Accolade Media"
+                          id="accolade_media"
+                          aria-label="Accolade Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -985,12 +895,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -1000,7 +905,7 @@ export default function ProfileEditForm() {
                         accolades: prev.accolades.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
@@ -1021,7 +926,7 @@ export default function ProfileEditForm() {
                     ],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Endorsement
               </button>
@@ -1039,7 +944,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Endorser Name"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -1053,7 +958,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Endorser Position"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="text"
@@ -1067,7 +972,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Endorser Company"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <textarea
                     value={endorsement.text}
@@ -1081,12 +986,12 @@ export default function ProfileEditForm() {
                     }}
                     placeholder="Endorsement Text"
                     rows={3}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="endorsement_media"
-                    aria-label="Endorsement Media"
+                          id="endorsement_media"
+                          aria-label="Endorsement Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1099,12 +1004,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -1114,7 +1014,7 @@ export default function ProfileEditForm() {
                         endorsements: prev.endorsements.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
@@ -1123,54 +1023,55 @@ export default function ProfileEditForm() {
             </div>
           </CategorySection>
         </div>
-      </PageSection>
+            </div>
 
       {/* Collaboration & Goals */}
-      <PageSection title="Collaboration & Goals">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Short Term Goals">
-            <div className="space-y-4 w-full">
+            <div className="form-section">
+              <h2 className="section-title">Collaboration & Goals</h2>
+              <div className="form-grid">
+                {/* Short Term Goals */}
               <div>
-                <label htmlFor="short_term_goals" className="block text-sm font-medium text-gray-700">
-                  Short Term Goals
-                </label>
+                  <h3 className="section-title">Short Term Goals</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="short_term_goals">Short Term Goals</label>
                 <textarea
                   id="short_term_goals"
                   name="short_term_goals"
                   value={formData.short_term_goals}
                   onChange={handleInputChange}
                   rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                   placeholder="Enter your short term goals..."
                 ></textarea>
               </div>
             </div>
-          </CategorySection>
-          <CategorySection title="Long Term Goals">
-            <div className="space-y-4 w-full">
+
+                {/* Long Term Goals */}
               <div>
-                <label htmlFor="long_term_goals" className="block text-sm font-medium text-gray-700">
-                  Long Term Goals
-                </label>
+                  <h3 className="section-title">Long Term Goals</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="long_term_goals">Long Term Goals</label>
                 <textarea
                   id="long_term_goals"
                   name="long_term_goals"
                   value={formData.long_term_goals}
                   onChange={handleInputChange}
                   rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                   placeholder="Enter your long term goals..."
                 ></textarea>
               </div>
             </div>
-          </CategorySection>
         </div>
-      </PageSection>
+            </div>
 
       {/* Portfolio & Showcase */}
-      <PageSection title="Portfolio & Showcase">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Featured Projects">
+            <div className="form-section">
+              <h2 className="section-title">Portfolio & Showcase</h2>
+              <div className="form-grid">
+                {/* Featured Projects */}
+                <div>
+                  <h3 className="section-title">Featured Projects</h3>
             <div className="space-y-4 w-full">
               <button
                 type="button"
@@ -1183,12 +1084,12 @@ export default function ProfileEditForm() {
                     ],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Featured Project
               </button>
               {formData.featured_projects.map((project, index) => (
-                <div key={index} className="space-y-2 p-4 border rounded-md">
+                      <div key={project.id || index} className="space-y-2 p-4 border rounded-md">
                   <input
                     type="text"
                     value={project.title}
@@ -1201,12 +1102,12 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Project Title"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="featured_project_media"
-                    aria-label="Featured Project Media"
+                          id="featured_project_media"
+                          aria-label="Featured Project Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1219,12 +1120,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <textarea
                     value={project.description}
@@ -1238,7 +1134,7 @@ export default function ProfileEditForm() {
                     }}
                     placeholder="Project Description"
                     rows={3}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="url"
@@ -1252,25 +1148,29 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Project URL"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <button
                     type="button"
-                    onClick={() => {
-                      setFormData((prev) => ({
+                          onClick={() => project.id ? 
+                            handleDeleteFeaturedProject(project.id) : 
+                            setFormData(prev => ({
                         ...prev,
-                        featured_projects: prev.featured_projects.filter((_, i) => i !== index),
+                              featured_projects: prev.featured_projects.filter((_, i) => i !== index)
                       }))
-                    }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          }
+                          className="form-input"
                   >
                     Remove
                   </button>
                 </div>
               ))}
             </div>
-          </CategorySection>
-          <CategorySection title="Case Studies">
+                </div>
+
+                {/* Case Studies */}
+                <div>
+                  <h3 className="section-title">Case Studies</h3>
             <div className="space-y-4 w-full">
               <button
                 type="button"
@@ -1280,7 +1180,7 @@ export default function ProfileEditForm() {
                     case_studies: [...prev.case_studies, { title: "", description: "", url: "", media: undefined }],
                   }))
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                      className="form-input"
               >
                 Add Case Study
               </button>
@@ -1298,12 +1198,12 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Case Study Title"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="file"
-                    id="case_study_media"
-                    aria-label="Case Study Media"
+                          id="case_study_media"
+                          aria-label="Case Study Media"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -1316,12 +1216,7 @@ export default function ProfileEditForm() {
                       }
                     }}
                     accept="image/*,video/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                          className="form-input"
                   />
                   <textarea
                     value={study.description}
@@ -1335,7 +1230,7 @@ export default function ProfileEditForm() {
                     }}
                     placeholder="Case Study Description"
                     rows={3}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <input
                     type="url"
@@ -1349,7 +1244,7 @@ export default function ProfileEditForm() {
                       }))
                     }}
                     placeholder="Case Study URL"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <button
                     type="button"
@@ -1359,32 +1254,32 @@ export default function ProfileEditForm() {
                         case_studies: prev.case_studies.filter((_, i) => i !== index),
                       }))
                     }}
-                    className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                          className="form-input"
                   >
                     Remove
                   </button>
                 </div>
               ))}
             </div>
-          </CategorySection>
         </div>
-      </PageSection>
+              </div>
+            </div>
 
       {/* Privacy & Notifications */}
-      <PageSection title="Privacy & Notifications (Coming Soon!)">
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          <CategorySection title="Privacy Settings">
-            <div className="space-y-4 w-full">
+            <div className="form-section">
+              <h2 className="section-title">Privacy & Notifications</h2>
+              <div className="form-grid">
+                {/* Privacy Settings */}
               <div>
-                <label htmlFor="profile_visibility" className="block text-sm font-medium text-gray-700">
-                  Profile Visibility
-                </label>
+                  <h3 className="section-title">Privacy Settings</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="profile_visibility">Profile Visibility</label>
                 <select
                   id="profile_visibility"
                   name="profile_visibility"
                   value={formData.profile_visibility}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 >
                   <option value="public">Public</option>
                   <option value="private">Private</option>
@@ -1398,15 +1293,17 @@ export default function ProfileEditForm() {
                   name="search_visibility"
                   checked={formData.search_visibility}
                   onChange={handleInputChange}
-                  className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="form-input"
                 />
                 <label htmlFor="search_visibility" className="ml-2 block text-sm text-gray-900">
                   Visible in search results
                 </label>
               </div>
             </div>
-          </CategorySection>
-          <CategorySection title="Notification Preferences">
+
+                {/* Notification Preferences */}
+                <div>
+                  <h3 className="section-title">Notification Preferences</h3>
             <div className="space-y-4 w-full">
               {Object.entries(formData.notification_preferences).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-center">
@@ -1423,7 +1320,7 @@ export default function ProfileEditForm() {
                         },
                       }))
                     }}
-                    className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="form-input"
                   />
                   <label htmlFor={`notification_${key}`} className="ml-2 block text-sm text-gray-900 capitalize">
                     {key.replace("_", " ")} Notifications
@@ -1431,20 +1328,24 @@ export default function ProfileEditForm() {
                 </div>
               ))}
             </div>
-          </CategorySection>
         </div>
-      </PageSection>
-
-      <div className="flex justify-center">
-        <Button 
-          type="submit" 
-          disabled={saving}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              </div>
+            </div>
+          </div>
+          <div className="form-section">
+            <div className="flex items-center justify-center w-full">
+              <Button 
+          type="submit"
+                disabled={saving}
+                className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full md:w-auto"
         >
-          {saving ? "Saving..." : "Save Changes"}
-        </Button>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
       </div>
     </form>
+      </div>
+    </Layout>
   )
 }
 
