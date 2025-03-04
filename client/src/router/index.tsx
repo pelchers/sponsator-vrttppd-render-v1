@@ -24,10 +24,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "profile/:id",
-    element: <Layout><ProfilePage /></Layout>,
+    element: <ProfilePage />,
   },
   {
     path: "profile/:id/edit",
-    element: <Layout><ProfileEditPage /></Layout>,
+    element: <ProfileEditPage />,
   },
 ]) 

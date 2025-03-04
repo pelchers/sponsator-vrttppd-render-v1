@@ -66,19 +66,19 @@ export default function ProfileEditForm() {
   }
 
   return (
-    <Layout>
+  
       <div className="w-full">
         <form onSubmit={handleSubmit} className="profile-edit-container">
-          <div className="form-sections-container">
+          <div> 
             <div className="form-section">
-              <h1 className="profile-edit-header">Edit Profile</h1>
+              
               {error && (
                 <div className="error-message">{error}</div>
               )}
               {success && (
                 <div className="success-message">Profile updated successfully!</div>
               )}
-            </div>
+          </div>
 
       {/* Basic Information */}
             <div className="form-section">
@@ -1432,7 +1432,7 @@ export default function ProfileEditForm() {
       </div>
     </form>
       </div>
-    </Layout>
+
   )
 }
 

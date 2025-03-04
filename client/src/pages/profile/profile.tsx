@@ -82,7 +82,7 @@ export default function Profile() {
   if (!user) return <div className="container mx-auto px-4 py-8">User not found</div>;
 
   return (
-    <Layout>
+    
       <div className="w-full">
         <div className="profile-container">
           <div className="profile-sections-container">
@@ -485,7 +485,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </Layout>
+  
   )
 }
 
