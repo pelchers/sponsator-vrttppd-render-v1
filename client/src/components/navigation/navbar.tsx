@@ -8,10 +8,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { logout } from '@/api/auth';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <nav className="bg-white shadow-sm">
@@ -22,6 +28,13 @@ export default function Navbar() {
             <div className="flex-shrink-0 flex items-center">
               <Button variant="ghost" onClick={() => navigate('/')}>
                 Home
+              </Button>
+            </div>
+            
+            {/* Main Navigation */}
+            <div className="hidden md:ml-6 md:flex md:space-x-2">
+              <Button variant="ghost" onClick={() => navigate('/projects')}>
+                Projects
               </Button>
             </div>
           </div>
@@ -42,6 +55,7 @@ export default function Navbar() {
                     Edit Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Projects</DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => navigate('/projects')}>
                     My Projects
                   </DropdownMenuItem>
@@ -49,10 +63,7 @@ export default function Navbar() {
                     Create Project
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => {
-                    localStorage.clear();
-                    navigate('/login');
-                  }}>
+                  <DropdownMenuItem onClick={handleLogout}>
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -62,7 +73,7 @@ export default function Navbar() {
                 <Button variant="ghost" onClick={() => navigate('/login')}>
                   Login
                 </Button>
-                <Button onClick={() => navigate('/signup')}>
+                <Button onClick={() => navigate('/register')}>
                   Sign Up
                 </Button>
               </div>

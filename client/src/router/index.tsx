@@ -1,17 +1,16 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Home from '../pages/home/Home'
 import Login from '../pages/auth/Login'
+import Signup from '../pages/auth/signup'
 import ProfilePage from '../pages/profile/profile'
 import ProfileEditPage from '../pages/profile/editprofile'
-import Layout from '../components/layout/layout'
+import Layout from '../components/layout/Layout'
 
-// Remove the duplicate Layout component definition
-// const Layout = ({ children }: { children: React.ReactNode }) => (
-//   <div className="min-h-screen bg-background">
-//     {/* You can add header, navigation, footer, etc. here */}
-//     <main>{children}</main>
-//   </div>
-// )
+// Import project pages directly with full path
+import ProjectsListPage from '../pages/project/projectslist'
+import ProjectPage from '../pages/project/project'
+import ProjectEditPage from '../pages/project/editproject'
+import TestPage from '../pages/test'
 
 export const router = createBrowserRouter([
   {
@@ -23,11 +22,38 @@ export const router = createBrowserRouter([
     element: <Layout><Login /></Layout>,
   },
   {
-    path: "profile/:id",
-    element: <ProfilePage />,
+    path: "/register",
+    element: <Layout><Signup /></Layout>,
   },
   {
-    path: "profile/:id/edit",
-    element: <ProfileEditPage />,
+    path: "/profile/:id",
+    element: <Layout><ProfilePage /></Layout>,
   },
-]) 
+  {
+    path: "/profile/:id/edit",
+    element: <Layout><ProfileEditPage /></Layout>,
+  },
+  // Project routes with leading slash
+  {
+    path: "/projects",
+    element: <Layout><ProjectsListPage /></Layout>,
+  },
+  {
+    path: "/projects/new",
+    element: <Layout><ProjectEditPage /></Layout>,
+  },
+  {
+    path: "/projects/:id",
+    element: <Layout><ProjectPage /></Layout>,
+  },
+  {
+    path: "/projects/:id/edit",
+    element: <Layout><ProjectEditPage /></Layout>,
+  },
+  {
+    path: "/test",
+    element: <Layout><TestPage /></Layout>,
+  },
+])
+
+export default router 

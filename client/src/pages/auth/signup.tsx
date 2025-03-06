@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
+import { register } from '@/api/auth';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -64,49 +65,24 @@ export default function Signup() {
     }
     
     try {
-      console.log('Attempting to register user with:', {
-        url: `${import.meta.env.VITE_API_URL || 'http://localhost:4100/api'}/register`,
-        data: {
-          username: formData.username,
-          email: formData.email,
-          password: '***' // Don't log the actual password
-        }
-      });
-      
-      const response = await axios.post('http://localhost:4100/api/register', {
+      const data = await register({
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
       
-      const data = response.data;
-      
-      // Store token in localStorage
-      localStorage.setItem('token', data.token);
+      // Store user ID
       localStorage.setItem('userId', data.user.id);
       
       // Redirect to profile page
       navigate(`/profile/${data.user.id}`);
     } catch (error) {
-      console.error('Signup error details:', error);
+      console.error('Signup error:', error);
       
       let errorMessage = 'An error occurred during signup. Please try again.';
       
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error('Error response data:', error.response.data);
-        console.error('Error response status:', error.response.status);
-        
-        errorMessage = error.response.data.message || errorMessage;
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('Error request:', error.request);
-        errorMessage = 'No response from server. Please try again later.';
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error('Error message:', error.message);
-        errorMessage = error.message;
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || errorMessage;
       }
       
       setErrors({

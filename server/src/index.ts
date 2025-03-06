@@ -8,6 +8,8 @@ import * as userController from './controllers/userController';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import projectRoutes from './routes/projectRoutes';
+import authRoutes from './routes/auth';
 
 dotenv.config();
 
@@ -40,6 +42,8 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/auth', authRoutes);
 
 // Define routes directly
 app.post('/api/register', async (req, res) => {
@@ -270,6 +274,7 @@ function printRoutes(router: Router, basePath = '') {
 
 printRoutes(app._router);
 
+// Start the server
 const PORT = process.env.PORT || 4100;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

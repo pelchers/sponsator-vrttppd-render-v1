@@ -1,0 +1,15 @@
+.form-input {
+  @apply w-full border border-gray-200 rounded px-2 py-1 text-sm;
+}
+
+.form-label {
+  @apply text-sm font-medium mb-1 block;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-section {
+  @apply mb-6;
+} 

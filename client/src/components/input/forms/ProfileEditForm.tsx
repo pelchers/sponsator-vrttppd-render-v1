@@ -69,7 +69,7 @@ export default function ProfileEditForm() {
   
       <div className="w-full">
         <form onSubmit={handleSubmit} className="profile-edit-container">
-          <div> 
+            <div>
             <div className="form-section">
               
               {error && (
@@ -151,7 +151,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Professional Information</h2>
               <div className="form-grid">
                 {/* Career Details */}
-                <div>
+              <div>
                   <h3 className="section-title">Career Details</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="career_title">Career Title</label>
@@ -179,7 +179,7 @@ export default function ProfileEditForm() {
             </div>
 
                 {/* Social Media Details */}
-                <div>
+              <div>
                   <h3 className="section-title">Social Media</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="social_media_handle">Handle</label>
@@ -205,12 +205,12 @@ export default function ProfileEditForm() {
                 />
               </div>
             </div>
-          </div>
+        </div>
 
           {/* Add Professional Affiliation and Contract Specifications */}
           <div className="form-grid mt-6">
             {/* Professional Affiliation */}
-            <div>
+              <div>
               <h3 className="section-title">Professional Affiliation</h3>
               <div className="form-group">
                 <label className="form-label" htmlFor="company">Company</label>
@@ -249,7 +249,7 @@ export default function ProfileEditForm() {
             </div>
 
             {/* Contract Specifications */}
-            <div>
+              <div>
               <h3 className="section-title">Contract Specifications</h3>
               <div className="form-group">
                 <label className="form-label" htmlFor="contract_type">Contract Type</label>
@@ -292,7 +292,7 @@ export default function ProfileEditForm() {
                 />
               </div>
             </div>
-          </div>
+        </div>
         </div>
 
       {/* Availability & Work Preferences */}
@@ -300,7 +300,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Availability & Work Preferences</h2>
               <div className="form-grid">
                 {/* Availability */}
-                <div>
+              <div>
                   <h3 className="section-title">Availability</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="availability_status">Availability Status</label>
@@ -338,7 +338,7 @@ export default function ProfileEditForm() {
             </div>
 
                 {/* Compensation */}
-                <div>
+              <div>
                   <h3 className="section-title">Compensation</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="standard_service_rate">Standard Service Rate</label>
@@ -1117,7 +1117,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Collaboration & Goals</h2>
               <div className="form-grid">
                 {/* Short Term Goals */}
-                <div>
+              <div>
                   <h3 className="section-title">Short Term Goals</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="short_term_goals">Short Term Goals</label>
@@ -1134,7 +1134,7 @@ export default function ProfileEditForm() {
             </div>
 
                 {/* Long Term Goals */}
-                <div>
+              <div>
                   <h3 className="section-title">Long Term Goals</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="long_term_goals">Long Term Goals</label>
@@ -1357,7 +1357,7 @@ export default function ProfileEditForm() {
               <h2 className="section-title">Privacy & Notifications</h2>
               <div className="form-grid">
                 {/* Privacy Settings */}
-                <div>
+              <div>
                   <h3 className="section-title">Privacy Settings</h3>
                   <div className="form-group">
                     <label className="form-label" htmlFor="profile_visibility">Profile Visibility</label>

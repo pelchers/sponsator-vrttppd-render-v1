@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { login } from '@/api/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,24 +20,9 @@ export default function Login() {
     }
     
     try {
-      // Send login request to backend
-      const response = await fetch(`http://localhost:4100/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await login({ email, password });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-      
-      const data = await response.json();
-      
-      // Store token in localStorage
-      localStorage.setItem('token', data.token);
+      // Store user ID
       localStorage.setItem('userId', data.user.id);
       
       // Redirect to profile page
@@ -93,7 +79,7 @@ export default function Login() {
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-indigo-600 hover:text-indigo-800">
+            <Link to="/register" className="text-indigo-600 hover:text-indigo-800">
               Sign up
             </Link>
           </p>

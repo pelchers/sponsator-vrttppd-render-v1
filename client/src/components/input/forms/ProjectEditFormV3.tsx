@@ -1,13 +1,89 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import PageSection from "./PageSection"
-import CategorySection from "./CategorySection"
-import TagInput from "./TagInput"
-import ImageUpload from "./ImageUpload"
+import { useEffect } from "react"
+import { useParams, useNavigate } from 'react-router-dom'
+import PageSection from "@/components/sections/PageSection"
+import CategorySection from "@/components/sections/CategorySection"
+import TagInput from "@/components/input/forms/TagInput"
+import ImageUpload from "@/components/input/forms/ImageUpload"
+import { Button } from "@/components/ui/button"
+import Layout from "@/components/layout/layout"
+import { useProjectForm } from "@/hooks/useProjectForm"
+import "@/components/input/forms/ProjectEditFormV3.css"
+import { 
+  TeamMember, 
+  Collaborator, 
+  Advisor, 
+  Partner, 
+  Testimonial, 
+  Deliverable, 
+  Milestone,
+  ProjectFormData 
+} from '@/types/project'
 
-export default function ProjectEditForm() {
+interface ProjectEditFormProps {
+  projectId?: string;
+}
+
+interface ProjectFormDataWithFile extends Omit<ProjectFormData, 'project_image'> {
+  project_image: File | string | null;
+}
+
+// Update the project type fields map
+const projectTypeFields = {
+  creative_work: {
+    category_label: "Content Category",
+    category_placeholder: "e.g., Video, Music, Art, Writing",
+    skills_label: "Creative Skills",
+    skills_placeholder: "Add creative skills...",
+    target_audience_label: "Target Audience",
+    target_audience_placeholder: "Add target audience...",
+    solutions_label: "Solutions Offered",
+    solutions_placeholder: "Add solutions...",
+    industry_tags_label: "Creative / Genre Tags",
+    technology_tags_label: "Tools / Software Tags"
+  },
+  creative_partnership: {
+    category_label: "Content Category",
+    category_placeholder: "e.g., Video, Music, Art, Writing",
+    skills_label: "Creative Skills",
+    skills_placeholder: "Add creative skills...",
+    target_audience_label: "Target Audience",
+    target_audience_placeholder: "Add target audience...",
+    solutions_label: "Solutions Offered",
+    solutions_placeholder: "Add solutions...",
+    industry_tags_label: "Creative / Genre Tags",
+    technology_tags_label: "Tools / Software Tags"
+  }
+};
+
+export default function ProjectEditFormV3({ projectId }: ProjectEditFormProps) {
+  const {
+    formData,
+    setFormData,
+    loading,
+    saving,
+    error,
+    success,
+    imageUploading,
+    loadingError,
+    uploadError,
+    handleInputChange,
+    handleImageSelect,
+    handleAddTag,
+    handleRemoveTag,
+    handleSubmit,
+  } = useProjectForm(projectId);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="text-center py-8">Loading project data...</div>
+      </Layout>
+    );
+  }
+
   // -----------------------------------------------------------------------
   // 1) FORM DATA (unchanged structure, but note on new dynamic usage below)
   // -----------------------------------------------------------------------
@@ -18,91 +94,6 @@ export default function ProjectEditForm() {
    * or "Brand Category" for brand_work, but the underlying formData key is still
    * `industry_tags`.
    */
-  const [formData, setFormData] = useState({
-    // Basic Information
-    project_image: null as File | null,
-    project_name: "",
-    project_description: "",
-    project_type: "",
-    project_category: "",
-
-    // Project Details
-    project_title: "",
-    project_duration: "",
-    project_handle: "",
-    project_followers: 0,
-    client: "",
-    client_location: "",
-    client_website: "",
-    contract_type: "",
-    contract_duration: "",
-    contract_value: "",
-    project_timeline: "",
-    budget: "",
-
-    // Availability & Preferences
-    project_status: "",
-    preferred_collaboration_type: "",
-    budget_range: "",
-    currency: "USD",
-    standard_rate: "",
-    rate_type: "",
-    compensation_type: "",
-
-    // Skills & Expertise
-    skills_required: [] as string[],
-    expertise_needed: [] as string[],
-
-    // Focus
-    target_audience: [] as string[],
-    solutions_offered: [] as string[],
-
-    // Tags & Categories
-    project_tags: [] as string[],
-    industry_tags: [] as string[],
-    technology_tags: [] as string[],
-    project_status_tag: "",
-    seeking: {
-      creator: false,
-      brand: false,
-      freelancer: false,
-      contractor: false,
-    },
-
-    // Contact & Availability
-    social_links: {
-      youtube: "",
-      instagram: "",
-      github: "",
-      twitter: "",
-      linkedin: "",
-    },
-    website_links: [] as string[],
-
-    // Team & Collaborators
-    team_members: [] as { name: string; role: string; years: string; media?: File }[],
-    collaborators: [] as { name: string; company: string; role: string; media?: File }[],
-    advisors: [] as { name: string; expertise: string; year: string; media?: File }[],
-    partners: [] as { name: string; contribution: string; year: string; media?: File }[],
-    testimonials: [] as { name: string; position: string; company: string; text: string; media?: File }[],
-
-    // Project Goals
-    short_term_goals: "",
-    long_term_goals: "",
-
-    // Portfolio
-    milestones: [] as { title: string; description: string; date: string; media?: File }[],
-    deliverables: [] as { title: string; description: string; due_date: string; status: string }[],
-
-    // Privacy
-    project_visibility: "public",
-    search_visibility: true,
-    notification_preferences: {
-      email: true,
-      push: true,
-      digest: true,
-    },
-  })
 
   // -----------------------------------------------------------------------
   // 2) MAPS FOR CONDITIONAL LABELS / OPTIONS
@@ -117,7 +108,6 @@ export default function ProjectEditForm() {
     contractor_services: "Client / Hiring Manager",
     contractor_products_supply: "Client / Purchasing Company",
     contractor_management_services: "Management Contract Info",
-    // etc.
   }
 
   // For "Contract Info" label or heading
@@ -129,7 +119,6 @@ export default function ProjectEditForm() {
     contractor_services: "Contractor Services Contract",
     contractor_products_supply: "Supply Contract Details",
     contractor_management_services: "Management Contract Details",
-    // etc.
   }
 
   // For "industry_tags" label:
@@ -143,7 +132,6 @@ export default function ProjectEditForm() {
     contractor_services: "Industry / Service Tags",
     contractor_products_supply: "Supply / Industry Tags",
     contractor_management_services: "Management / Industry Tags",
-    // fallback will be "Industry Tags"
   }
 
   // For "technology_tags" label:
@@ -163,7 +151,6 @@ export default function ProjectEditForm() {
     contractor_services: "Service Deliverables",
     contractor_products_supply: "Product Supply Deliverables",
     contractor_management_services: "Management Deliverables",
-    // fallback => "Deliverables"
   }
 
   // For "Milestones" section heading
@@ -175,7 +162,6 @@ export default function ProjectEditForm() {
     contractor_services: "Service Milestones",
     contractor_products_supply: "Fulfillment Milestones",
     contractor_management_services: "Management Milestones",
-    // fallback => "Milestones"
   }
 
   // For "Contract Type" or "Preferred Collaboration Type", etc., we can do a 
@@ -230,8 +216,6 @@ export default function ProjectEditForm() {
     "brand_partnership",
     "freelance_services",
     "contractor_services",
-    "contractor_products_supply",
-    "contractor_management_services",
   ]
   const showIndustryTechnologyTags = [
     "creative_work",
@@ -258,54 +242,37 @@ export default function ProjectEditForm() {
     "contractor_management_services",
   ]
 
+  // For "Skills Required" label
+  const skillsLabelMap: Record<string, string> = {
+    creative_work: "Creative Skills",
+    creative_partnership: "Creative Skills",
+    brand_work: "Marketing Skills",
+    brand_deal: "Brand Management Skills",
+    brand_partnership: "Partnership Skills",
+    freelance_services: "Service Skills",
+    contractor_services: "Technical Skills",
+  };
+
+  // For "Budget" section
+  const budgetLabelMap: Record<string, string> = {
+    brand_work: "Campaign Budget",
+    brand_deal: "Sponsorship Budget",
+    brand_partnership: "Partnership Budget",
+    freelance_services: "Project Budget",
+    contractor_services: "Service Budget",
+  };
+
+  const showBudgetSection = [
+    "brand_work",
+    "brand_deal",
+    "brand_partnership",
+    "freelance_services",
+    "contractor_services",
+  ];
+
   // -----------------------------------------------------------------------
   // 4) HANDLERS
   // -----------------------------------------------------------------------
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target
-    if (name === "seeking") {
-      setFormData((prev) => ({
-        ...prev,
-        seeking: {
-          ...prev.seeking,
-          [value]: (e.target as HTMLInputElement).checked,
-        },
-      }))
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-      }))
-    }
-  }
-
-  const handleImageSelect = (file: File) => {
-    setFormData((prev) => ({
-      ...prev,
-      project_image: file,
-    }))
-  }
-
-  const handleAddTag = (section: keyof typeof formData) => (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: [...(prev[section] as string[]), tag],
-    }))
-  }
-
-  const handleRemoveTag = (section: keyof typeof formData) => (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: (prev[section] as string[]).filter((t) => t !== tag),
-    }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-  }
 
   // Existing conditional fields for *Project Category* within "Project Information" 
   const renderConditionalFields = () => {
@@ -315,11 +282,8 @@ export default function ProjectEditForm() {
         return (
           <>
             <div>
-              <label
-                htmlFor="project_category"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Content Category
+              <label htmlFor="project_category" className="block text-sm font-medium text-gray-700">
+                {projectTypeFields[formData.project_type].category_label}
               </label>
               <input
                 type="text"
@@ -327,22 +291,20 @@ export default function ProjectEditForm() {
                 name="project_category"
                 value={formData.project_category}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="e.g., Video, Music, Art, Writing"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                placeholder={projectTypeFields[formData.project_type].category_placeholder}
               />
             </div>
+            {/* We can add more specific fields here once you share the image references */}
           </>
-        )
+        );
+
       case "brand_work":
       case "brand_deal":
       case "brand_partnership":
         return (
-          <>
             <div>
-              <label
-                htmlFor="project_category"
-                className="block text-sm font-medium text-gray-700"
-              >
+            <label htmlFor="project_category" className="block text-sm font-medium text-gray-700">
                 Campaign Type
               </label>
               <input
@@ -351,18 +313,17 @@ export default function ProjectEditForm() {
                 name="project_category"
                 value={formData.project_category}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
                 placeholder="e.g., Product Launch, Brand Awareness, Influencer Collaboration"
               />
             </div>
-          </>
-        )
+        );
+
       case "freelance_services":
       case "contractor_services":
       case "contractor_products_supply":
       case "contractor_management_services":
         return (
-          <>
             <div>
               <label
                 htmlFor="project_category"
@@ -376,20 +337,291 @@ export default function ProjectEditForm() {
                 name="project_category"
                 value={formData.project_category}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
                 placeholder="e.g., Web Development, Graphic Design, Marketing"
               />
             </div>
-          </>
-        )
+        );
+
       default:
-        return null
+        return null;
     }
   }
+
+  // Add these handler functions inside the component
+  const handleAddWebsiteLink = () => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      website_links: [...prevData.website_links, '']
+    }));
+  };
+
+  const handleUpdateWebsiteLink = (index: number, value: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      website_links: prevData.website_links.map((link, i) => 
+        i === index ? value : link
+      )
+    }));
+  };
+
+  const handleRemoveWebsiteLink = (index: number) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      website_links: prevData.website_links.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleAddTeamMember = () => {
+    const newTeamMember: TeamMember = {
+      id: crypto.randomUUID(),
+      name: '',
+      role: '',
+      years: '',
+      bio: ''
+    };
+    setFormData((prev) => ({
+      ...prev,
+      team_members: [...prev.team_members, newTeamMember]
+    }));
+  };
+
+  const handleUpdateTeamMember = (id: string, field: keyof TeamMember, value: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      team_members: prevData.team_members.map((member: TeamMember) =>
+        member.id === id ? { ...member, [field]: value } : member
+      )
+    }));
+  };
+
+  const handleRemoveTeamMember = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      team_members: prevData.team_members.filter((member: TeamMember) => member.id !== id)
+    }));
+  };
+
+  const handleAddCollaborator = () => {
+    const newCollaborator: Collaborator = {
+      id: crypto.randomUUID(),
+      name: '',
+      role: '',
+      company: '',
+      contribution: ''
+    };
+    setFormData((prev) => ({
+      ...prev,
+      collaborators: [...prev.collaborators, newCollaborator]
+    }));
+  };
+
+  const handleUpdateCollaborator = (id: string, field: keyof Collaborator, value: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      collaborators: prevData.collaborators.map(member =>
+        member.id === id ? { ...member, [field]: value } : member
+      )
+    }));
+  };
+
+  const handleRemoveCollaborator = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      collaborators: prevData.collaborators.filter(member => member.id !== id)
+    }));
+  };
+
+  const handleAddAdvisor = () => {
+    const newAdvisor: Advisor = {
+      id: crypto.randomUUID(),
+      name: '',
+      expertise: '',
+      year: '',
+      bio: ''
+    };
+    setFormData((prev) => ({
+      ...prev,
+      advisors: [...prev.advisors, newAdvisor]
+    }));
+  };
+
+  const handleUpdateAdvisor = (id: string, field: keyof Advisor, value: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      advisors: prevData.advisors.map((advisor: Advisor) =>
+        advisor.id === id ? { ...advisor, [field]: value } : advisor
+      )
+    }));
+  };
+
+  const handleRemoveAdvisor = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      advisors: prevData.advisors.filter((advisor: Advisor) => advisor.id !== id)
+    }));
+  };
+
+  const handleAddPartner = () => {
+    const newPartner: Partner = {
+      id: crypto.randomUUID(),
+      name: '',
+      organization: '',
+      contribution: '',
+      year: ''
+    };
+    setFormData((prev) => ({
+      ...prev,
+      partners: [...prev.partners, newPartner]
+    }));
+  };
+
+  const handleUpdatePartner = (id: string, field: keyof Partner, value: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      partners: prevData.partners.map((partner: Partner) =>
+        partner.id === id ? { ...partner, [field]: value } : partner
+      )
+    }));
+  };
+
+  const handleRemovePartner = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      partners: prevData.partners.filter((partner: Partner) => partner.id !== id)
+    }));
+  };
+
+  const handleAddTestimonial = () => {
+    const newTestimonial: Testimonial = {
+      id: crypto.randomUUID(),
+      name: '',
+      position: '',
+      company: '',
+      role: '',
+      organization: '',
+      text: ''
+    };
+    setFormData((prev) => ({
+      ...prev,
+      testimonials: [...prev.testimonials, newTestimonial]
+    }));
+  };
+
+  const handleUpdateTestimonial = (id: string, field: keyof Testimonial, value: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      testimonials: prevData.testimonials.map((testimonial: Testimonial) =>
+        testimonial.id === id ? { ...testimonial, [field]: value } : testimonial
+      )
+    }));
+  };
+
+  const handleRemoveTestimonial = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      testimonials: prevData.testimonials.filter((testimonial: Testimonial) => testimonial.id !== id)
+    }));
+  };
+
+  // Add handlers for deliverables and milestones
+  const handleAddDeliverable = () => {
+    const newDeliverable: Deliverable = {
+      id: crypto.randomUUID(),
+      title: '',
+      description: '',
+      due_date: '',
+      status: 'pending'
+    };
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      deliverables: [...prevData.deliverables, newDeliverable]
+    }));
+  };
+
+  const handleUpdateDeliverable = (id: string, field: keyof Deliverable, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      deliverables: prev.deliverables.map((deliverable) =>
+        deliverable.id === id ? { ...deliverable, [field]: value } : deliverable
+      )
+    }));
+  };
+
+  const handleRemoveDeliverable = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      deliverables: prevData.deliverables.filter((deliverable: Deliverable) => deliverable.id !== id)
+    }));
+  };
+
+  const handleAddMilestone = () => {
+    const newMilestone: Milestone = {
+      id: crypto.randomUUID(),
+      title: '',
+      description: '',
+      date: ''
+    };
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      milestones: [...prevData.milestones, newMilestone]
+    }));
+  };
+
+  const handleUpdateMilestone = (id: string, field: keyof Milestone, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      milestones: prev.milestones.map((milestone) =>
+        milestone.id === id ? { ...milestone, [field]: value } : milestone
+      )
+    }));
+  };
+
+  const handleRemoveMilestone = (id: string) => {
+    setFormData((prevData: ProjectFormDataWithFile) => ({
+      ...prevData,
+      milestones: prevData.milestones.filter((milestone: Milestone) => milestone.id !== id)
+    }));
+  };
 
   // -----------------------------------------------------------------------
   // 5) RENDER
   // -----------------------------------------------------------------------
+
+  // Add loading indicator to media upload buttons
+  const MediaUploadButton = ({ 
+    section, 
+    index, 
+    onSelect, 
+    isUploading 
+  }: { 
+    section: string; 
+    index: number; 
+    onSelect: (file: File) => void;
+    isUploading: boolean;
+  }) => (
+    <div>
+      <input
+        type="file"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onSelect(file);
+        }}
+        className="hidden"
+        id={`${section}-${index}-media`}
+        disabled={isUploading}
+      />
+      <label
+        htmlFor={`${section}-${index}-media`}
+        className={`cursor-pointer inline-flex items-center px-4 py-2 ${
+          isUploading ? 'bg-gray-300' : 'bg-gray-100 hover:bg-gray-200'
+        } text-gray-700 rounded-md`}
+      >
+        {isUploading ? 'Uploading...' : 'Upload Media'}
+      </label>
+              </div>
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Basic Information */}
@@ -413,10 +645,7 @@ export default function ProjectEditForm() {
             </div>
 
             <div>
-              <label
-                htmlFor="project_description"
-                className="block text-sm font-medium text-gray-700"
-              >
+                <label htmlFor="project_description" className="block text-sm font-medium text-gray-700">
                 Project Description
               </label>
               <textarea
@@ -449,9 +678,7 @@ export default function ProjectEditForm() {
                 <option value="freelance_services">Freelance Services</option>
                 <option value="contractor_services">Contractor Services</option>
                 <option value="contractor_products_supply">Contractor Products/Supply</option>
-                <option value="contractor_management_services">
-                  Contractor Management Services
-                </option>
+                <option value="contractor_management_services">Contractor Management Services</option>
                 <option value="collaborative_work">Collaborative Work</option>
                 <option value="simple_connection">Simple Connection</option>
               </select>
@@ -479,10 +706,7 @@ export default function ProjectEditForm() {
                 />
               </div>
               <div>
-                <label
-                  htmlFor="project_timeline"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="project_timeline" className="block text-sm font-medium text-gray-700">
                   Project Timeline
                 </label>
                 <input
@@ -514,12 +738,7 @@ export default function ProjectEditForm() {
         <div className="md:grid md:grid-cols-2 md:gap-6 mt-6">
           {/* --- CLIENT INFO (CONDITIONAL) --- */}
           {showClientContractSections.includes(formData.project_type) && (
-            <CategorySection
-              title={
-                clientInfoLabelMap[formData.project_type] ||
-                "Client Info"
-              }
-            >
+            <CategorySection title={clientInfoLabelMap[formData.project_type] || "Client Info"}>
               <div className="space-y-4 w-full">
                 <div>
                   <label htmlFor="client" className="block text-sm font-medium text-gray-700">
@@ -539,10 +758,7 @@ export default function ProjectEditForm() {
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="client_location"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="client_location" className="block text-sm font-medium text-gray-700">
                     Location
                   </label>
                   <input
@@ -555,10 +771,7 @@ export default function ProjectEditForm() {
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="client_website"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="client_website" className="block text-sm font-medium text-gray-700">
                     Website
                   </label>
                   <input
@@ -576,21 +789,13 @@ export default function ProjectEditForm() {
 
           {/* --- CONTRACT INFO (CONDITIONAL) --- */}
           {showClientContractSections.includes(formData.project_type) && (
-            <CategorySection
-              title={
-                contractInfoLabelMap[formData.project_type] ||
-                "Contract Info"
-              }
-            >
+            <CategorySection title={contractInfoLabelMap[formData.project_type] || "Contract Info"}>
               <div className="space-y-4 w-full">
                 <div>
-                  <label
-                    htmlFor="contract_type"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="contract_type" className="block text-sm font-medium text-gray-700">
                     Contract Type
                   </label>
-                  {/** 
+                  {/**
                    * Show dynamic dropdown options. If none is found, we use
                    * defaultContractTypeOptions as fallback.
                    */}
@@ -602,9 +807,7 @@ export default function ProjectEditForm() {
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   >
                     <option value="">Select contract type...</option>
-                    {(contractTypeMap[formData.project_type] ||
-                      defaultContractTypeOptions
-                    ).map((option) => (
+                    {(contractTypeMap[formData.project_type] || defaultContractTypeOptions).map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>
@@ -612,10 +815,7 @@ export default function ProjectEditForm() {
                   </select>
                 </div>
                 <div>
-                  <label
-                    htmlFor="contract_duration"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="contract_duration" className="block text-sm font-medium text-gray-700">
                     Contract Duration
                   </label>
                   <input
@@ -628,10 +828,7 @@ export default function ProjectEditForm() {
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="contract_value"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="contract_value" className="block text-sm font-medium text-gray-700">
                     Contract Value
                   </label>
                   <input
@@ -675,10 +872,7 @@ export default function ProjectEditForm() {
                   </select>
                 </div>
                 <div>
-                  <label
-                    htmlFor="preferred_collaboration_type"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="preferred_collaboration_type" className="block text-sm font-medium text-gray-700">
                     Preferred Collaboration Type
                   </label>
                   <select
@@ -759,10 +953,7 @@ export default function ProjectEditForm() {
                   </select>
                 </div>
                 <div>
-                  <label
-                    htmlFor="compensation_type"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="compensation_type" className="block text-sm font-medium text-gray-700">
                     Compensation Type
                   </label>
                   <select
@@ -847,32 +1038,18 @@ export default function ProjectEditForm() {
                 placeholder="Add a project tag..."
               />
             </CategorySection>
-            <CategorySection
-              title={
-                industryTagsLabelMap[formData.project_type] || "Industry Tags"
-              }
-            >
+            <CategorySection title={industryTagsLabelMap[formData.project_type] || "Industry Tags"}>
               <TagInput
-                label={
-                  industryTagsLabelMap[formData.project_type] || "Industry Tags"
-                }
+                label={industryTagsLabelMap[formData.project_type] || "Industry Tags"}
                 tags={formData.industry_tags}
                 onAddTag={handleAddTag("industry_tags")}
                 onRemoveTag={handleRemoveTag("industry_tags")}
                 placeholder="Add an industry tag..."
               />
             </CategorySection>
-            <CategorySection
-              title={
-                technologyTagsLabelMap[formData.project_type] ||
-                "Technology Tags"
-              }
-            >
+            <CategorySection title={technologyTagsLabelMap[formData.project_type] || "Technology Tags"}>
               <TagInput
-                label={
-                  technologyTagsLabelMap[formData.project_type] ||
-                  "Technology Tags"
-                }
+                label={technologyTagsLabelMap[formData.project_type] || "Technology Tags"}
                 tags={formData.technology_tags}
                 onAddTag={handleAddTag("technology_tags")}
                 onRemoveTag={handleRemoveTag("technology_tags")}
@@ -892,6 +1069,7 @@ export default function ProjectEditForm() {
                 id="project_status_tag"
                 name="project_status_tag"
                 value={formData.project_status_tag}
+                aria-label="Project Status"
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >
@@ -918,11 +1096,8 @@ export default function ProjectEditForm() {
                       checked={formData.seeking[option]}
                       onChange={handleInputChange}
                       className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    />
-                    <label
-                      htmlFor={`seeking_${option}`}
-                      className="ml-2 block text-sm text-gray-900 capitalize"
-                    >
+                />
+                    <label htmlFor={`seeking_${option}`} className="ml-2 block text-sm text-gray-900 capitalize">
                       {option}
                     </label>
                   </div>
@@ -940,10 +1115,7 @@ export default function ProjectEditForm() {
             <div className="space-y-4 w-full">
               {Object.entries(formData.social_links).map(([platform, url]) => (
                 <div key={platform}>
-                  <label
-                    htmlFor={platform}
-                    className="block text-sm font-medium text-gray-700 capitalize"
-                  >
+                  <label htmlFor={platform} className="block text-sm font-medium text-gray-700 capitalize">
                     {platform}
                   </label>
                   <input
@@ -1026,10 +1198,7 @@ export default function ProjectEditForm() {
                 onClick={() => {
                   setFormData((prev) => ({
                     ...prev,
-                    team_members: [
-                      ...prev.team_members,
-                      { name: "", role: "", years: "", media: undefined },
-                    ],
+                    team_members: [...prev.team_members, { name: "", role: "", years: "", media: undefined }],
                   }))
                 }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -1080,26 +1249,18 @@ export default function ProjectEditForm() {
                     placeholder="Years"
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) {
-                        const newMembers = [...formData.team_members]
-                        newMembers[index] = { ...newMembers[index], media: file }
-                        setFormData((prev) => ({
-                          ...prev,
-                          team_members: newMembers,
-                        }))
-                      }
+                  <MediaUploadButton
+                    section="team_members"
+                    index={index}
+                    onSelect={(file) => {
+                      const newMembers = [...formData.team_members]
+                      newMembers[index] = { ...newMembers[index], media: file }
+                      setFormData((prev) => ({
+                        ...prev,
+                        team_members: newMembers,
+                      }))
                     }}
-                    accept="image/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                    isUploading={imageUploading}
                   />
                   <button
                     type="button"
@@ -1124,10 +1285,7 @@ export default function ProjectEditForm() {
                 onClick={() => {
                   setFormData((prev) => ({
                     ...prev,
-                    collaborators: [
-                      ...prev.collaborators,
-                      { name: "", company: "", role: "", media: undefined },
-                    ],
+                    collaborators: [...prev.collaborators, { name: "", company: "", role: "", media: undefined }],
                   }))
                 }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -1178,26 +1336,18 @@ export default function ProjectEditForm() {
                     placeholder="Role"
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) {
-                        const newCollaborators = [...formData.collaborators]
-                        newCollaborators[index] = { ...newCollaborators[index], media: file }
-                        setFormData((prev) => ({
-                          ...prev,
-                          collaborators: newCollaborators,
-                        }))
-                      }
+                  <MediaUploadButton
+                    section="collaborators"
+                    index={index}
+                    onSelect={(file) => {
+                      const newCollaborators = [...formData.collaborators]
+                      newCollaborators[index] = { ...newCollaborators[index], media: file }
+                      setFormData((prev) => ({
+                        ...prev,
+                        collaborators: newCollaborators,
+                      }))
                     }}
-                    accept="image/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                    isUploading={imageUploading}
                   />
                   <button
                     type="button"
@@ -1223,10 +1373,7 @@ export default function ProjectEditForm() {
               onClick={() => {
                 setFormData((prev) => ({
                   ...prev,
-                  advisors: [
-                    ...prev.advisors,
-                    { name: "", expertise: "", year: "", media: undefined },
-                  ],
+                  advisors: [...prev.advisors, { name: "", expertise: "", year: "", media: undefined }],
                 }))
               }}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -1277,26 +1424,18 @@ export default function ProjectEditForm() {
                   placeholder="Year"
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const newAdvisors = [...formData.advisors]
-                      newAdvisors[index] = { ...newAdvisors[index], media: file }
-                      setFormData((prev) => ({
-                        ...prev,
-                        advisors: newAdvisors,
-                      }))
-                    }
+                <MediaUploadButton
+                  section="advisors"
+                  index={index}
+                  onSelect={(file) => {
+                    const newAdvisors = [...formData.advisors]
+                    newAdvisors[index] = { ...newAdvisors[index], media: file }
+                    setFormData((prev) => ({
+                      ...prev,
+                      advisors: newAdvisors,
+                    }))
                   }}
-                  accept="image/*"
-                  className="mt-2 block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-indigo-50 file:text-indigo-700
-                    hover:file:bg-indigo-100"
+                  isUploading={imageUploading}
                 />
                 <button
                   type="button"
@@ -1321,10 +1460,7 @@ export default function ProjectEditForm() {
               onClick={() => {
                 setFormData((prev) => ({
                   ...prev,
-                  partners: [
-                    ...prev.partners,
-                    { name: "", contribution: "", year: "", media: undefined },
-                  ],
+                  partners: [...prev.partners, { name: "", contribution: "", year: "", media: undefined }],
                 }))
               }}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -1375,26 +1511,18 @@ export default function ProjectEditForm() {
                   placeholder="Year"
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const newPartners = [...formData.partners]
-                      newPartners[index] = { ...newPartners[index], media: file }
-                      setFormData((prev) => ({
-                        ...prev,
-                        partners: newPartners,
-                      }))
-                    }
+                <MediaUploadButton
+                  section="partners"
+                  index={index}
+                  onSelect={(file) => {
+                    const newPartners = [...formData.partners]
+                    newPartners[index] = { ...newPartners[index], media: file }
+                    setFormData((prev) => ({
+                      ...prev,
+                      partners: newPartners,
+                    }))
                   }}
-                  accept="image/*"
-                  className="mt-2 block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-indigo-50 file:text-indigo-700
-                    hover:file:bg-indigo-100"
+                  isUploading={imageUploading}
                 />
                 <button
                   type="button"
@@ -1489,26 +1617,18 @@ export default function ProjectEditForm() {
                 rows={3}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
-              <input
-                type="file"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    const newTestimonials = [...formData.testimonials]
-                    newTestimonials[index] = { ...newTestimonials[index], media: file }
-                    setFormData((prev) => ({
-                      ...prev,
-                      testimonials: newTestimonials,
-                    }))
-                  }
+              <MediaUploadButton
+                section="testimonials"
+                index={index}
+                onSelect={(file) => {
+                  const newTestimonials = [...formData.testimonials]
+                  newTestimonials[index] = { ...newTestimonials[index], media: file }
+                  setFormData((prev) => ({
+                    ...prev,
+                    testimonials: newTestimonials,
+                  }))
                 }}
-                accept="image/*"
-                className="mt-2 block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-indigo-50 file:text-indigo-700
-                  hover:file:bg-indigo-100"
+                isUploading={imageUploading}
               />
               <button
                 type="button"
@@ -1572,22 +1692,14 @@ export default function ProjectEditForm() {
       {/* Portfolio (Conditional) */}
       {showPortfolio.includes(formData.project_type) && (
         <PageSection title="Portfolio">
-          <CategorySection
-            title={
-              deliverablesLabelMap[formData.project_type] ||
-              "Deliverables"
-            }
-          >
+          <CategorySection title={deliverablesLabelMap[formData.project_type] || "Deliverables"}>
             <div className="space-y-4 w-full">
               <button
                 type="button"
                 onClick={() => {
                   setFormData((prev) => ({
                     ...prev,
-                    deliverables: [
-                      ...prev.deliverables,
-                      { title: "", description: "", due_date: "", status: "" },
-                    ],
+                    deliverables: [...prev.deliverables, { title: "", description: "", due_date: "", status: "" }],
                   }))
                 }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -1632,6 +1744,7 @@ export default function ProjectEditForm() {
                   />
                   <input
                     type="date"
+                    aria-label="Due Date"
                     value={deliverable.due_date}
                     onChange={(e) => {
                       const newDeliverables = [...formData.deliverables]
@@ -1647,6 +1760,7 @@ export default function ProjectEditForm() {
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   <select
+                    aria-label="Status"
                     value={deliverable.status}
                     onChange={(e) => {
                       const newDeliverables = [...formData.deliverables]
@@ -1666,6 +1780,22 @@ export default function ProjectEditForm() {
                     <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                   </select>
+                  <MediaUploadButton
+                    section="deliverables"
+                    index={index}
+                    onSelect={(file) => {
+                      const newDeliverables = [...formData.deliverables]
+                      newDeliverables[index] = {
+                        ...newDeliverables[index],
+                        media: file,
+                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        deliverables: newDeliverables,
+                      }))
+                    }}
+                    isUploading={imageUploading}
+                  />
                   <button
                     type="button"
                     onClick={() => {
@@ -1682,22 +1812,14 @@ export default function ProjectEditForm() {
               ))}
             </div>
           </CategorySection>
-          <CategorySection
-            title={
-              milestonesLabelMap[formData.project_type] ||
-              "Milestones"
-            }
-          >
+          <CategorySection title={milestonesLabelMap[formData.project_type] || "Milestones"}>
             <div className="space-y-4 w-full">
               <button
                 type="button"
                 onClick={() => {
                   setFormData((prev) => ({
                     ...prev,
-                    milestones: [
-                      ...prev.milestones,
-                      { title: "", description: "", date: "", media: undefined },
-                    ],
+                    milestones: [...prev.milestones, { title: "", description: "", date: "", media: undefined }],
                   }))
                 }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -1756,29 +1878,21 @@ export default function ProjectEditForm() {
                     }}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) {
-                        const newMilestones = [...formData.milestones]
-                        newMilestones[index] = {
-                          ...newMilestones[index],
-                          media: file,
-                        }
-                        setFormData((prev) => ({
-                          ...prev,
-                          milestones: newMilestones,
-                        }))
+                  <MediaUploadButton
+                    section="milestones"
+                    index={index}
+                    onSelect={(file) => {
+                      const newMilestones = [...formData.milestones]
+                      newMilestones[index] = {
+                        ...newMilestones[index],
+                        media: file,
                       }
+                      setFormData((prev) => ({
+                        ...prev,
+                        milestones: newMilestones,
+                      }))
                     }}
-                    accept="image/*"
-                    className="mt-2 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
+                    isUploading={imageUploading}
                   />
                   <button
                     type="button"
@@ -1805,10 +1919,7 @@ export default function ProjectEditForm() {
           <CategorySection title="Privacy Settings">
             <div className="space-y-4 w-full">
               <div>
-                <label
-                  htmlFor="project_visibility"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="project_visibility" className="block text-sm font-medium text-gray-700">
                   Project Visibility
                 </label>
                 <select
@@ -1857,10 +1968,7 @@ export default function ProjectEditForm() {
                     }}
                     className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   />
-                  <label
-                    htmlFor={`notification_${key}`}
-                    className="ml-2 block text-sm text-gray-900 capitalize"
-                  >
+                  <label htmlFor={`notification_${key}`} className="ml-2 block text-sm text-gray-900 capitalize">
                     {key.replace("_", " ")} Notifications
                   </label>
                 </div>
@@ -1873,9 +1981,14 @@ export default function ProjectEditForm() {
       <div className="flex justify-center">
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          disabled={saving}
+          className={`px-4 py-2 ${
+            saving 
+              ? 'bg-gray-400' 
+              : 'bg-indigo-600 hover:bg-indigo-700'
+          } text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
         >
-          Save Changes
+          {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
     </form>

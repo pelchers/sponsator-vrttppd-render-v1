@@ -1,18 +1,19 @@
 import type React from "react"
 
 interface PageSectionProps {
-  title: string
-  children: React.ReactNode
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
 }
 
-export default function PageSection({ title, children }: PageSectionProps) {
+export default function PageSection({ title, children, className = '' }: PageSectionProps) {
   return (
-    <div className="mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
-      <div className="space-y-6">
-        {children}
-      </div>
-    </div>
-  )
+    <section className={`mb-4 ${className}`}>
+      {title && (
+        <h2 className="text-sm font-medium mb-3">{title}</h2>
+      )}
+      {children}
+    </section>
+  );
 }
 

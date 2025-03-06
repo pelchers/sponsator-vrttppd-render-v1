@@ -98,21 +98,21 @@ export async function uploadProfileImage(req: Request, res: Response) {
 
 export async function registerUser(req: Request, res: Response) {
   try {
-    console.log('Registration request received:', req.body);
-    
     const { username, email, password } = req.body;
     
     // Validate input
     if (!username || !email || !password) {
-      console.log('Missing required fields:', { username: !!username, email: !!email, password: !!password });
-      return res.status(400).json({ message: 'Username, email, and password are required' });
+      return res.status(400).json({ 
+        message: 'Username, email, and password are required' 
+      });
     }
     
-    // Check if user already exists
+    // Check if user exists
     const existingUser = await userService.getUserByEmail(email);
     if (existingUser) {
-      console.log('User already exists with email:', email);
-      return res.status(409).json({ message: 'User with this email already exists' });
+      return res.status(409).json({ 
+        message: 'User with this email already exists' 
+      });
     }
     
     // Hash password
@@ -120,24 +120,32 @@ export async function registerUser(req: Request, res: Response) {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     
     // Create user
-    console.log('Creating new user with username:', username);
     const newUser = await userService.createUser({
       username,
       email,
       password_hash: hashedPassword,
     });
     
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET not configured');
+    }
+    
     // Generate JWT token
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
-      process.env.JWT_SECRET || 'your-secret-key',
+      { 
+        id: newUser.id, 
+        email: newUser.email,
+        username: newUser.username 
+      },
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
     
-    // Return user data and token (excluding password)
-    console.log('User created successfully with ID:', newUser.id);
+    // Remove sensitive data
+    const { password_hash, ...userWithoutPassword } = newUser;
+    
     res.status(201).json({
-      user: newUser,
+      user: userWithoutPassword,
       token
     });
   } catch (error) {
@@ -170,15 +178,24 @@ export async function loginUser(req: Request, res: Response) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET not configured');
+    }
+    
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key',
+      { 
+        id: user.id, 
+        email: user.email,
+        username: user.username 
+      },
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
     
-    // Return user data and token (excluding password)
+    // Remove sensitive data
     const { password_hash, ...userWithoutPassword } = user;
+    
     res.json({
       user: userWithoutPassword,
       token

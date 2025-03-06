@@ -2,19 +2,20 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 
 interface ImageUploadProps {
-  onImageSelect: (file: File) => void
-  initialImage?: string
+  onImageSelect: (file: File) => Promise<void>
+  className?: string
+  currentImage?: string
 }
 
-export default function ImageUpload({ onImageSelect, initialImage }: ImageUploadProps) {
+export default function ImageUpload({ onImageSelect, className, currentImage }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (initialImage && typeof initialImage === 'string') {
-      setPreview(initialImage)
+    if (currentImage && typeof currentImage === 'string') {
+      setPreview(currentImage)
     }
-  }, [initialImage])
+  }, [currentImage])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
