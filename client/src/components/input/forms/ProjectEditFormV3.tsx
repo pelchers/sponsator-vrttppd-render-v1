@@ -8,26 +8,15 @@ import CategorySection from "@/components/sections/CategorySection"
 import TagInput from "@/components/input/forms/TagInput"
 import ImageUpload from "@/components/input/forms/ImageUpload"
 import { Button } from "@/components/ui/button"
-import Layout from "@/components/layout/layout"
-import { useProjectForm } from "@/hooks/useProjectForm"
+import Layout from "@/components/layout/Layout"
+import { useProjectForm, ProjectFormDataWithFile, TeamMember, Collaborator, Advisor, Partner, Testimonial, Deliverable, Milestone } from "@/hooks/useProjectForm"
 import "@/components/input/forms/ProjectEditFormV3.css"
 import { 
-  TeamMember, 
-  Collaborator, 
-  Advisor, 
-  Partner, 
-  Testimonial, 
-  Deliverable, 
-  Milestone,
   ProjectFormData 
 } from '@/types/project'
 
 interface ProjectEditFormProps {
   projectId?: string;
-}
-
-interface ProjectFormDataWithFile extends Omit<ProjectFormData, 'project_image'> {
-  project_image: File | string | null;
 }
 
 // Update the project type fields map
@@ -1864,6 +1853,7 @@ export default function ProjectEditFormV3({ projectId }: ProjectEditFormProps) {
                   />
                   <input
                     type="date"
+                    aria-label="Milestone Date"
                     value={milestone.date}
                     onChange={(e) => {
                       const newMilestones = [...formData.milestones]

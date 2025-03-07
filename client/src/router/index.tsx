@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom'
+import Layout from '../components/layout/Layout'
 import Home from '../pages/home/Home'
 import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/signup'
 import ProfilePage from '../pages/profile/profile'
 import ProfileEditPage from '../pages/profile/editprofile'
-import Layout from '../components/layout/Layout'
 
 // Import project pages directly with full path
 import ProjectsListPage from '../pages/project/projectslist'

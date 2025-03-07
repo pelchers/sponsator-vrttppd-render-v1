@@ -46,6 +46,7 @@ This architecture ensures separation of concerns, maintainability, and scalabili
   - ✅ Project Display Page (`project.tsx`) - Structure exists, needs data connection
   - ⬜ Projects List Page (`projects/index.tsx`) - Needs to be created
   - ⬜ API Service Functions (`api/projects.ts`) - Create based on pattern in `api/users.ts`
+  - ⬜ API Config (`api/config.ts`) - Create based on pattern in `api/config.ts`
   - ⬜ Custom Hooks (`hooks/useProjectForm.ts`) - Create based on pattern in `hooks/useProfileForm.ts`
   - ⬜ Router Configuration (`router/index.tsx`) - Needs project routes added
   - ✅ shadcn components - Already set up from profile implementation
@@ -176,6 +177,13 @@ export async function uploadProjectImage(projectId: string, file: File, token: s
     throw error;
   }
 }
+```
+
+also complete the config file:
+
+```typescript
+// client/src/api/config.ts
+
 ```
 
 ## 4. Creating Custom Hooks for Form Handling

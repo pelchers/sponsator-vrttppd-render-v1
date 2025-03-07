@@ -47,6 +47,7 @@ This architecture ensures separation of concerns, maintainability, and scalabili
   - ✅ Profile Display Page (`profile.tsx`)
   - ✅ Profile Edit Form (`ProfileEditForm.tsx`)
   - ⬜ API Service Functions (`api/users.ts`)
+  - ⬜ API Config (`api/config.ts`)
   - ⬜ Custom Hooks (`hooks/useProfileForm.ts`)
   - ⬜ Router Configuration (`router/index.tsx`)
   - ⬜ Missing shadcn components (button, form, input, etc.)
@@ -149,6 +150,13 @@ export async function uploadProfileImage(userId: string, file: File) {
     throw error;
   }
 }
+```
+
+also complete the config file:
+
+```typescript
+// client/src/api/config.ts
+
 ```
 
 ## 4. Creating Custom Hooks for Form Handling

@@ -1,5 +1,8 @@
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+import { PrismaClient, projects as PrismaProject } from '@prisma/client'
+import prisma from '../lib/prisma'
+import { Project } from '@prisma/client'
+
+const prismaClient = new PrismaClient()
 
 // Format projects for frontend
 function formatProject(project: any) {
@@ -91,9 +94,32 @@ function formatProjectForDB(data: any) {
 // Transform form data to database format
 function transformFormToDb(data: any) {
   // Extract nested objects
-  const { seeking, notification_preferences, social_links, ...baseData } = data;
+  const { 
+    seeking, 
+    notification_preferences, 
+    social_links,
+    team_members,
+    collaborators,
+    advisors,
+    partners,
+    testimonials,
+    deliverables,
+    milestones,
+    ...baseData 
+  } = data;
 
-  // Flatten the data for database
+  // Handle JSON fields (stringify arrays and objects)
+  const jsonFields = {
+    team_members: JSON.stringify(team_members || []),
+    collaborators: JSON.stringify(collaborators || []),
+    advisors: JSON.stringify(advisors || []),
+    partners: JSON.stringify(partners || []),
+    testimonials: JSON.stringify(testimonials || []),
+    deliverables: JSON.stringify(deliverables || []),
+    milestones: JSON.stringify(milestones || [])
+  };
+
+  // Return flattened data for database
   return {
     ...baseData,
     // Flatten seeking fields
@@ -113,22 +139,43 @@ function transformFormToDb(data: any) {
     social_links_github: social_links?.github || '',
     social_links_twitter: social_links?.twitter || '',
     social_links_linkedin: social_links?.linkedin || '',
+
+    // Add JSON fields
+    ...jsonFields,
+
+    // Add timestamps
+    updated_at: new Date()
   };
 }
 
 // Transform database data to API response format
-const transformDbToApi = (data: any) => {
+function transformDbToApi(project: any) {
+  return {
+    ...project,
+    // Parse JSON fields
+    team_members: JSON.parse(project.team_members || '[]'),
+    collaborators: JSON.parse(project.collaborators || '[]'),
+    advisors: JSON.parse(project.advisors || '[]'),
+    partners: JSON.parse(project.partners || '[]'),
+    testimonials: JSON.parse(project.testimonials || '[]'),
+    deliverables: JSON.parse(project.deliverables || '[]'),
+    milestones: JSON.parse(project.milestones || '[]'),
+  };
+}
+
+// Transform API data to database format
+function transformApiToDb(data: any) {
   return {
     ...data,
-    // Parse JSON fields
-    team_members: JSON.parse(data.team_members || '[]'),
-    collaborators: JSON.parse(data.collaborators || '[]'),
-    advisors: JSON.parse(data.advisors || '[]'),
-    partners: JSON.parse(data.partners || '[]'),
-    testimonials: JSON.parse(data.testimonials || '[]'),
-    deliverables: JSON.parse(data.deliverables || '[]'),
-    milestones: JSON.parse(data.milestones || '[]'),
-  }
+    // Stringify JSON fields
+    team_members: JSON.stringify(data.team_members || []),
+    collaborators: JSON.stringify(data.collaborators || []),
+    advisors: JSON.stringify(data.advisors || []),
+    partners: JSON.stringify(data.partners || []),
+    testimonials: JSON.stringify(data.testimonials || []),
+    deliverables: JSON.stringify(data.deliverables || []),
+    milestones: JSON.stringify(data.milestones || []),
+  };
 }
 
 export const projectService = {
@@ -136,7 +183,7 @@ export const projectService = {
     try {
       const dbData = transformFormToDb(projectData);
       
-      const project = await prisma.projects.create({
+      const project = await prismaClient.projects.create({
         data: {
           ...dbData,
           user_id: userId,
@@ -162,7 +209,7 @@ export const projectService = {
         updated_at: new Date()
       };
 
-      const project = await prisma.projects.update({
+      const project = await prismaClient.projects.update({
         where: { id: projectId },
         data
       });
@@ -175,30 +222,30 @@ export const projectService = {
   },
 
   async getProject(projectId: string) {
-    const project = await prisma.projects.findUnique({
+    const project = await prismaClient.projects.findUnique({
       where: { id: projectId }
     })
     return project ? transformDbToApi(project) : null
   },
 
   getAllProjects: async () => {
-    const projects = await prisma.projects.findMany();
-    return projects.map(formatProject);
+    const projects = await prismaClient.projects.findMany();
+    return projects.map(transformDbToApi);
   },
 
   getProjectsByUser: async (userId: string) => {
-    const projects = await prisma.projects.findMany({
+    const projects = await prismaClient.projects.findMany({
       where: { user_id: userId },
     });
-    return projects.map(formatProject);
+    return projects.map(transformDbToApi);
   },
 
   getProjectById: async (id: string) => {
     try {
-      const project = await prisma.projects.findUnique({
+      const project = await prismaClient.projects.findUnique({
         where: { id },
       });
-      return project ? formatProject(project) : null;
+      return project ? transformDbToApi(project) : null;
     } catch (error) {
       console.error('Error in getProjectById:', error);
       throw error;
@@ -207,7 +254,7 @@ export const projectService = {
 
   async deleteProject(id: string) {
     try {
-      await prisma.projects.delete({
+      await prismaClient.projects.delete({
         where: { id },
       });
       return true;
@@ -221,16 +268,53 @@ export const projectService = {
     try {
       const imagePath = `/uploads/${file.filename}`;
       
-      await prisma.projects.update({
+      const project = await prismaClient.projects.update({
         where: { id },
         data: {
           project_image: imagePath,
+          updated_at: new Date()
         },
       });
       
       return imagePath;
     } catch (error) {
       console.error('Error in uploadProjectImage:', error);
+      throw error;
+    }
+  },
+
+  async uploadFieldMedia(id: string, field: string, index: number, file: Express.Multer.File) {
+    try {
+      const imagePath = `/uploads/${file.filename}`;
+      const project = await prismaClient.projects.findUnique({
+        where: { id }
+      });
+
+      if (!project) {
+        throw new Error('Project not found');
+      }
+
+      // Parse the existing field data
+      const fieldData = JSON.parse(project[field] || '[]');
+      
+      // Update the media path at the specified index
+      fieldData[index] = {
+        ...fieldData[index],
+        media: imagePath
+      };
+
+      // Update the project with the new field data
+      await prismaClient.projects.update({
+        where: { id },
+        data: {
+          [field]: JSON.stringify(fieldData),
+          updated_at: new Date()
+        }
+      });
+
+      return imagePath;
+    } catch (error) {
+      console.error(`Error in uploadFieldMedia:`, error);
       throw error;
     }
   }

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ProjectFormData } from '@/types/project';
-import { fetchProject, createProject, updateProject, uploadProjectImage, uploadTeamMemberMedia, uploadCollaboratorMedia } from '@/api/projects';
-import {
+import { 
   showClientContractSections,
   showBudgetSection,
   showSkillsExpertise,
@@ -12,13 +10,25 @@ import {
   skillsLabelMap,
   deliverablesLabelMap,
   milestonesLabelMap
-} from '@/config/projectFormConfig';
+} from '@/components/input/forms/config/projectFormConfig';
+import { 
+  fetchProject, 
+  createProject, 
+  updateProject, 
+  uploadProjectImage,
+  uploadTeamMemberMedia,
+  uploadCollaboratorMedia,
+  uploadAdvisorMedia,
+  uploadPartnerMedia,
+  uploadTestimonialMedia
+} from '@/api/projects';
 
-interface ProjectFormMedia {
+// Move all types here from project.ts
+export interface ProjectFormMedia {
   file: File;
 }
 
-interface TeamMember {
+export interface TeamMember {
   id?: string;
   name: string;
   role: string;
@@ -27,14 +37,171 @@ interface TeamMember {
   media?: ProjectFormMedia;
 }
 
-// Update the project_image type to handle both File and string
-interface ProjectFormDataWithFile extends Omit<ProjectFormData, 'project_image'> {
-  project_image: File | string | null;
+export interface Collaborator {
+  id: string;
+  name: string;
+  company: string;
+  role: string;
+  contribution: string;
+  media?: ProjectFormMedia;
+}
+
+export interface Advisor {
+  id: string;
+  name: string;
+  expertise: string;
+  year: string;
+  bio: string;
+  media?: ProjectFormMedia;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  organization: string;
+  contribution: string;
+  year: string;
+  media?: ProjectFormMedia;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  organization: string;
+  position: string;
+  company: string;
+  text: string;
+  media?: ProjectFormMedia;
+}
+
+export interface Deliverable {
+  id: string;
+  title: string;
+  description: string;
+  due_date: string;
+  status: string;
+}
+
+export interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+}
+
+export interface ProjectFormData {
+  project_image: string | null;
+  project_name: string;
+  project_description: string;
+  project_type: string;
+  project_category: string;
+  project_title: string;
+  project_duration: string;
+  project_handle: string;
+  project_followers: number;
+
+  // Client & Contract Info
+  client: string;
+  client_location: string;
+  client_website: string;
+  contract_type: string;
+  contract_duration: string;
+  contract_value: string;
+  project_timeline: string;
+  budget: string;
+  project_status: string;
+  preferred_collaboration_type: string;
+  budget_range: string;
+  currency: string;
+  standard_rate: string;
+  rate_type: string;
+  compensation_type: string;
+
+  // Arrays
+  skills_required: string[];
+  expertise_needed: string[];
+  target_audience: string[];
+  solutions_offered: string[];
+  project_tags: string[];
+  industry_tags: string[];
+  technology_tags: string[];
+  website_links: string[];
+
+  // Complex objects
   team_members: TeamMember[];
+  collaborators: Collaborator[];
+  advisors: Advisor[];
+  partners: Partner[];
+  testimonials: Testimonial[];
+  deliverables: Deliverable[];
+  milestones: Milestone[];
+
+  // Nested objects
+  seeking: {
+    creator: boolean;
+    brand: boolean;
+    freelancer: boolean;
+    contractor: boolean;
+  };
+
+  social_links: {
+    youtube: string;
+    instagram: string;
+    github: string;
+    twitter: string;
+    linkedin: string;
+  };
+
+  notification_preferences: {
+    email: boolean;
+    push: boolean;
+    digest: boolean;
+  };
+
+  // Other fields
+  project_status_tag: string;
+  project_visibility: string;
+  search_visibility: boolean;
+  short_term_goals: string;
+  long_term_goals: string;
+}
+
+export interface ProjectFormDataWithFile extends Omit<ProjectFormData, 'project_image' | 'team_members' | 'collaborators' | 'advisors' | 'partners' | 'testimonials'> {
+  project_image: File | string | null;
+  team_members: ProjectFormTeamMember[];
+  collaborators: ProjectFormCollaborator[];
+  advisors: ProjectFormAdvisor[];
+  partners: ProjectFormPartner[];
+  testimonials: ProjectFormTestimonial[];
+}
+
+export interface ProjectFormTeamMember extends Omit<TeamMember, 'media'> {
+  media?: ProjectFormMedia;
+}
+
+export interface ProjectFormCollaborator extends Omit<Collaborator, 'media'> {
+  media?: ProjectFormMedia;
+}
+
+export interface ProjectFormAdvisor extends Omit<Advisor, 'media'> {
+  media?: ProjectFormMedia;
+}
+
+export interface ProjectFormPartner extends Omit<Partner, 'media'> {
+  media?: ProjectFormMedia;
+}
+
+export interface ProjectFormTestimonial extends Omit<Testimonial, 'media'> {
+  media?: ProjectFormMedia;
 }
 
 export function useProjectForm(projectId?: string) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -119,14 +286,6 @@ export function useProjectForm(projectId?: string) {
     },
   });
   
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  
-  // Add loading states for media uploads
-  const [mediaUploading, setMediaUploading] = useState<Record<string, boolean>>({});
-  
   // Load project data if editing
   useEffect(() => {
     if (projectId) {
@@ -134,37 +293,22 @@ export function useProjectForm(projectId?: string) {
     }
   }, [projectId]);
   
-  async function loadProject(id: string) {
+  const loadProject = async (id: string) => {
     try {
       setLoading(true);
       setLoadingError(null);
       const token = localStorage.getItem('token');
       const projectData = await fetchProject(id, token || undefined);
       
-      setFormData({
-        ...projectData,
-        project_image: projectData.project_image || null,
-        team_members: projectData.team_members.map((member: any) => ({
-          ...member,
-          media: member.media ? { file: new File([], '') } : undefined
-        })),
-      });
+      // Transform API data to form format
+      const transformedData = transformApiDataToForm(projectData);
+      setFormData(transformedData);
     } catch (err) {
       setLoadingError('Failed to load project');
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }
-  
-  const handleNestedUpdate = (parent: string, child: string, value: unknown) => {
-    setFormData((prev) => ({
-      ...prev,
-      [parent]: {
-        ...(prev[parent as keyof ProjectFormDataWithFile] as Record<string, unknown>),
-        [child]: value,
-      },
-    }));
   };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -174,7 +318,13 @@ export function useProjectForm(projectId?: string) {
       const [parent, child] = name.includes('.') ? name.split('.') : [name, null];
       
       if (child) {
-        handleNestedUpdate(parent, child, (e.target as HTMLInputElement).checked);
+        setFormData((prev) => ({
+          ...prev,
+          [parent]: {
+            ...(prev[parent as keyof ProjectFormDataWithFile] as Record<string, unknown>),
+            [child]: (e.target as HTMLInputElement).checked,
+          },
+        }));
         return;
       }
       
@@ -187,7 +337,13 @@ export function useProjectForm(projectId?: string) {
     
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-      handleNestedUpdate(parent, child, value);
+      setFormData((prev) => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value,
+        },
+      }));
       return;
     }
     
@@ -304,54 +460,14 @@ export function useProjectForm(projectId?: string) {
         return;
       }
       
-      // Transform data before sending to API
-      const apiData = transformFormDataForApi(formData);
+      // Transform form data before sending to API
+      const transformedData = transformFormDataForApi(formData);
       
       let result;
       if (projectId) {
-        // Update existing project
-        result = await updateProject(projectId, apiData, token);
-        
-        // Handle file uploads
-        if (formData.project_image instanceof File) {
-          await uploadProjectImage(projectId, formData.project_image, token);
-        }
-
-        // Upload media files for complex fields
-        await Promise.all([
-          ...formData.team_members.map(async (member, index) => {
-            if (member.media?.file instanceof File) {
-              await uploadTeamMemberMedia(projectId, index, member.media.file, token);
-            }
-          }),
-          ...formData.collaborators.map(async (collab, index) => {
-            if (collab.media?.file instanceof File) {
-              await uploadCollaboratorMedia(projectId, index, collab.media.file, token);
-            }
-          }),
-          // Similar for other media fields
-        ]);
-
+        result = await updateProject(projectId, transformedData, token);
       } else {
-        // Create new project
-        result = await createProject(apiData, token);
-        
-        // Handle file uploads for new project
-        if (result?.id) {
-          if (formData.project_image instanceof File) {
-            await uploadProjectImage(result.id, formData.project_image, token);
-          }
-
-          // Upload media files for complex fields
-          await Promise.all([
-            ...formData.team_members.map(async (member, index) => {
-              if (member.media?.file instanceof File) {
-                await uploadTeamMemberMedia(result.id, index, member.media.file, token);
-              }
-            }),
-            // Similar for other media fields
-          ]);
-        }
+        result = await createProject(transformedData, token);
       }
       
       setSuccess(true);
@@ -364,34 +480,6 @@ export function useProjectForm(projectId?: string) {
       console.error(err);
     } finally {
       setSaving(false);
-    }
-  };
-  
-  // Update media handling function
-  const handleMediaSelect = (
-    section: 'team_members' | 'collaborators' | 'advisors' | 'partners' | 'testimonials',
-    index: number
-  ) => async (file: File) => {
-    try {
-      setMediaUploading({ ...mediaUploading, [`${section}-${index}`]: true });
-      
-      // Update form state immediately with file
-      setFormData(prev => {
-        const items = [...prev[section]];
-        items[index] = {
-          ...items[index],
-          media: { file }
-        };
-        return {
-          ...prev,
-          [section]: items
-        };
-      });
-      
-    } catch (error) {
-      console.error(`Error handling ${section} media:`, error);
-    } finally {
-      setMediaUploading({ ...mediaUploading, [`${section}-${index}`]: false });
     }
   };
   
@@ -410,7 +498,6 @@ export function useProjectForm(projectId?: string) {
     handleAddTag,
     handleRemoveTag,
     handleSubmit,
-    handleMediaSelect,
   };
 }
 
