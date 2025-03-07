@@ -161,27 +161,144 @@ const transformApiDataToForm = (data: any): ProjectFormDataWithFile => {
    ```typescript
    // Wrong
    const [formData, setFormData] = useState(null);
+   /* Why it's wrong:
+    * - Starts with null, causing Object.entries() to fail immediately
+    * - Forces null checks throughout the component
+    * - Doesn't provide default values for form fields
+    * - TypeScript can't infer proper types from null
+    */
    
    // Right
    const [formData, setFormData] = useState(defaultFormState);
+   /* Why it's right:
+    * - Ensures form always has valid data structure
+    * - Prevents null/undefined errors
+    * - Provides TypeScript with proper type inference
+    * - Makes form usable even before API data loads
+    */
    ```
 
 2. **Object Access**
    ```typescript
    // Wrong
    formData.seeking[option]
+   /* Why it's wrong:
+    * - Assumes formData and seeking always exist
+    * - No fallback for missing values
+    * - Will throw error if any part of the chain is null
+    * - Doesn't handle type safety for option key
+    */
    
    // Right
-   formData?.seeking?.[option] ?? false
+   formData?.seeking?.[option as keyof typeof SEEKING_OPTIONS] ?? false
+   /* Why it's right:
+    * - Uses optional chaining (?.) to safely handle null/undefined
+    * - Provides fallback value with nullish coalescing (??)
+    * - Properly types the option key with TypeScript
+    * - Gracefully handles missing data
+    */
    ```
 
 3. **Type Safety**
    ```typescript
    // Wrong
    Object.entries(formData.seeking)
+   /* Why it's wrong:
+    * - No null check before Object.entries
+    * - Assumes formData.seeking exists
+    * - Will throw error if seeking is undefined
+    * - Doesn't validate object structure
+    */
    
    // Right
    formData && formData.seeking && Object.entries(formData.seeking)
+   /* Why it's right:
+    * - Checks both formData and seeking exist
+    * - Only calls Object.entries on valid object
+    * - Prevents runtime errors
+    * - Can be combined with conditional rendering
+    */
+   ```
+
+4. **Event Handlers**
+   ```typescript
+   // Wrong
+   const handleInputChange = (e) => {
+     setFormData((prev) => ({
+       ...prev,
+       [name]: value
+     }));
+   }
+   /* Why it's wrong:
+    * - No type checking on event
+    * - Doesn't handle nested objects
+    * - No validation of prev state
+    * - Could overwrite complex objects
+    */
+   
+   // Right
+   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+     if (!formData) return;
+     
+     const { name, value } = e.target;
+     if (name.includes('.')) {
+       const [parent, child] = name.split('.');
+       setFormData((prev) => {
+         if (!prev?.[parent]) return prev;
+         return {
+           ...prev,
+           [parent]: {
+             ...prev[parent],
+             [child]: value
+           }
+         };
+       });
+       return;
+     }
+   }
+   /* Why it's right:
+    * - Proper TypeScript event typing
+    * - Handles nested object updates
+    * - Validates state before updates
+    * - Preserves object structure
+    */
+   ```
+
+5. **API Data Transformation**
+   ```typescript
+   // Wrong
+   const transformApiData = (data) => ({
+     ...data,
+     seeking: data.seeking
+   });
+   /* Why it's wrong:
+    * - No validation of input data
+    * - No default values
+    * - Doesn't handle missing properties
+    * - Could propagate invalid data
+    */
+   
+   // Right
+   const transformApiData = (data: any): ProjectFormDataWithFile => {
+     if (!data) return defaultFormState;
+     
+     return {
+       ...defaultFormState,
+       ...data,
+       seeking: {
+         creator: Boolean(data.seeking_creator),
+         brand: Boolean(data.seeking_brand),
+         freelancer: Boolean(data.seeking_freelancer),
+         contractor: Boolean(data.seeking_contractor),
+       }
+     };
+   }
+   /* Why it's right:
+    * - Validates input data
+    * - Provides default values
+    * - Properly transforms data types
+    * - Ensures consistent structure
+    */
    ```
 
 ### Future Improvements:

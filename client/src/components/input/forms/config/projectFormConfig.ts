@@ -142,3 +142,53 @@ export const defaultContractTypeOptions = [
   "Milestone-based",
   "Undefined Contract"
 ];
+
+export const technologyTagsLabelMap: Record<string, string> = {
+  creative_work: "Tools / Software Tags",
+  brand_work: "Platform / Tech Stack",
+  brand_deal: "Platform / Tech Stack",
+  // Default falls back to "Technology Tags"
+};
+
+export const showIndustryTechnologyTags = [
+  "creative_work",
+  "creative_partnership",
+  "collaborative_work",
+  "brand_work",
+  "brand_deal",
+  "brand_partnership",
+  "freelance_services",
+  "contractor_services",
+  "contractor_products_supply",
+  "contractor_management_services",
+];
+
+export const defaultFormState = {
+  project_name: "",
+  project_description: "",
+  project_type: "",
+  project_category: "",
+  project_timeline: "",
+  project_status_tag: "",
+  project_visibility: "public",
+  search_visibility: true,
+  project_image: null,
+  team_members: [],
+  collaborators: [],
+  advisors: [],
+  partners: [],
+  testimonials: [],
+  deliverables: [],
+  milestones: [],
+  seeking: {
+    creator: false,
+    brand: false,
+    freelancer: false,
+    contractor: false
+  },
+  notification_preferences: {
+    email: true,
+    push: true,
+    sms: false
+  }
+};
