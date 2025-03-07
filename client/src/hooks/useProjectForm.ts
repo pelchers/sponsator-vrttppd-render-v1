@@ -196,9 +196,74 @@ export interface ProjectFormTestimonial extends Omit<Testimonial, 'media'> {
   media?: ProjectFormMedia;
 }
 
+const defaultFormState: ProjectFormDataWithFile = {
+  project_image: null,
+  project_name: "",
+  project_description: "",
+  project_type: "",
+  project_category: "",
+  project_title: "",
+  project_duration: "",
+  project_handle: "",
+  project_followers: 0,
+  client: "",
+  client_location: "",
+  client_website: "",
+  contract_type: "",
+  contract_duration: "",
+  contract_value: "",
+  project_timeline: "",
+  budget: "",
+  project_status: "",
+  preferred_collaboration_type: "",
+  budget_range: "",
+  currency: "USD",
+  standard_rate: "",
+  rate_type: "",
+  compensation_type: "",
+  skills_required: [],
+  expertise_needed: [],
+  target_audience: [],
+  solutions_offered: [],
+  project_tags: [],
+  industry_tags: [],
+  technology_tags: [],
+  project_status_tag: "",
+  seeking: {
+    creator: false,
+    brand: false,
+    freelancer: false,
+    contractor: false,
+  },
+  social_links: {
+    youtube: "",
+    instagram: "",
+    github: "",
+    twitter: "",
+    linkedin: "",
+  },
+  website_links: [],
+  deliverables: [],
+  milestones: [],
+  team_members: [],
+  collaborators: [],
+  advisors: [],
+  partners: [],
+  testimonials: [],
+  short_term_goals: "",
+  long_term_goals: "",
+  project_visibility: "public",
+  search_visibility: true,
+  notification_preferences: {
+    email: true,
+    push: true,
+    digest: true,
+  },
+};
+
 export function useProjectForm(projectId?: string) {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(projectId ? true : false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -206,132 +271,62 @@ export function useProjectForm(projectId?: string) {
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState<ProjectFormDataWithFile>({
-    // Basic Information
-    project_image: null,
-    project_name: "",
-    project_description: "",
-    project_type: "",
-    project_category: "",
-    project_title: "",
-    project_duration: "",
-    project_handle: "",
-    project_followers: 0,
-
-    // Client & Contract Info
-    client: "",
-    client_location: "",
-    client_website: "",
-    contract_type: "",
-    contract_duration: "",
-    contract_value: "",
-    project_timeline: "",
-    budget: "",
-    project_status: "",
-    preferred_collaboration_type: "",
-    budget_range: "",
-    currency: "USD",
-    standard_rate: "",
-    rate_type: "",
-    compensation_type: "",
-
-    // Tags & Categories
-    skills_required: [],
-    expertise_needed: [],
-    target_audience: [],
-    solutions_offered: [],
-    project_tags: [],
-    industry_tags: [],
-    technology_tags: [],
-    project_status_tag: "",
-
-    // Seeking flags
-    seeking: {
-      creator: false,
-      brand: false,
-      freelancer: false,
-      contractor: false,
-    },
-
-    // Social & Website Links
-    social_links: {
-      youtube: "",
-      instagram: "",
-      github: "",
-      twitter: "",
-      linkedin: "",
-    },
-    website_links: [],
-
-    // Complex JSON fields
-    deliverables: [],
-    milestones: [],
-    team_members: [],
-    collaborators: [],
-    advisors: [],
-    partners: [],
-    testimonials: [],
-
-    // Goals
-    short_term_goals: "",
-    long_term_goals: "",
-
-    // Privacy & Notifications
-    project_visibility: "public",
-    search_visibility: true,
-    notification_preferences: {
-      email: true,
-      push: true,
-      digest: true,
-    },
-  });
+  const [formData, setFormData] = useState<ProjectFormDataWithFile>(defaultFormState);
   
-  // Load project data if editing
   useEffect(() => {
-    if (projectId) {
-      loadProject(projectId);
-    }
+    const initializeForm = async () => {
+      if (projectId) {
+        try {
+          setLoading(true);
+          const token = localStorage.getItem('token');
+          const projectData = await fetchProject(projectId, token || undefined);
+          if (projectData) {
+            setFormData(transformApiDataToForm(projectData));
+          } else {
+            setFormData(defaultFormState);
+          }
+        } catch (err) {
+          console.error('Failed to load project:', err);
+          setError('Failed to load project');
+          setFormData(defaultFormState);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeForm();
   }, [projectId]);
   
-  const loadProject = async (id: string) => {
-    try {
-      setLoading(true);
-      setLoadingError(null);
-      const token = localStorage.getItem('token');
-      const projectData = await fetchProject(id, token || undefined);
-      
-      // Transform API data to form format
-      const transformedData = transformApiDataToForm(projectData);
-      setFormData(transformedData);
-    } catch (err) {
-      setLoadingError('Failed to load project');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    if (!formData) return;
+    
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
       const [parent, child] = name.includes('.') ? name.split('.') : [name, null];
       
-      if (child) {
-        setFormData((prev) => ({
-          ...prev,
-          [parent]: {
-            ...(prev[parent as keyof ProjectFormDataWithFile] as Record<string, unknown>),
-            [child]: (e.target as HTMLInputElement).checked,
-          },
-        }));
+      if (child && parent === 'seeking') {
+        setFormData((prev) => {
+          if (!prev?.seeking) return prev;
+          return {
+            ...prev,
+            seeking: {
+              ...prev.seeking,
+              [child]: (e.target as HTMLInputElement).checked,
+            },
+          };
+        });
         return;
       }
       
-      setFormData((prev) => ({
-        ...prev,
-        [name]: (e.target as HTMLInputElement).checked,
-      }));
+      setFormData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          [name]: (e.target as HTMLInputElement).checked,
+        };
+      });
       return;
     }
     
@@ -377,18 +372,26 @@ export function useProjectForm(projectId?: string) {
     }
   };
   
-  const handleAddTag = (section: keyof typeof formData) => (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: [...(prev[section] as string[]), tag],
-    }));
+  const handleAddTag = (section: keyof ProjectFormDataWithFile) => (tag: string) => {
+    setFormData((prev) => {
+      if (!prev) return prev;
+      const currentTags = prev[section] as string[];
+      return {
+        ...prev,
+        [section]: [...currentTags, tag],
+      };
+    });
   };
   
-  const handleRemoveTag = (section: keyof typeof formData) => (tag: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: (prev[section] as string[]).filter((t) => t !== tag),
-    }));
+  const handleRemoveTag = (section: keyof ProjectFormDataWithFile) => (tag: string) => {
+    setFormData((prev) => {
+      if (!prev) return prev;
+      const currentTags = prev[section] as string[];
+      return {
+        ...prev,
+        [section]: currentTags.filter((t) => t !== tag),
+      };
+    });
   };
   
   const validateForm = () => {
@@ -460,6 +463,10 @@ export function useProjectForm(projectId?: string) {
         return;
       }
       
+      if (!formData) {
+        throw new Error('No form data available');
+      }
+
       // Transform form data before sending to API
       const transformedData = transformFormDataForApi(formData);
       
@@ -471,9 +478,13 @@ export function useProjectForm(projectId?: string) {
       }
       
       setSuccess(true);
-      setTimeout(() => {
+      
+      // Add delay before redirect
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      if (result?.id) {
         navigate(`/projects/${result.id}`);
-      }, 1500);
+      }
       
     } catch (err) {
       setError('Failed to save project');

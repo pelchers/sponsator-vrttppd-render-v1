@@ -20,6 +20,10 @@ import {
  * @returns Transformed project data matching frontend structure
  */
 const transformApiResponse = (projectData: any): Project => {
+  if (!projectData) {
+    throw new Error('No project data received from API');
+  }
+
   return {
     ...projectData,
     // Transform flattened social links into object
@@ -32,10 +36,10 @@ const transformApiResponse = (projectData: any): Project => {
     },
     // Transform flattened seeking fields into object
     seeking: {
-      creator: projectData.seeking_creator || false,
-      brand: projectData.seeking_brand || false,
-      freelancer: projectData.seeking_freelancer || false,
-      contractor: projectData.seeking_contractor || false,
+      creator: Boolean(projectData.seeking_creator),
+      brand: Boolean(projectData.seeking_brand),
+      freelancer: Boolean(projectData.seeking_freelancer),
+      contractor: Boolean(projectData.seeking_contractor),
     },
     // Parse JSON fields
     team_members: JSON.parse(projectData.team_members || '[]'),
@@ -358,4 +362,34 @@ export async function uploadTestimonialMedia(projectId: string, index: number, f
   } catch (error) {
     handleApiError(error, 'Error uploading testimonial media');
   }
-} 
+}
+
+const transformApiDataToForm = (data: any): ProjectFormDataWithFile => {
+  if (!data) {
+    return defaultFormState;
+  }
+
+  return {
+    ...defaultFormState, // Start with default values
+    ...data, // Spread API data
+    // Ensure nested objects are properly initialized
+    seeking: {
+      creator: Boolean(data.seeking_creator),
+      brand: Boolean(data.seeking_brand),
+      freelancer: Boolean(data.seeking_freelancer),
+      contractor: Boolean(data.seeking_contractor),
+    },
+    social_links: {
+      youtube: data.social_links_youtube || '',
+      instagram: data.social_links_instagram || '',
+      github: data.social_links_github || '',
+      twitter: data.social_links_twitter || '',
+      linkedin: data.social_links_linkedin || '',
+    },
+    notification_preferences: {
+      email: Boolean(data.notification_preferences?.email),
+      push: Boolean(data.notification_preferences?.push),
+      digest: Boolean(data.notification_preferences?.digest),
+    },
+  };
+}; 
