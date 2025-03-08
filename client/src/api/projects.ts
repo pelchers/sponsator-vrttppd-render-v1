@@ -19,52 +19,65 @@ import {
  * @param projectData Raw project data from API
  * @returns Transformed project data matching frontend structure
  */
-const transformApiResponse = (projectData: any): Project => {
-  if (!projectData) {
-    throw new Error('No project data received from API');
+const transformApiResponse = (data: any) => {
+  if (!data) return null;
+  
+  try {
+    // Create a copy of the data
+    const result = { ...data };
+    
+    // Safely parse JSON fields
+    const parseJsonField = (field: string) => {
+      if (!result[field]) return [];
+      
+      if (typeof result[field] === 'string') {
+        try {
+          return JSON.parse(result[field]);
+        } catch (error) {
+          console.warn(`Error parsing ${field}:`, error);
+          return [];
+        }
+      }
+      
+      return result[field]; // Already an object/array
+    };
+    
+    // Parse all JSON fields
+    result.team_members = parseJsonField('team_members');
+    result.collaborators = parseJsonField('collaborators');
+    result.advisors = parseJsonField('advisors');
+    result.partners = parseJsonField('partners');
+    result.testimonials = parseJsonField('testimonials');
+    result.deliverables = parseJsonField('deliverables');
+    result.milestones = parseJsonField('milestones');
+    
+    // Add nested objects for UI compatibility
+    result.seeking = {
+      creator: Boolean(result.seeking_creator),
+      brand: Boolean(result.seeking_brand),
+      freelancer: Boolean(result.seeking_freelancer),
+      contractor: Boolean(result.seeking_contractor)
+    };
+    
+    result.social_links = {
+      youtube: result.social_links_youtube || '',
+      instagram: result.social_links_instagram || '',
+      github: result.social_links_github || '',
+      twitter: result.social_links_twitter || '',
+      linkedin: result.social_links_linkedin || ''
+    };
+    
+    result.notification_preferences = {
+      email: Boolean(result.notification_preferences_email),
+      push: Boolean(result.notification_preferences_push),
+      digest: Boolean(result.notification_preferences_digest)
+    };
+    
+    return result;
+  } catch (error) {
+    console.error('Error transforming API response:', error);
+    return data; // Return original data if transformation fails
   }
-
-  return {
-    ...projectData,
-    // Transform flattened social links into object
-    social_links: {
-      youtube: projectData.social_links_youtube || '',
-      instagram: projectData.social_links_instagram || '',
-      github: projectData.social_links_github || '',
-      twitter: projectData.social_links_twitter || '',
-      linkedin: projectData.social_links_linkedin || '',
-    },
-    // Transform flattened seeking fields into object
-    seeking: {
-      creator: Boolean(projectData.seeking_creator),
-      brand: Boolean(projectData.seeking_brand),
-      freelancer: Boolean(projectData.seeking_freelancer),
-      contractor: Boolean(projectData.seeking_contractor),
-    },
-    // Parse JSON fields
-    team_members: JSON.parse(projectData.team_members || '[]'),
-    collaborators: JSON.parse(projectData.collaborators || '[]'),
-    advisors: JSON.parse(projectData.advisors || '[]'),
-    partners: JSON.parse(projectData.partners || '[]'),
-    testimonials: JSON.parse(projectData.testimonials || '[]'),
-    deliverables: JSON.parse(projectData.deliverables || '[]'),
-    milestones: JSON.parse(projectData.milestones || '[]'),
-    // Transform conditional sections based on project type
-    client_info: showClientContractSections.includes(projectData.project_type) ? {
-      client: projectData.client,
-      client_location: projectData.client_location,
-      client_website: projectData.client_website,
-      contract_type: projectData.contract_type,
-      contract_duration: projectData.contract_duration,
-      contract_value: projectData.contract_value,
-    } : undefined,
-    budget_info: showBudgetSection.includes(projectData.project_type) ? {
-      budget: projectData.budget,
-      budget_range: projectData.budget_range,
-      currency: projectData.currency,
-      rate_type: projectData.rate_type,
-    } : undefined,
-  };
 };
 
 // Transform frontend data to API format
@@ -144,22 +157,7 @@ export async function fetchProject(projectId: string, token?: string): Promise<P
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const url = replaceUrlParams(API_ROUTES.PROJECTS.GET, { id: projectId });
-    const response = await axios.get(`${API_URL}${url}`, { 
-      headers,
-      params: {
-        include: [
-          'team_members',
-          'collaborators',
-          'advisors',
-          'partners',
-          'testimonials',
-          'deliverables',
-          'milestones'
-        ].join(',')
-      }
-    });
-
+    const response = await axios.get(`${API_URL}/projects/${projectId}`, { headers });
     return transformApiResponse(response.data);
   } catch (error) {
     console.error('Error fetching project:', error);
@@ -195,22 +193,23 @@ export async function createProject(projectData: ProjectFormDataWithFile, token:
 }
 
 // Update existing project
-export async function updateProject(projectId: string, projectData: ProjectFormDataWithFile, token: string) {
+export const updateProject = async (projectId: string, data: any, token: string) => {
   try {
-    const apiData = transformFormToApi(projectData);
-    const url = replaceUrlParams(API_ROUTES.PROJECTS.UPDATE, { id: projectId });
-    const response = await axios.put(`${API_URL}${url}`, apiData, {
+    // Log what's being sent to the backend
+    console.log('Sending to backend:', data);
+    
+    const response = await axios.put(`${API_URL}/projects/${projectId}`, data, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
-    return transformApiResponse(response.data);
+    return response.data;
   } catch (error) {
     console.error('Error updating project:', error);
     throw error;
   }
-}
+};
 
 // Delete project
 export async function deleteProject(projectId: string, token: string) {
@@ -392,4 +391,40 @@ const transformApiDataToForm = (data: any): ProjectFormDataWithFile => {
       digest: Boolean(data.notification_preferences?.digest),
     },
   };
+};
+
+export async function fetchProjects(token?: string): Promise<Project[]> {
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await axios.get(`${API_URL}/projects`, { headers });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch projects');
+    }
+    throw error;
+  }
+}
+
+// The transformFormDataForApi function should not transform these fields
+const transformFormDataForApi = (formData: ProjectFormDataWithFile) => {
+  // Create a copy to avoid mutating the original
+  const apiData = { ...formData };
+  
+  // Handle file upload separately
+  if (formData.project_image_file) {
+    delete apiData.project_image_file;
+  }
+  
+  // Make sure we're not transforming the seeking fields into an object
+  // They should remain as individual boolean fields
+  
+  return apiData;
 }; 

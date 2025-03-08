@@ -199,24 +199,144 @@ export const projectService = {
     }
   },
 
-  async updateProject(projectId: string, projectData: any) {
+  async updateProject(projectId: string, userId: string, projectData: any) {
     try {
-      const dbData = transformFormToDb(projectData);
+      // Extract all fields including the ones that were missing
+      const {
+        project_name,
+        project_description,
+        project_type,
+        project_category,
+        project_title,
+        project_duration,
+        project_timeline,
+        project_status_tag,
+        project_visibility,
+        search_visibility,
+        project_image,
+        client,
+        client_location,
+        client_website,
+        contract_type,
+        contract_duration,
+        contract_value,
+        budget,
+        budget_range,
+        currency,
+        standard_rate,
+        rate_type,
+        compensation_type,
+        skills_required,
+        expertise_needed,
+        target_audience,
+        solutions_offered,
+        project_tags,
+        industry_tags,
+        technology_tags,
+        team_members,
+        collaborators,
+        advisors,
+        partners,
+        testimonials,
+        deliverables,
+        milestones,
+        social_links_youtube,
+        social_links_instagram,
+        social_links_github,
+        social_links_twitter,
+        social_links_linkedin,
+        seeking_creator,
+        seeking_brand,
+        seeking_freelancer,
+        seeking_contractor,
+        notification_preferences_email,
+        notification_preferences_push,
+        notification_preferences_digest,
+        website_links,
+        short_term_goals,
+        long_term_goals,
+        project_status,
+        preferred_collaboration_type,
+      } = projectData;
       
-      // Add updated timestamp
-      const data = {
-        ...dbData,
-        updated_at: new Date()
+      // Prepare JSON fields
+      const jsonFields = {
+        team_members: Array.isArray(team_members) ? JSON.stringify(team_members) : team_members,
+        collaborators: Array.isArray(collaborators) ? JSON.stringify(collaborators) : collaborators,
+        advisors: Array.isArray(advisors) ? JSON.stringify(advisors) : advisors,
+        partners: Array.isArray(partners) ? JSON.stringify(partners) : partners,
+        testimonials: Array.isArray(testimonials) ? JSON.stringify(testimonials) : testimonials,
+        deliverables: Array.isArray(deliverables) ? JSON.stringify(deliverables) : deliverables,
+        milestones: Array.isArray(milestones) ? JSON.stringify(milestones) : milestones,
       };
-
-      const project = await prismaClient.projects.update({
-        where: { id: projectId },
-        data
+      
+      // Prepare array fields
+      const arrayFields = {
+        skills_required: Array.isArray(skills_required) ? skills_required : [],
+        expertise_needed: Array.isArray(expertise_needed) ? expertise_needed : [],
+        target_audience: Array.isArray(target_audience) ? target_audience : [],
+        solutions_offered: Array.isArray(solutions_offered) ? solutions_offered : [],
+        project_tags: Array.isArray(project_tags) ? project_tags : [],
+        industry_tags: Array.isArray(industry_tags) ? industry_tags : [],
+        technology_tags: Array.isArray(technology_tags) ? technology_tags : [],
+        website_links: Array.isArray(website_links) ? website_links : [],
+      };
+      
+      // Update the project with all fields
+      const updatedProject = await prismaClient.projects.update({
+        where: { 
+          id: projectId,
+          user_id: userId 
+        },
+        data: {
+          project_name,
+          project_description,
+          project_type,
+          project_category,
+          project_title,
+          project_duration,
+          project_timeline,
+          project_status_tag,
+          project_visibility,
+          search_visibility,
+          project_image,
+          client,
+          client_location,
+          client_website,
+          contract_type,
+          contract_duration,
+          contract_value,
+          budget,
+          budget_range,
+          currency,
+          standard_rate,
+          rate_type,
+          compensation_type,
+          ...arrayFields,
+          ...jsonFields,
+          social_links_youtube,
+          social_links_instagram,
+          social_links_github,
+          social_links_twitter,
+          social_links_linkedin,
+          seeking_creator,
+          seeking_brand,
+          seeking_freelancer,
+          seeking_contractor,
+          notification_preferences_email,
+          notification_preferences_push,
+          notification_preferences_digest,
+          short_term_goals,
+          long_term_goals,
+          project_status,
+          preferred_collaboration_type,
+          updated_at: new Date()
+        }
       });
-
-      return transformDbToApi(project);
+      
+      return transformDbToApi(updatedProject);
     } catch (error) {
-      console.error('Error in updateProject:', error);
+      console.error('Error in updateProject service:', error);
       throw error;
     }
   },

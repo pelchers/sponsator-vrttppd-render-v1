@@ -259,6 +259,15 @@ const defaultFormState: ProjectFormDataWithFile = {
     push: true,
     digest: true,
   },
+  social_links_youtube: '',
+  social_links_instagram: '',
+  social_links_github: '',
+  social_links_twitter: '',
+  social_links_linkedin: '',
+  seeking_creator: false,
+  seeking_brand: false,
+  seeking_freelancer: false,
+  seeking_contractor: false,
 };
 
 export function useProjectForm(projectId?: string) {
@@ -271,7 +280,34 @@ export function useProjectForm(projectId?: string) {
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState<ProjectFormDataWithFile>(defaultFormState);
+  const [formData, setFormData] = useState<ProjectFormDataWithFile>({
+    ...defaultFormState,
+    team_members: Array.isArray(defaultFormState.team_members) 
+      ? defaultFormState.team_members 
+      : (typeof defaultFormState.team_members === 'string' 
+          ? JSON.parse(defaultFormState.team_members || '[]') 
+          : []),
+    collaborators: Array.isArray(defaultFormState.collaborators) 
+      ? defaultFormState.collaborators 
+      : (typeof defaultFormState.collaborators === 'string' 
+          ? JSON.parse(defaultFormState.collaborators || '[]') 
+          : []),
+    advisors: Array.isArray(defaultFormState.advisors) 
+      ? defaultFormState.advisors 
+      : (typeof defaultFormState.advisors === 'string' 
+          ? JSON.parse(defaultFormState.advisors || '[]') 
+          : []),
+    partners: Array.isArray(defaultFormState.partners) 
+      ? defaultFormState.partners 
+      : (typeof defaultFormState.partners === 'string' 
+          ? JSON.parse(defaultFormState.partners || '[]') 
+          : []),
+    testimonials: Array.isArray(defaultFormState.testimonials) 
+      ? defaultFormState.testimonials 
+      : (typeof defaultFormState.testimonials === 'string' 
+          ? JSON.parse(defaultFormState.testimonials || '[]') 
+          : []),
+  });
   
   useEffect(() => {
     const initializeForm = async () => {
@@ -467,14 +503,19 @@ export function useProjectForm(projectId?: string) {
         throw new Error('No form data available');
       }
 
-      // Transform form data before sending to API
-      const transformedData = transformFormDataForApi(formData);
+      // Log the form data before transformation
+      console.log('Form data before transformation:', formData);
+      
+      const apiData = transformFormDataForApi(formData);
+      
+      // Log the data after transformation
+      console.log('API data after transformation:', apiData);
       
       let result;
       if (projectId) {
-        result = await updateProject(projectId, transformedData, token);
+        result = await updateProject(projectId, apiData, token);
       } else {
-        result = await createProject(transformedData, token);
+        result = await createProject(apiData, token);
       }
       
       setSuccess(true);
@@ -513,26 +554,75 @@ export function useProjectForm(projectId?: string) {
 }
 
 // Transform form data before sending to API
-const transformFormDataForApi = (data: ProjectFormDataWithFile) => {
-  return {
-    ...data,
-    // Transform social links
-    social_links_youtube: data.social_links.youtube,
-    social_links_instagram: data.social_links.instagram,
-    social_links_github: data.social_links.github,
-    social_links_twitter: data.social_links.twitter,
-    social_links_linkedin: data.social_links.linkedin,
-    
-    // Transform seeking fields
-    seeking_creator: data.seeking.creator,
-    seeking_brand: data.seeking.brand,
-    seeking_freelancer: data.seeking.freelancer,
-    seeking_contractor: data.seeking.contractor,
-
-    // Remove the original fields that were transformed
-    social_links: undefined,
-    seeking: undefined,
-  };
+const transformFormDataForApi = (formData: ProjectFormDataWithFile) => {
+  // Create a copy to avoid mutating the original
+  const apiData = { ...formData };
+  
+  // Make sure project_status and preferred_collaboration_type are included
+  apiData.project_status = formData.project_status || '';
+  apiData.preferred_collaboration_type = formData.preferred_collaboration_type || '';
+  
+  // Handle file upload separately
+  if (formData.project_image instanceof File) {
+    apiData.project_image_file = formData.project_image;
+    apiData.project_image = null;
+  }
+  
+  // Explicitly flatten nested objects to individual fields
+  if (formData.seeking) {
+    apiData.seeking_creator = formData.seeking.creator;
+    apiData.seeking_brand = formData.seeking.brand;
+    apiData.seeking_freelancer = formData.seeking.freelancer;
+    apiData.seeking_contractor = formData.seeking.contractor;
+    delete apiData.seeking; // Remove the nested object
+  }
+  
+  if (formData.social_links) {
+    apiData.social_links_youtube = formData.social_links.youtube;
+    apiData.social_links_instagram = formData.social_links.instagram;
+    apiData.social_links_github = formData.social_links.github;
+    apiData.social_links_twitter = formData.social_links.twitter;
+    apiData.social_links_linkedin = formData.social_links.linkedin;
+    delete apiData.social_links; // Remove the nested object
+  }
+  
+  if (formData.notification_preferences) {
+    apiData.notification_preferences_email = formData.notification_preferences.email;
+    apiData.notification_preferences_push = formData.notification_preferences.push;
+    apiData.notification_preferences_digest = formData.notification_preferences.digest;
+    delete apiData.notification_preferences; // Remove the nested object
+  }
+  
+  // Stringify array fields
+  if (Array.isArray(apiData.team_members)) {
+    apiData.team_members = JSON.stringify(apiData.team_members);
+  }
+  
+  if (Array.isArray(apiData.collaborators)) {
+    apiData.collaborators = JSON.stringify(apiData.collaborators);
+  }
+  
+  if (Array.isArray(apiData.advisors)) {
+    apiData.advisors = JSON.stringify(apiData.advisors);
+  }
+  
+  if (Array.isArray(apiData.partners)) {
+    apiData.partners = JSON.stringify(apiData.partners);
+  }
+  
+  if (Array.isArray(apiData.testimonials)) {
+    apiData.testimonials = JSON.stringify(apiData.testimonials);
+  }
+  
+  if (Array.isArray(apiData.deliverables)) {
+    apiData.deliverables = JSON.stringify(apiData.deliverables);
+  }
+  
+  if (Array.isArray(apiData.milestones)) {
+    apiData.milestones = JSON.stringify(apiData.milestones);
+  }
+  
+  return apiData;
 };
 
 // Transform API data to form format

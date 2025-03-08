@@ -8,7 +8,6 @@ import CategorySection from "@/components/sections/CategorySection"
 import TagInput from "@/components/input/forms/TagInput"
 import ImageUpload from "@/components/input/forms/ImageUpload"
 import { Button } from "@/components/ui/button"
-import Layout from "@/components/layout/Layout"
 import { useProjectForm, ProjectFormDataWithFile } from "@/hooks/useProjectForm"
 import "@/components/input/forms/ProjectEditFormV3.css"
 import { 
@@ -29,6 +28,7 @@ import {
   defaultContractTypeOptions
 } from '@/components/input/forms/config/projectFormConfig'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import { v4 as uuidv4 } from 'uuid'
 
 interface ProjectEditFormProps {
   projectId?: string;
@@ -38,6 +38,71 @@ interface ProjectEditFormProps {
 const isFormDataValid = (formData: ProjectFormDataWithFile | null): formData is ProjectFormDataWithFile => {
   return formData !== null;
 };
+
+// Add these type definitions at the top of the file
+interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  years?: string;
+  bio?: string;
+  media?: any;
+}
+
+interface Collaborator {
+  id: string;
+  name: string;
+  company: string;
+  role: string;
+  contribution: string;
+  media?: any;
+}
+
+interface Advisor {
+  id: string;
+  name: string;
+  expertise: string;
+  bio: string;
+  year: string;
+  media?: any;
+}
+
+interface Partner {
+  id: string;
+  name: string;
+  organization: string;
+  contribution: string;
+  year: string;
+  media?: any;
+}
+
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  organization: string;
+  position: string;
+  company: string;
+  text: string;
+  media?: any;
+}
+
+interface Deliverable {
+  id: string;
+  title: string;
+  description: string;
+  due_date: string;
+  status: string;
+  media?: any;
+}
+
+interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  media?: any;
+}
 
 export default function ProjectEditFormV3({ projectId }: ProjectEditFormProps) {
   return (
@@ -68,11 +133,9 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
   // Show loading state while initializing
   if (loading || !formData) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
     );
   }
 
@@ -365,32 +428,54 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
   };
 
   const handleAddTeamMember = () => {
-    const newTeamMember: TeamMember = {
-      id: crypto.randomUUID(),
+    const newTeamMember = {
+      id: uuidv4(),
       name: '',
       role: '',
       years: '',
       bio: ''
     };
+    
+    // Ensure team_members is an array before adding to it
+    const currentTeamMembers = Array.isArray(formData.team_members) 
+      ? formData.team_members 
+      : (typeof formData.team_members === 'string' 
+          ? JSON.parse(formData.team_members || '[]') 
+          : []);
+    
     setFormData((prev) => ({
       ...prev,
-      team_members: [...prev.team_members, newTeamMember]
+      team_members: [...currentTeamMembers, newTeamMember]
     }));
   };
 
   const handleUpdateTeamMember = (id: string, field: keyof TeamMember, value: string) => {
+    // Ensure team_members is an array before updating
+    const currentTeamMembers = Array.isArray(formData.team_members) 
+      ? formData.team_members 
+      : (typeof formData.team_members === 'string' 
+          ? JSON.parse(formData.team_members || '[]') 
+          : []);
+    
     setFormData((prevData: ProjectFormDataWithFile) => ({
       ...prevData,
-      team_members: prevData.team_members.map((member: TeamMember) =>
+      team_members: currentTeamMembers.map((member: any) =>
         member.id === id ? { ...member, [field]: value } : member
       )
     }));
   };
 
   const handleRemoveTeamMember = (id: string) => {
+    // Ensure team_members is an array before filtering
+    const currentTeamMembers = Array.isArray(formData.team_members) 
+      ? formData.team_members 
+      : (typeof formData.team_members === 'string' 
+          ? JSON.parse(formData.team_members || '[]') 
+          : []);
+    
     setFormData((prevData: ProjectFormDataWithFile) => ({
       ...prevData,
-      team_members: prevData.team_members.filter((member: TeamMember) => member.id !== id)
+      team_members: currentTeamMembers.filter((member: any) => member.id !== id)
     }));
   };
 
@@ -398,8 +483,8 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
     const newCollaborator: Collaborator = {
       id: crypto.randomUUID(),
       name: '',
-      role: '',
       company: '',
+      role: '',
       contribution: ''
     };
     setFormData((prev) => ({
@@ -429,8 +514,8 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
       id: crypto.randomUUID(),
       name: '',
       expertise: '',
-      year: '',
-      bio: ''
+      bio: '',
+      year: ''
     };
     setFormData((prev) => ({
       ...prev,
@@ -488,10 +573,10 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
     const newTestimonial: Testimonial = {
       id: crypto.randomUUID(),
       name: '',
-      position: '',
-      company: '',
       role: '',
       organization: '',
+      position: '',
+      company: '',
       text: ''
     };
     setFormData((prev) => ({
@@ -614,8 +699,43 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
               </div>
   );
 
+  // Add SOCIAL_PLATFORMS constant at the top
+  const SOCIAL_PLATFORMS = {
+    youtube: 'YouTube',
+    instagram: 'Instagram',
+    github: 'GitHub',
+    twitter: 'Twitter',
+    linkedin: 'LinkedIn'
+  } as const;
+
+  // Update handleNestedChange to handle social links
+  const handleNestedChange = (parent: string, child: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [parent]: {
+        ...prev[parent],
+        [child]: value
+      }
+    }));
+  };
+
+  // Add this helper function at the top of the component
+  const safelyParseArray = (data: any) => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'string') {
+      try {
+        return JSON.parse(data);
+      } catch (error) {
+        console.warn('Error parsing JSON string:', error);
+        return [];
+      }
+    }
+    return [];
+  };
+
   return (
-    <Layout>
+    <div className="container mx-auto px-4 py-8">
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Information */}
         <PageSection title="Basic Information">
@@ -982,13 +1102,15 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                 />
               </CategorySection>
               <CategorySection title="Expertise Needed">
-                <TagInput
-                  label="Expertise"
-                  tags={formData.expertise_needed}
-                  onAddTag={handleAddTag("expertise_needed")}
-                  onRemoveTag={handleRemoveTag("expertise_needed")}
-                  placeholder="Add an area of expertise..."
-                />
+                <div className="space-y-4 w-full">
+                  <TagInput
+                    label="Expertise"
+                    tags={formData.expertise_needed}
+                    onAddTag={handleAddTag("expertise_needed")}
+                    onRemoveTag={handleRemoveTag("expertise_needed")}
+                    placeholder="Add an area of expertise..."
+                  />
+                </div>
               </CategorySection>
             </div>
           </PageSection>
@@ -1076,25 +1198,85 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
             </CategorySection>
 
             <CategorySection title="Seeking">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Seeking</label>
-                <div className="mt-2 space-y-2">
-                  {formData && SEEKING_OPTIONS &&
-                    Object.entries(SEEKING_OPTIONS).map(([option, label]) => (
-                      <div key={option} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`seeking_${option}`}
-                          name={`seeking.${option}`}
-                          checked={formData?.seeking?.[option as keyof typeof SEEKING_OPTIONS] ?? false}
-                          onChange={handleInputChange}
-                          className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        />
-                        <label htmlFor={`seeking_${option}`} className="ml-2 block text-sm text-gray-900">
-                          {label}
-                        </label>
-                      </div>
-                    ))}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Seeking</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="seeking_creator"
+                      name="seeking_creator"
+                      checked={formData.seeking?.creator || false}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          seeking: {
+                            ...prev.seeking,
+                            creator: e.target.checked
+                          }
+                        }));
+                      }}
+                      className="rounded border-gray-300 text-indigo-600"
+                    />
+                    <label htmlFor="seeking_creator" className="ml-2">Creator</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="seeking_brand"
+                      name="seeking_brand"
+                      checked={formData.seeking?.brand || false}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          seeking: {
+                            ...prev.seeking,
+                            brand: e.target.checked
+                          }
+                        }));
+                      }}
+                      className="rounded border-gray-300 text-indigo-600"
+                    />
+                    <label htmlFor="seeking_brand" className="ml-2">Brand</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="seeking_freelancer"
+                      name="seeking_freelancer"
+                      checked={formData.seeking?.freelancer || false}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          seeking: {
+                            ...prev.seeking,
+                            freelancer: e.target.checked
+                          }
+                        }));
+                      }}
+                      className="rounded border-gray-300 text-indigo-600"
+                    />
+                    <label htmlFor="seeking_freelancer" className="ml-2">Freelancer</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="seeking_contractor"
+                      name="seeking_contractor"
+                      checked={formData.seeking?.contractor || false}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          seeking: {
+                            ...prev.seeking,
+                            contractor: e.target.checked
+                          }
+                        }));
+                      }}
+                      className="rounded border-gray-300 text-indigo-600"
+                    />
+                    <label htmlFor="seeking_contractor" className="ml-2">Contractor</label>
+                  </div>
                 </div>
               </div>
             </CategorySection>
@@ -1105,31 +1287,100 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
         <PageSection title="Contact & Availability">
           <div className="md:grid md:grid-cols-2 md:gap-6">
             <CategorySection title="Social Links">
-              <div className="space-y-4 w-full">
-                {Object.entries(formData.social_links).map(([platform, url]) => (
-                  <div key={platform}>
-                    <label htmlFor={platform} className="block text-sm font-medium text-gray-700 capitalize">
-                      {platform}
-                    </label>
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Social Links</h3>
+                <div className="space-y-2">
+                  <div>
+                    <label htmlFor="social_links_youtube">YouTube</label>
                     <input
-                      type="url"
-                      id={platform}
-                      name={`social_links.${platform}`}
-                      value={url}
+                      type="text"
+                      id="social_links_youtube"
+                      value={formData.social_links?.youtube || ''}
                       onChange={(e) => {
                         setFormData((prev) => ({
                           ...prev,
                           social_links: {
                             ...prev.social_links,
-                            [platform]: e.target.value,
-                          },
-                        }))
+                            youtube: e.target.value
+                          }
+                        }));
                       }}
-                      placeholder={`Enter your ${platform} URL`}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="mt-1 block w-full rounded-md border-gray-300"
                     />
                   </div>
-                ))}
+                  <div>
+                    <label htmlFor="social_links_instagram">Instagram</label>
+                    <input
+                      type="text"
+                      id="social_links_instagram"
+                      value={formData.social_links?.instagram || ''}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          social_links: {
+                            ...prev.social_links,
+                            instagram: e.target.value
+                          }
+                        }));
+                      }}
+                      className="mt-1 block w-full rounded-md border-gray-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="social_links_github">GitHub</label>
+                    <input
+                      type="text"
+                      id="social_links_github"
+                      value={formData.social_links?.github || ''}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          social_links: {
+                            ...prev.social_links,
+                            github: e.target.value
+                          }
+                        }));
+                      }}
+                      className="mt-1 block w-full rounded-md border-gray-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="social_links_twitter">Twitter</label>
+                    <input
+                      type="text"
+                      id="social_links_twitter"
+                      value={formData.social_links?.twitter || ''}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          social_links: {
+                            ...prev.social_links,
+                            twitter: e.target.value
+                          }
+                        }));
+                      }}
+                      className="mt-1 block w-full rounded-md border-gray-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="social_links_linkedin">LinkedIn</label>
+                    <input
+                      type="text"
+                      id="social_links_linkedin"
+                      value={formData.social_links?.linkedin || ''}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          social_links: {
+                            ...prev.social_links,
+                            linkedin: e.target.value
+                          }
+                        }));
+                      }}
+                      className="mt-1 block w-full rounded-md border-gray-300"
+                    />
+                  </div>
+                </div>
               </div>
             </CategorySection>
             <CategorySection title="Website Links">
@@ -1146,13 +1397,13 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                 >
                   Add Website Link
                 </button>
-                {formData.website_links.map((link, index) => (
+                {safelyParseArray(formData.website_links).map((link, index) => (
                   <div key={index} className="flex gap-2">
                     <input
                       type="url"
                       value={link}
                       onChange={(e) => {
-                        const newLinks = [...formData.website_links]
+                        const newLinks = [...safelyParseArray(formData.website_links)]
                         newLinks[index] = e.target.value
                         setFormData((prev) => ({
                           ...prev,
@@ -1167,7 +1418,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          website_links: prev.website_links.filter((_, i) => i !== index),
+                          website_links: safelyParseArray(prev.website_links).filter((_, i) => i !== index),
                         }))
                       }}
                       className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1191,20 +1442,20 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   onClick={() => {
                     setFormData((prev) => ({
                       ...prev,
-                      team_members: [...prev.team_members, { name: "", role: "", years: "", media: undefined }],
+                      team_members: [...safelyParseArray(prev.team_members), { name: "", role: "", years: "", media: undefined }],
                     }))
                   }}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
                 >
                   Add Team Member
                 </button>
-                {formData.team_members.map((member, index) => (
+                {safelyParseArray(formData.team_members).map((member, index) => (
                   <div key={index} className="space-y-2 p-4 border rounded-md">
                     <input
                       type="text"
                       value={member.name}
                       onChange={(e) => {
-                        const newMembers = [...formData.team_members]
+                        const newMembers = [...safelyParseArray(formData.team_members)]
                         newMembers[index] = { ...newMembers[index], name: e.target.value }
                         setFormData((prev) => ({
                           ...prev,
@@ -1218,7 +1469,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       type="text"
                       value={member.role}
                       onChange={(e) => {
-                        const newMembers = [...formData.team_members]
+                        const newMembers = [...safelyParseArray(formData.team_members)]
                         newMembers[index] = { ...newMembers[index], role: e.target.value }
                         setFormData((prev) => ({
                           ...prev,
@@ -1232,7 +1483,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       type="text"
                       value={member.years}
                       onChange={(e) => {
-                        const newMembers = [...formData.team_members]
+                        const newMembers = [...safelyParseArray(formData.team_members)]
                         newMembers[index] = { ...newMembers[index], years: e.target.value }
                         setFormData((prev) => ({
                           ...prev,
@@ -1246,7 +1497,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       section="team_members"
                       index={index}
                       onSelect={(file) => {
-                        const newMembers = [...formData.team_members]
+                        const newMembers = [...safelyParseArray(formData.team_members)]
                         newMembers[index] = { ...newMembers[index], media: file }
                         setFormData((prev) => ({
                           ...prev,
@@ -1260,7 +1511,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          team_members: prev.team_members.filter((_, i) => i !== index),
+                          team_members: safelyParseArray(prev.team_members).filter((_, i) => i !== index),
                         }))
                       }}
                       className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1278,20 +1529,20 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   onClick={() => {
                     setFormData((prev) => ({
                       ...prev,
-                      collaborators: [...prev.collaborators, { name: "", company: "", role: "", media: undefined }],
+                      collaborators: [...safelyParseArray(prev.collaborators), { name: "", company: "", role: "", media: undefined }],
                     }))
                   }}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
                 >
                   Add Collaborator
                 </button>
-                {formData.collaborators.map((collaborator, index) => (
+                {safelyParseArray(formData.collaborators).map((collaborator, index) => (
                   <div key={index} className="space-y-2 p-4 border rounded-md">
                     <input
                       type="text"
                       value={collaborator.name}
                       onChange={(e) => {
-                        const newCollaborators = [...formData.collaborators]
+                        const newCollaborators = [...safelyParseArray(formData.collaborators)]
                         newCollaborators[index] = { ...newCollaborators[index], name: e.target.value }
                         setFormData((prev) => ({
                           ...prev,
@@ -1305,7 +1556,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       type="text"
                       value={collaborator.company}
                       onChange={(e) => {
-                        const newCollaborators = [...formData.collaborators]
+                        const newCollaborators = [...safelyParseArray(formData.collaborators)]
                         newCollaborators[index] = { ...newCollaborators[index], company: e.target.value }
                         setFormData((prev) => ({
                           ...prev,
@@ -1319,7 +1570,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       type="text"
                       value={collaborator.role}
                       onChange={(e) => {
-                        const newCollaborators = [...formData.collaborators]
+                        const newCollaborators = [...safelyParseArray(formData.collaborators)]
                         newCollaborators[index] = { ...newCollaborators[index], role: e.target.value }
                         setFormData((prev) => ({
                           ...prev,
@@ -1333,7 +1584,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       section="collaborators"
                       index={index}
                       onSelect={(file) => {
-                        const newCollaborators = [...formData.collaborators]
+                        const newCollaborators = [...safelyParseArray(formData.collaborators)]
                         newCollaborators[index] = { ...newCollaborators[index], media: file }
                         setFormData((prev) => ({
                           ...prev,
@@ -1347,7 +1598,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          collaborators: prev.collaborators.filter((_, i) => i !== index),
+                          collaborators: safelyParseArray(prev.collaborators).filter((_, i) => i !== index),
                         }))
                       }}
                       className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1366,20 +1617,20 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                 onClick={() => {
                   setFormData((prev) => ({
                     ...prev,
-                    advisors: [...prev.advisors, { name: "", expertise: "", year: "", media: undefined }],
+                    advisors: [...safelyParseArray(prev.advisors), { name: "", expertise: "", bio: "", year: "", media: undefined }],
                   }))
                 }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
               >
                 Add Advisor
               </button>
-              {formData.advisors.map((advisor, index) => (
+              {safelyParseArray(formData.advisors).map((advisor, index) => (
                 <div key={index} className="space-y-2 p-4 border rounded-md">
                   <input
                     type="text"
                     value={advisor.name}
                     onChange={(e) => {
-                      const newAdvisors = [...formData.advisors]
+                      const newAdvisors = [...safelyParseArray(formData.advisors)]
                       newAdvisors[index] = { ...newAdvisors[index], name: e.target.value }
                       setFormData((prev) => ({
                         ...prev,
@@ -1393,7 +1644,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     type="text"
                     value={advisor.expertise}
                     onChange={(e) => {
-                      const newAdvisors = [...formData.advisors]
+                      const newAdvisors = [...safelyParseArray(formData.advisors)]
                       newAdvisors[index] = { ...newAdvisors[index], expertise: e.target.value }
                       setFormData((prev) => ({
                         ...prev,
@@ -1405,9 +1656,23 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   />
                   <input
                     type="text"
+                    value={advisor.bio}
+                    onChange={(e) => {
+                      const newAdvisors = [...safelyParseArray(formData.advisors)]
+                      newAdvisors[index] = { ...newAdvisors[index], bio: e.target.value }
+                      setFormData((prev) => ({
+                        ...prev,
+                        advisors: newAdvisors,
+                      }))
+                    }}
+                    placeholder="Bio"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  />
+                  <input
+                    type="text"
                     value={advisor.year}
                     onChange={(e) => {
-                      const newAdvisors = [...formData.advisors]
+                      const newAdvisors = [...safelyParseArray(formData.advisors)]
                       newAdvisors[index] = { ...newAdvisors[index], year: e.target.value }
                       setFormData((prev) => ({
                         ...prev,
@@ -1421,7 +1686,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     section="advisors"
                     index={index}
                     onSelect={(file) => {
-                      const newAdvisors = [...formData.advisors]
+                      const newAdvisors = [...safelyParseArray(formData.advisors)]
                       newAdvisors[index] = { ...newAdvisors[index], media: file }
                       setFormData((prev) => ({
                         ...prev,
@@ -1435,7 +1700,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     onClick={() => {
                       setFormData((prev) => ({
                         ...prev,
-                        advisors: prev.advisors.filter((_, i) => i !== index),
+                        advisors: safelyParseArray(prev.advisors).filter((_, i) => i !== index),
                       }))
                     }}
                     className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1453,20 +1718,20 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                 onClick={() => {
                   setFormData((prev) => ({
                     ...prev,
-                    partners: [...prev.partners, { name: "", contribution: "", year: "", media: undefined }],
+                    partners: [...safelyParseArray(prev.partners), { name: "", contribution: "", year: "", media: undefined }],
                   }))
                 }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
               >
                 Add Partner
               </button>
-              {formData.partners.map((partner, index) => (
+              {safelyParseArray(formData.partners).map((partner, index) => (
                 <div key={index} className="space-y-2 p-4 border rounded-md">
                   <input
                     type="text"
                     value={partner.name}
                     onChange={(e) => {
-                      const newPartners = [...formData.partners]
+                      const newPartners = [...safelyParseArray(formData.partners)]
                       newPartners[index] = { ...newPartners[index], name: e.target.value }
                       setFormData((prev) => ({
                         ...prev,
@@ -1480,7 +1745,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     type="text"
                     value={partner.contribution}
                     onChange={(e) => {
-                      const newPartners = [...formData.partners]
+                      const newPartners = [...safelyParseArray(formData.partners)]
                       newPartners[index] = { ...newPartners[index], contribution: e.target.value }
                       setFormData((prev) => ({
                         ...prev,
@@ -1494,7 +1759,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     type="text"
                     value={partner.year}
                     onChange={(e) => {
-                      const newPartners = [...formData.partners]
+                      const newPartners = [...safelyParseArray(formData.partners)]
                       newPartners[index] = { ...newPartners[index], year: e.target.value }
                       setFormData((prev) => ({
                         ...prev,
@@ -1508,7 +1773,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     section="partners"
                     index={index}
                     onSelect={(file) => {
-                      const newPartners = [...formData.partners]
+                      const newPartners = [...safelyParseArray(formData.partners)]
                       newPartners[index] = { ...newPartners[index], media: file }
                       setFormData((prev) => ({
                         ...prev,
@@ -1522,7 +1787,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     onClick={() => {
                       setFormData((prev) => ({
                         ...prev,
-                        partners: prev.partners.filter((_, i) => i !== index),
+                        partners: safelyParseArray(prev.partners).filter((_, i) => i !== index),
                       }))
                     }}
                     className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1543,7 +1808,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                 setFormData((prev) => ({
                   ...prev,
                   testimonials: [
-                    ...prev.testimonials,
+                    ...safelyParseArray(prev.testimonials),
                     { name: "", position: "", company: "", text: "", media: undefined },
                   ],
                 }))
@@ -1552,13 +1817,13 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
             >
               Add Testimonial
             </button>
-            {formData.testimonials.map((testimonial, index) => (
+            {safelyParseArray(formData.testimonials).map((testimonial, index) => (
               <div key={index} className="space-y-2 p-4 border rounded-md">
                 <input
                   type="text"
                   value={testimonial.name}
                   onChange={(e) => {
-                    const newTestimonials = [...formData.testimonials]
+                    const newTestimonials = [...safelyParseArray(formData.testimonials)]
                     newTestimonials[index] = { ...newTestimonials[index], name: e.target.value }
                     setFormData((prev) => ({
                       ...prev,
@@ -1572,7 +1837,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   type="text"
                   value={testimonial.position}
                   onChange={(e) => {
-                    const newTestimonials = [...formData.testimonials]
+                    const newTestimonials = [...safelyParseArray(formData.testimonials)]
                     newTestimonials[index] = { ...newTestimonials[index], position: e.target.value }
                     setFormData((prev) => ({
                       ...prev,
@@ -1586,7 +1851,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   type="text"
                   value={testimonial.company}
                   onChange={(e) => {
-                    const newTestimonials = [...formData.testimonials]
+                    const newTestimonials = [...safelyParseArray(formData.testimonials)]
                     newTestimonials[index] = { ...newTestimonials[index], company: e.target.value }
                     setFormData((prev) => ({
                       ...prev,
@@ -1599,7 +1864,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                 <textarea
                   value={testimonial.text}
                   onChange={(e) => {
-                    const newTestimonials = [...formData.testimonials]
+                    const newTestimonials = [...safelyParseArray(formData.testimonials)]
                     newTestimonials[index] = { ...newTestimonials[index], text: e.target.value }
                     setFormData((prev) => ({
                       ...prev,
@@ -1614,7 +1879,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   section="testimonials"
                   index={index}
                   onSelect={(file) => {
-                    const newTestimonials = [...formData.testimonials]
+                    const newTestimonials = [...safelyParseArray(formData.testimonials)]
                     newTestimonials[index] = { ...newTestimonials[index], media: file }
                     setFormData((prev) => ({
                       ...prev,
@@ -1628,7 +1893,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   onClick={() => {
                     setFormData((prev) => ({
                       ...prev,
-                      testimonials: prev.testimonials.filter((_, i) => i !== index),
+                      testimonials: safelyParseArray(prev.testimonials).filter((_, i) => i !== index),
                     }))
                   }}
                   className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1692,20 +1957,20 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   onClick={() => {
                     setFormData((prev) => ({
                       ...prev,
-                      deliverables: [...prev.deliverables, { title: "", description: "", due_date: "", status: "" }],
+                      deliverables: [...safelyParseArray(prev.deliverables), { title: "", description: "", due_date: "", status: "" }],
                     }))
                   }}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
                 >
                   Add Deliverable
                 </button>
-                {formData.deliverables.map((deliverable, index) => (
+                {safelyParseArray(formData.deliverables).map((deliverable, index) => (
                   <div key={index} className="space-y-2 p-4 border rounded-md">
                     <input
                       type="text"
                       value={deliverable.title}
                       onChange={(e) => {
-                        const newDeliverables = [...formData.deliverables]
+                        const newDeliverables = [...safelyParseArray(formData.deliverables)]
                         newDeliverables[index] = {
                           ...newDeliverables[index],
                           title: e.target.value,
@@ -1721,7 +1986,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     <textarea
                       value={deliverable.description}
                       onChange={(e) => {
-                        const newDeliverables = [...formData.deliverables]
+                        const newDeliverables = [...safelyParseArray(formData.deliverables)]
                         newDeliverables[index] = {
                           ...newDeliverables[index],
                           description: e.target.value,
@@ -1740,7 +2005,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       aria-label="Due Date"
                       value={deliverable.due_date}
                       onChange={(e) => {
-                        const newDeliverables = [...formData.deliverables]
+                        const newDeliverables = [...safelyParseArray(formData.deliverables)]
                         newDeliverables[index] = {
                           ...newDeliverables[index],
                           due_date: e.target.value,
@@ -1756,7 +2021,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       aria-label="Status"
                       value={deliverable.status}
                       onChange={(e) => {
-                        const newDeliverables = [...formData.deliverables]
+                        const newDeliverables = [...safelyParseArray(formData.deliverables)]
                         newDeliverables[index] = {
                           ...newDeliverables[index],
                           status: e.target.value,
@@ -1777,7 +2042,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       section="deliverables"
                       index={index}
                       onSelect={(file) => {
-                        const newDeliverables = [...formData.deliverables]
+                        const newDeliverables = [...safelyParseArray(formData.deliverables)]
                         newDeliverables[index] = {
                           ...newDeliverables[index],
                           media: file,
@@ -1794,7 +2059,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          deliverables: prev.deliverables.filter((_, i) => i !== index),
+                          deliverables: safelyParseArray(prev.deliverables).filter((_, i) => i !== index),
                         }))
                       }}
                       className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1812,20 +2077,20 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                   onClick={() => {
                     setFormData((prev) => ({
                       ...prev,
-                      milestones: [...prev.milestones, { title: "", description: "", date: "", media: undefined }],
+                      milestones: [...safelyParseArray(prev.milestones), { title: "", description: "", date: "", media: undefined }],
                     }))
                   }}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
                 >
                   Add Milestone
                 </button>
-                {formData.milestones.map((milestone, index) => (
+                {safelyParseArray(formData.milestones).map((milestone, index) => (
                   <div key={index} className="space-y-2 p-4 border rounded-md">
                     <input
                       type="text"
                       value={milestone.title}
                       onChange={(e) => {
-                        const newMilestones = [...formData.milestones]
+                        const newMilestones = [...safelyParseArray(formData.milestones)]
                         newMilestones[index] = {
                           ...newMilestones[index],
                           title: e.target.value,
@@ -1841,7 +2106,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                     <textarea
                       value={milestone.description}
                       onChange={(e) => {
-                        const newMilestones = [...formData.milestones]
+                        const newMilestones = [...safelyParseArray(formData.milestones)]
                         newMilestones[index] = {
                           ...newMilestones[index],
                           description: e.target.value,
@@ -1860,7 +2125,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       aria-label="Milestone Date"
                       value={milestone.date}
                       onChange={(e) => {
-                        const newMilestones = [...formData.milestones]
+                        const newMilestones = [...safelyParseArray(formData.milestones)]
                         newMilestones[index] = {
                           ...newMilestones[index],
                           date: e.target.value,
@@ -1876,7 +2141,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       section="milestones"
                       index={index}
                       onSelect={(file) => {
-                        const newMilestones = [...formData.milestones]
+                        const newMilestones = [...safelyParseArray(formData.milestones)]
                         newMilestones[index] = {
                           ...newMilestones[index],
                           media: file,
@@ -1893,7 +2158,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,
-                          milestones: prev.milestones.filter((_, i) => i !== index),
+                          milestones: safelyParseArray(prev.milestones).filter((_, i) => i !== index),
                         }))
                       }}
                       className="px-2 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
@@ -1945,32 +2210,31 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
             </CategorySection>
             <CategorySection title="Notification Preferences">
               <div className="space-y-4 w-full">
-                {formData && formData.notification_preferences &&
-                  Object.entries(formData.notification_preferences).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-center">
-                      <input
-                        type="checkbox"
-                        id={`notification_${key}`}
-                        checked={value}
-                        onChange={(e) => {
-                          setFormData((prev) => {
-                            if (!prev?.notification_preferences) return prev;
-                            return {
-                              ...prev,
-                              notification_preferences: {
-                                ...prev.notification_preferences,
-                                [key]: e.target.checked,
-                              },
-                            };
-                          });
-                        }}
-                        className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                      />
-                      <label htmlFor={`notification_${key}`} className="ml-2 block text-sm text-gray-900 capitalize">
-                        {key.replace("_", " ")} Notifications
-                      </label>
-                    </div>
-                  ))}
+                {safelyParseArray(formData.notification_preferences).map(([key, value]) => (
+                  <div key={key} className="flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      id={`notification_${key}`}
+                      checked={value}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          if (!prev?.notification_preferences) return prev;
+                          return {
+                            ...prev,
+                            notification_preferences: {
+                              ...prev.notification_preferences,
+                              [key]: e.target.checked,
+                            },
+                          };
+                        });
+                      }}
+                      className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                    />
+                    <label htmlFor={`notification_${key}`} className="ml-2 block text-sm text-gray-900 capitalize">
+                      {key.replace("_", " ")} Notifications
+                    </label>
+                  </div>
+                ))}
               </div>
             </CategorySection>
           </div>
@@ -1990,7 +2254,7 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
           </button>
         </div>
       </form>
-    </Layout>
+    </div>
   )
 }
 

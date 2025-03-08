@@ -69,6 +69,7 @@ export interface ProjectFormMilestone {
 
 export interface Project {
   id: string;
+  user_id: string;
   project_name: string;
   project_description: string;
   project_type: string;
@@ -79,17 +80,15 @@ export interface Project {
   search_visibility: boolean;
   project_image: string | null;
   
-  // Add missing fields that we're using
-  social_links?: {
-    youtube?: string;
-    instagram?: string;
-    github?: string;
-    twitter?: string;
-    linkedin?: string;
-  };
+  // Social links to match schema
+  social_links_youtube?: string;
+  social_links_instagram?: string;
+  social_links_github?: string;
+  social_links_twitter?: string;
+  social_links_linkedin?: string;
   website_links?: string[];
   
-  // Team related fields
+  // Team related fields (as JSON in schema)
   team_members: ProjectFormTeamMember[];
   collaborators: ProjectFormCollaborator[];
   advisors: ProjectFormAdvisor[];
@@ -98,14 +97,16 @@ export interface Project {
   deliverables: ProjectFormDeliverable[];
   milestones: ProjectFormMilestone[];
   
-  // Project specific fields
-  seeking: {
-    creator: boolean;
-    brand: boolean;
-    freelancer: boolean;
-    contractor: boolean;
-  };
-  notification_preferences: Record<string, boolean>;
+  // Seeking fields as individual booleans
+  seeking_creator: boolean;
+  seeking_brand: boolean;
+  seeking_freelancer: boolean;
+  seeking_contractor: boolean;
+  
+  // Notification preferences
+  notification_preferences_email: boolean;
+  notification_preferences_push: boolean;
+  notification_preferences_digest: boolean;
   
   // Optional fields based on project type
   client?: string;
@@ -121,9 +122,28 @@ export interface Project {
   expertise_needed?: string[];
   industry_tags?: string[];
   technology_tags?: string[];
+  target_audience?: string[];
+  solutions_offered?: string[];
+  project_tags?: string[];
   short_term_goals?: string;
   long_term_goals?: string;
+}
+
+export interface ProjectFormDataWithFile {
+  // ... other fields
   
-  // Add target_audience field
-  target_audience?: string[];
+  // Social links as individual fields
+  social_links_youtube: string;
+  social_links_instagram: string;
+  social_links_github: string;
+  social_links_twitter: string;
+  social_links_linkedin: string;
+  
+  // Seeking as individual boolean fields
+  seeking_creator: boolean;
+  seeking_brand: boolean;
+  seeking_freelancer: boolean;
+  seeking_contractor: boolean;
+  
+  // ... other fields
 } 

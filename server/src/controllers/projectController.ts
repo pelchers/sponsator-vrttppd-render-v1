@@ -71,24 +71,19 @@ export const projectController = {
   async updateProject(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const userId = req.user?.id; // From auth middleware
+      const userId = req.user?.id;
       
-      // Check if project exists and belongs to user
-      const existingProject = await projectService.getProjectById(id);
-      if (!existingProject) {
-        return res.status(404).json({ message: 'Project not found' });
-      }
+      // Log the incoming data to verify fields
+      console.log('Updating project with data:', JSON.stringify(req.body, null, 2));
       
-      if (existingProject.user_id !== userId) {
-        return res.status(403).json({ message: 'Not authorized to update this project' });
-      }
-
-      const projectData = req.body;
-      const updatedProject = await projectService.updateProject(id, projectData);
-      res.json(updatedProject);
+      // Pass all fields to the service
+      const updatedProject = await projectService.updateProject(id, userId, req.body);
+      
+      // Make sure we're returning a valid JSON response
+      return res.status(200).json(updatedProject);
     } catch (error) {
-      console.error('Error in updateProject:', error);
-      res.status(500).json({ message: 'Failed to update project' });
+      console.error('Error updating project:', error);
+      return res.status(500).json({ message: 'Failed to update project' });
     }
   },
 

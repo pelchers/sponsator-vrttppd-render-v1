@@ -84,9 +84,23 @@ export const showSkillsExpertise = [
 ];
 
 export const showPortfolio = [
-  'portfolio',
-  'showcase',
-  'case_study'
+  "creative_work",
+  "creative_partnership",
+  "collaborative_work",
+  "brand_work",
+  "brand_deal",
+  "brand_partnership",
+  "freelance_services",
+  "contractor_services",
+  "contractor_products_supply",
+  "contractor_management_services",
+  "campaign",
+  "content_creation",
+  "event",
+  "product_launch",
+  "service_offering",
+  "social_media_management",
+  "website_development"
 ];
 
 export const SEEKING_OPTIONS = {
@@ -180,15 +194,19 @@ export const defaultFormState = {
   testimonials: [],
   deliverables: [],
   milestones: [],
-  seeking: {
-    creator: false,
-    brand: false,
-    freelancer: false,
-    contractor: false
-  },
-  notification_preferences: {
-    email: true,
-    push: true,
-    sms: false
-  }
+  
+  seeking_creator: false,
+  seeking_brand: false,
+  seeking_freelancer: false,
+  seeking_contractor: false,
+  
+  social_links_youtube: "",
+  social_links_instagram: "",
+  social_links_github: "",
+  social_links_twitter: "",
+  social_links_linkedin: "",
+  
+  notification_preferences_email: true,
+  notification_preferences_push: true,
+  notification_preferences_digest: true
 };
