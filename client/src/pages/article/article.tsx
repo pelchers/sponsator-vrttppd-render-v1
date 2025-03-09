@@ -97,11 +97,12 @@ export default function ArticleViewPage() {
             <div className="space-y-2 article-adaptive-container">
               <div className="article-media-container">
                 <img 
-                  src={section.mediaUrl || "/placeholder.svg"} 
+                  src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
                   alt={section.title || "Article media"} 
                   className="article-media"
                   onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg";
+                    e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                    e.currentTarget.alt = "Image failed to load";
                   }}
                 />
               </div>
@@ -114,11 +115,12 @@ export default function ArticleViewPage() {
               <div className="article-mixed-layout-column article-adaptive-container">
                 <div className="article-media-container">
                   <img
-                    src={section.mediaUrl || "/placeholder.svg"}
+                    src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
                     alt={section.title || "Article media"}
                     className="article-media"
                     onError={(e) => {
-                      e.currentTarget.src = "/placeholder.svg";
+                      e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                      e.currentTarget.alt = "Image failed to load";
                     }}
                   />
                 </div>
@@ -140,11 +142,12 @@ export default function ArticleViewPage() {
               <div className="article-mixed-layout-column article-adaptive-container">
                 <div className="article-media-container">
                   <img
-                    src={section.mediaUrl || "/placeholder.svg"}
+                    src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
                     alt={section.title || "Article media"}
                     className="article-media"
                     onError={(e) => {
-                      e.currentTarget.src = "/placeholder.svg";
+                      e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                      e.currentTarget.alt = "Image failed to load";
                     }}
                   />
                 </div>

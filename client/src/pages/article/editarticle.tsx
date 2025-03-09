@@ -112,7 +112,7 @@ export default function ArticleEditPage() {
       case "full-width-text":
         // Only text fields for full-width-text
         return (
-          <div className="space-y-4">
+          <div className="space-y-4 article-adaptive-container">
             <input
               type="text"
               placeholder="Subtitle"
@@ -130,9 +130,9 @@ export default function ArticleEditPage() {
           </div>
         );
       case "full-width-media":
-        // Only media fields for full-width-media
+        // Only media fields for full-width-media, but without file input
         return (
-          <div className="space-y-4">
+          <div className="space-y-4 article-adaptive-container">
             <input
               type="text"
               placeholder="Media URL"
@@ -147,23 +147,11 @@ export default function ArticleEditPage() {
               onChange={(e) => updateSection(index, { mediaSubtext: e.target.value })}
               className="w-full p-2 border rounded"
             />
-            <input
-              type="file"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  // In a real app, you'd handle file upload
-                  console.log("File selected:", e.target.files[0]);
-                  // For now, just set the URL to a placeholder
-                  updateSection(index, { mediaUrl: "/placeholder.svg" });
-                }
-              }}
-              className="w-full p-2 border rounded"
-            />
           </div>
         );
       case "left-media-right-text":
       case "left-text-right-media":
-        // Both media and text fields for mixed layouts
+        // Both media and text fields for mixed layouts, but without file input
         return (
           <div className="space-y-6">
             <div className="p-4 border rounded bg-gray-50">
@@ -201,18 +189,6 @@ export default function ArticleEditPage() {
                   placeholder="Media subtext"
                   value={section.mediaSubtext || ""}
                   onChange={(e) => updateSection(index, { mediaSubtext: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      // In a real app, you'd handle file upload
-                      console.log("File selected:", e.target.files[0]);
-                      // For now, just set the URL to a placeholder
-                      updateSection(index, { mediaUrl: "/placeholder.svg" });
-                    }
-                  }}
                   className="w-full p-2 border rounded"
                 />
               </div>

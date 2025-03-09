@@ -1,40 +1,39 @@
 # Short Guide: Implementing Articles Functionality
 
-This guide outlines the steps to implement the articles functionality in our application, following the same pattern we used for projects.
+This guide outlines the steps to implement the articles functionality in our application, using a more direct approach than what we used for projects.
 
 ## 1. Frontend Components
 
-### A. Article Form Configuration
-Create `client/src/components/input/forms/config/articleFormConfig.ts`:
-- Define section types (full-width-text, full-width-media, etc.)
-- Define default form state
-- Define validation rules
+### A. Article Form Configuration (Not Used in Current Implementation)
+~~Create `client/src/components/input/forms/config/articleFormConfig.ts`:~~
 
-### B. Article Form Hook
-Create `client/src/hooks/useArticleForm.ts`:
-- Manage form state
-- Handle form submission
-- Transform data between frontend and backend formats
-- Handle file uploads for media
+**Note:** Unlike the projects feature, we don't use a separate form configuration file for articles. Instead, we define all form structure directly in the edit component. This simpler approach works well for the less complex article form structure.
+
+### B. Article Form Hook (Not Used in Current Implementation)
+~~Create `client/src/hooks/useArticleForm.ts`:~~
+
+**Note:** We don't use a dedicated form hook for articles. Instead, we manage form state directly in the component using React's useState hooks. This direct approach is more straightforward for the article form's needs.
 
 ### C. Article Form Component
 Update `client/src/pages/article/editarticle.tsx`:
-- Use the hook for state management
-- Implement proper form validation
-- Handle media uploads
-- Fix Next.js imports (Image, Link)
+- Implement state management directly in the component
+- Handle form submission and validation
+- Manage sections, citations, contributors, etc.
+- Call API functions directly
 
 ### D. Article View Component
 Update `client/src/pages/article/article.tsx`:
-- Fix Next.js imports
 - Fetch article data from API
 - Display article sections properly
+- Handle different section types (text, media, mixed layouts)
+- Style the article for optimal readability
 
 ### E. Articles List Component
 Update `client/src/pages/article/articleslist.tsx`:
-- Fix Next.js imports
 - Fetch articles from API
-- Add pagination and filtering
+- Display article list with pagination
+- Implement delete functionality
+- Add links to view and edit pages
 
 ## 2. API Services
 
@@ -89,8 +88,8 @@ Create `server/src/routes/articleRoutes.ts`:
 ## 4. Data Flow
 
 1. User interacts with `editarticle.tsx`
-2. Form uses `useArticleForm.ts` hook
-3. On submit, hook calls `api/articles.ts`
+2. Component manages state with useState hooks
+3. On submit, component calls `api/articles.ts` directly
 4. API service sends HTTP request to backend
 5. Request hits `articleRoutes.ts`
 6. Router calls `articleController.ts`
@@ -103,21 +102,20 @@ Create `server/src/routes/articleRoutes.ts`:
 1. Start with the Prisma schema update
 2. Implement backend components (controller, service, routes)
 3. Create the API service
-4. Develop the form hook
-5. Update the frontend components
-6. Test the full flow
+4. Develop the frontend components directly (without hooks/config)
+5. Test the full flow
 
 ## 6. Lessons from Project Implementation
 
-1. **Data Transformation**: Ensure proper transformation between frontend and backend formats
-2. **Type Safety**: Use TypeScript to catch potential type mismatches
-3. **Error Handling**: Add robust error handling for JSON parsing and API calls
-4. **Logging**: Add detailed logging to track data flow through the system
-5. **Field Mapping**: Explicitly map all fields between frontend and backend
-6. **Array Handling**: Be careful with arrays, especially when they need to be stringified for storage
-7. **Nested Objects**: When using nested objects in the UI, make sure they're properly flattened for the database
-8. **Optional Chaining**: Use optional chaining (`?.`) when accessing potentially undefined properties
-9. **Default Values**: Always provide default values for fields that might be missing
+1. **Direct vs. Abstracted Approach**: For simpler forms, a direct implementation in the component can be cleaner than abstracting to hooks and config files
+2. **State Management**: React's useState is powerful enough for many form scenarios
+3. **Type Safety**: Use TypeScript to catch potential type mismatches
+4. **Error Handling**: Add robust error handling for JSON parsing and API calls
+5. **Logging**: Add detailed logging to track data flow through the system
+6. **Field Mapping**: Explicitly map all fields between frontend and backend
+7. **Array Handling**: Be careful with arrays, especially when they need to be stringified for storage
+8. **Nested Objects**: When using nested objects in the UI, make sure they're properly flattened for the database
+9. **Optional Chaining**: Use optional chaining (`?.`) when accessing potentially undefined properties
 
 ## 7. Common Issues and Solutions
 
