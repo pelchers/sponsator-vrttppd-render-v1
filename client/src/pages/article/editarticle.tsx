@@ -1,15 +1,10 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
-import PageSection from "@/components/PageSection"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { useParams, useNavigate } from 'react-router-dom'
+import PageSection from "@/components/sections/PageSection"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
+import { createArticle, updateArticle, fetchArticle } from "@/api/articles"
 
 type SectionType = "full-width-text" | "full-width-media" | "left-media-right-text" | "left-text-right-media"
 
@@ -22,295 +17,417 @@ interface Section {
   mediaSubtext?: string
 }
 
-export default function ArticleEditPage({ params }: { params: { id: string } }) {
+export default function ArticleEditPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [title, setTitle] = useState("")
   const [sections, setSections] = useState<Section[]>([])
   const [citations, setCitations] = useState<string[]>([])
   const [contributors, setContributors] = useState<string[]>([])
   const [relatedMedia, setRelatedMedia] = useState<string[]>([])
   const [tags, setTags] = useState<string[]>([])
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
+  // Fetch article data if editing an existing article
   useEffect(() => {
-    if (params.id !== "new") {
-      // Fetch article data and set state
-      // This is where you'd normally fetch data from your API
-      // For now, we'll just set some dummy data
-      setTitle("Existing Article Title")
-      setSections([
-        {
-          type: "full-width-text",
-          title: "Introduction",
-          subtitle: "Getting Started",
-          text: "This is an introduction to our topic.",
-        },
-        {
-          type: "left-media-right-text",
-          title: "Main Content",
-          mediaUrl: "/placeholder.svg",
-          mediaSubtext: "An illustrative image",
-          subtitle: "Key Points",
-          text: "Here are the main points of our article.",
-        },
-      ])
-      setCitations(["Smith, J. (2023). Example Study. Journal of Examples, 1(1), 1-10."])
-      setContributors(["John Doe", "Jane Smith"])
-      setRelatedMedia(['Video: "Further Exploration" - available on YouTube'])
-      setTags(["technology", "science", "research"])
+    if (id && id !== 'new') {
+      setLoading(true);
+      fetchArticle(id)
+        .then(data => {
+          if (data) {
+            setTitle(data.title || '');
+            setSections(data.sections || []);
+            setCitations(data.citations || []);
+            setContributors(data.contributors || []);
+            setRelatedMedia(data.related_media || []);
+            setTags(data.tags || []);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching article:', error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
-  }, [params.id])
+  }, [id]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the data to your backend
-    console.log("Submitting article:", { title, sections, citations, contributors, relatedMedia, tags })
-    // After successful submission, you might want to redirect to the article view page
-    // router.push(`/article/${params.id === 'new' ? 'newly-created-id' : params.id}`)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    
+    try {
+      // Prepare data for API
+      const articleData = {
+        title,
+        sections,
+        citations,
+        contributors,
+        related_media: relatedMedia,
+        tags
+      };
+      
+      console.log('Submitting article data:', articleData);
+      console.log('API URL:', import.meta.env.VITE_API_URL);
+      
+      let response;
+      if (id && id !== 'new') {
+        // Update existing article
+        response = await updateArticle(id, articleData);
+      } else {
+        // Create new article
+        response = await createArticle(articleData);
+      }
+      
+      console.log('API response:', response);
+      
+      // Navigate to article view page
+      navigate(`/article/${response.id}`);
+    } catch (error) {
+      console.error('Error saving article:', error);
+      alert('Failed to save article. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const addSection = () => {
     setSections([...sections, { type: "full-width-text", title: "" }])
-  }
+  };
 
   const updateSection = (index: number, updates: Partial<Section>) => {
     const newSections = [...sections]
     newSections[index] = { ...newSections[index], ...updates }
     setSections(newSections)
-  }
+  };
 
   const removeSection = (index: number) => {
     const newSections = sections.filter((_, i) => i !== index)
     setSections(newSections)
-  }
+  };
 
   const renderSectionFields = (section: Section, index: number) => {
     switch (section.type) {
       case "full-width-text":
-      case "left-text-right-media":
+        // Only text fields for full-width-text
         return (
           <div className="space-y-4">
-            <Input
+            <input
+              type="text"
               placeholder="Subtitle"
               value={section.subtitle || ""}
               onChange={(e) => updateSection(index, { subtitle: e.target.value })}
+              className="w-full p-2 border rounded"
             />
-            <Textarea
+            <textarea
               placeholder="Main text"
               value={section.text || ""}
               onChange={(e) => updateSection(index, { text: e.target.value })}
               rows={6}
+              className="w-full p-2 border rounded"
             />
           </div>
-        )
+        );
       case "full-width-media":
-      case "left-media-right-text":
+        // Only media fields for full-width-media
         return (
           <div className="space-y-4">
-            <Input
+            <input
+              type="text"
               placeholder="Media URL"
               value={section.mediaUrl || ""}
               onChange={(e) => updateSection(index, { mediaUrl: e.target.value })}
+              className="w-full p-2 border rounded"
             />
-            <Input
+            <input
+              type="text"
               placeholder="Media subtext"
               value={section.mediaSubtext || ""}
               onChange={(e) => updateSection(index, { mediaSubtext: e.target.value })}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="file"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  // In a real app, you'd handle file upload
+                  console.log("File selected:", e.target.files[0]);
+                  // For now, just set the URL to a placeholder
+                  updateSection(index, { mediaUrl: "/placeholder.svg" });
+                }
+              }}
+              className="w-full p-2 border rounded"
             />
           </div>
-        )
+        );
+      case "left-media-right-text":
+      case "left-text-right-media":
+        // Both media and text fields for mixed layouts
+        return (
+          <div className="space-y-6">
+            <div className="p-4 border rounded bg-gray-50">
+              <h4 className="font-medium mb-2">Text Content</h4>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Subtitle"
+                  value={section.subtitle || ""}
+                  onChange={(e) => updateSection(index, { subtitle: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+                <textarea
+                  placeholder="Main text"
+                  value={section.text || ""}
+                  onChange={(e) => updateSection(index, { text: e.target.value })}
+                  rows={6}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            </div>
+            
+            <div className="p-4 border rounded bg-gray-50">
+              <h4 className="font-medium mb-2">Media Content</h4>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Media URL"
+                  value={section.mediaUrl || ""}
+                  onChange={(e) => updateSection(index, { mediaUrl: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+                <input
+                  type="text"
+                  placeholder="Media subtext"
+                  value={section.mediaSubtext || ""}
+                  onChange={(e) => updateSection(index, { mediaSubtext: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      // In a real app, you'd handle file upload
+                      console.log("File selected:", e.target.files[0]);
+                      // For now, just set the URL to a placeholder
+                      updateSection(index, { mediaUrl: "/placeholder.svg" });
+                    }
+                  }}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            </div>
+            
+            <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+              <p>Note: For {section.type === "left-media-right-text" ? "Left Media - Right Text" : "Left Text - Right Media"} layout, 
+              both text and media content are required.</p>
+            </div>
+          </div>
+        );
     }
-  }
+  };
 
   const addCitation = () => {
     setCitations([...citations, ""])
-  }
+  };
 
   const updateCitation = (index: number, value: string) => {
     const newCitations = [...citations]
     newCitations[index] = value
     setCitations(newCitations)
-  }
+  };
 
   const removeCitation = (index: number) => {
     const newCitations = citations.filter((_, i) => i !== index)
     setCitations(newCitations)
-  }
+  };
 
   const addContributor = () => {
     setContributors([...contributors, ""])
-  }
+  };
 
   const updateContributor = (index: number, value: string) => {
     const newContributors = [...contributors]
     newContributors[index] = value
     setContributors(newContributors)
-  }
+  };
 
   const removeContributor = (index: number) => {
     const newContributors = contributors.filter((_, i) => i !== index)
     setContributors(newContributors)
-  }
+  };
 
   const addRelatedMedia = () => {
     setRelatedMedia([...relatedMedia, ""])
-  }
+  };
 
   const updateRelatedMedia = (index: number, value: string) => {
     const newRelatedMedia = [...relatedMedia]
     newRelatedMedia[index] = value
     setRelatedMedia(newRelatedMedia)
-  }
+  };
 
   const removeRelatedMedia = (index: number) => {
     const newRelatedMedia = relatedMedia.filter((_, i) => i !== index)
     setRelatedMedia(newRelatedMedia)
-  }
+  };
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTags = e.target.value.split(",").map((tag) => tag.trim())
     setTags(newTags)
+  };
+
+  if (loading) {
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Edit Article</h1>
 
-      <Card className="mb-6">
-        <CardContent>
+      <form onSubmit={handleSubmit}>
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <PageSection title="Article Title">
-            <Input
+            <input
+              type="text"
               placeholder="Enter article title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mb-4"
+              className="w-full p-2 border rounded mb-4"
             />
           </PageSection>
-        </CardContent>
-      </Card>
+        </div>
 
-      {sections.map((section, index) => (
-        <PageSection key={index} title={`Section ${index + 1}`}>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Input
-                placeholder="Section title"
-                value={section.title}
-                onChange={(e) => updateSection(index, { title: e.target.value })}
-                className="w-2/3"
-              />
-              <Select
-                value={section.type}
-                onValueChange={(value: SectionType) => updateSection(index, { type: value })}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Select layout" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full-width-text">Full Width Text</SelectItem>
-                  <SelectItem value="full-width-media">Full Width Media</SelectItem>
-                  <SelectItem value="left-media-right-text">Left Media - Right Text</SelectItem>
-                  <SelectItem value="left-text-right-media">Left Text - Right Media</SelectItem>
-                </SelectContent>
-              </Select>
+        <PageSection title="Article Sections">
+          {sections.map((section, index) => (
+            <div key={index} className="bg-white shadow rounded-lg p-6 mb-4">
+              <h3 className="text-lg font-medium mb-4">Section {index + 1}</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <input
+                    type="text"
+                    placeholder="Section title"
+                    value={section.title}
+                    onChange={(e) => updateSection(index, { title: e.target.value })}
+                    className="w-2/3 p-2 border rounded"
+                  />
+                  <select
+                    value={section.type}
+                    onChange={(e) => updateSection(index, { type: e.target.value as SectionType })}
+                    className="w-1/3 p-2 border rounded ml-2"
+                  >
+                    <option value="full-width-text">Full Width Text</option>
+                    <option value="full-width-media">Full Width Media</option>
+                    <option value="left-media-right-text">Left Media - Right Text</option>
+                    <option value="left-text-right-media">Left Text - Right Media</option>
+                  </select>
+                </div>
+                {renderSectionFields(section, index)}
+                <Button variant="destructive" onClick={() => removeSection(index)} type="button">
+                  Remove Section
+                </Button>
+              </div>
             </div>
-            {renderSectionFields(section, index)}
-            <Button variant="destructive" onClick={() => removeSection(index)}>
-              Remove Section
-            </Button>
-          </div>
+          ))}
+          
+          <Button 
+            onClick={addSection} 
+            className="my-4 bg-green-500 hover:bg-green-600 text-white" 
+            type="button"
+          >
+            Add Section
+          </Button>
         </PageSection>
-      ))}
 
-      <Button onClick={addSection} className="my-4">
-        Add Section
-      </Button>
-
-      <Card className="mb-6">
-        <CardContent>
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <PageSection title="Tags">
-            <Label htmlFor="tags">Tags (comma-separated)</Label>
-            <Input
+            <label htmlFor="tags" className="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
+            <input
               id="tags"
+              type="text"
               placeholder="Enter tags, separated by commas"
               value={tags.join(", ")}
               onChange={handleTagsChange}
+              className="w-full p-2 border rounded mt-1"
             />
           </PageSection>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Card className="mb-6">
-        <CardContent>
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <PageSection title="Citations">
             {citations.map((citation, index) => (
               <div key={index} className="flex items-center space-x-2 mb-2">
-                <Input
+                <input
+                  type="text"
                   placeholder="Enter citation"
                   value={citation}
                   onChange={(e) => updateCitation(index, e.target.value)}
-                  className="flex-grow"
+                  className="flex-grow p-2 border rounded"
                 />
-                <Button variant="destructive" onClick={() => removeCitation(index)}>
+                <Button variant="destructive" onClick={() => removeCitation(index)} type="button">
                   Remove
                 </Button>
               </div>
             ))}
-            <Button onClick={addCitation} className="mt-2">
+            <Button onClick={addCitation} className="mt-2" type="button">
               Add New Citation
             </Button>
           </PageSection>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Card className="mb-6">
-        <CardContent>
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <PageSection title="Contributors">
             {contributors.map((contributor, index) => (
               <div key={index} className="flex items-center space-x-2 mb-2">
-                <Input
+                <input
+                  type="text"
                   placeholder="Enter contributor"
                   value={contributor}
                   onChange={(e) => updateContributor(index, e.target.value)}
-                  className="flex-grow"
+                  className="flex-grow p-2 border rounded"
                 />
-                <Button variant="destructive" onClick={() => removeContributor(index)}>
+                <Button variant="destructive" onClick={() => removeContributor(index)} type="button">
                   Remove
                 </Button>
               </div>
             ))}
-            <Button onClick={addContributor} className="mt-2">
+            <Button onClick={addContributor} className="mt-2" type="button">
               Add New Contributor
             </Button>
           </PageSection>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Card className="mb-6">
-        <CardContent>
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <PageSection title="Related Media">
             {relatedMedia.map((media, index) => (
               <div key={index} className="flex items-center space-x-2 mb-2">
-                <Input
+                <input
+                  type="text"
                   placeholder="Enter related media"
                   value={media}
                   onChange={(e) => updateRelatedMedia(index, e.target.value)}
-                  className="flex-grow"
+                  className="flex-grow p-2 border rounded"
                 />
-                <Button variant="destructive" onClick={() => removeRelatedMedia(index)}>
+                <Button variant="destructive" onClick={() => removeRelatedMedia(index)} type="button">
                   Remove
                 </Button>
               </div>
             ))}
-            <Button onClick={addRelatedMedia} className="mt-2">
+            <Button onClick={addRelatedMedia} className="mt-2" type="button">
               Add New Related Media
             </Button>
           </PageSection>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Button onClick={handleSubmit} className="mt-6">
-        {params.id === "new" ? "Create Article" : "Update Article"}
-      </Button>
+        <Button 
+          type="submit" 
+          className="mt-6 bg-blue-500 hover:bg-blue-600 text-white" 
+          disabled={saving}
+        >
+          {saving ? 'Saving...' : (id === 'new' ? 'Create Article' : 'Update Article')}
+        </Button>
+      </form>
     </div>
-  )
+  );
 }
 

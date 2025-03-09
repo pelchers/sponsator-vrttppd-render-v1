@@ -906,7 +906,7 @@ export default function ProjectPage() {
           <div className="md:grid md:grid-cols-2 md:gap-6">
             <AdvisorsSection advisors={project.advisors} />
             <PartnersSection partners={project.partners} />
-          </div>
+        </div>
         </PageSection>
         
         <TestimonialsSection testimonials={project.testimonials} />

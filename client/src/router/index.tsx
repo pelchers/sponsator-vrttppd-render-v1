@@ -11,6 +11,9 @@ import ProjectsListPage from '../pages/project/projectslist'
 import ProjectPage from '../pages/project/project'
 import ProjectEditPage from '../pages/project/editproject'
 import TestPage from '../pages/test'
+import ArticlesPage from '@/pages/article/articleslist'
+import ArticleViewPage from '@/pages/article/article'
+import ArticleEditPage from '@/pages/article/editarticle'
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +56,22 @@ export const router = createBrowserRouter([
   {
     path: "/test",
     element: <Layout><TestPage /></Layout>,
+  },
+  {
+    path: '/article',
+    element: <Layout><ArticlesPage /></Layout>,
+  },
+  {
+    path: '/article/:id',
+    element: <Layout><ArticleViewPage /></Layout>,
+  },
+  {
+    path: '/article/edit/new',
+    element: <Layout><ArticleEditPage /></Layout>,
+  },
+  {
+    path: '/article/edit/:id',
+    element: <Layout><ArticleEditPage /></Layout>,
   },
 ])
 

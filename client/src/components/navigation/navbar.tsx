@@ -36,6 +36,9 @@ export default function Navbar() {
               <Button variant="ghost" onClick={() => navigate('/projects')}>
                 Projects
               </Button>
+              <Button variant="ghost" onClick={() => navigate('/article')}>
+                Articles
+              </Button>
             </div>
           </div>
 
@@ -61,6 +64,14 @@ export default function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/projects/new')}>
                     Create Project
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Articles</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/article')}>
+                    My Articles
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/article/edit/new')}>
+                    Create Article
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
