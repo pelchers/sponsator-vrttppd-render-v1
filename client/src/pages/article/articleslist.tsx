@@ -15,6 +15,7 @@ export default function ArticlesPage() {
       try {
         setLoading(true);
         const response = await fetchArticles(page, 10);
+        console.log('Fetched articles:', response);
         setArticles(response.data || []);
         setTotalPages(Math.ceil((response.total || 0) / 10));
       } catch (err) {
