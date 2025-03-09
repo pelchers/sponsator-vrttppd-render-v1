@@ -14,6 +14,10 @@ import TestPage from '../pages/test'
 import ArticlesPage from '@/pages/article/articleslist'
 import ArticleViewPage from '@/pages/article/article'
 import ArticleEditPage from '@/pages/article/editarticle'
+// Import post pages
+import PostsPage from '../pages/post/postslist'
+import PostPage from '../pages/post/post'
+import PostEditPage from '../pages/post/editpost'
 
 export const router = createBrowserRouter([
   {
@@ -62,16 +66,33 @@ export const router = createBrowserRouter([
     element: <Layout><ArticlesPage /></Layout>,
   },
   {
-    path: '/article/:id',
-    element: <Layout><ArticleViewPage /></Layout>,
-  },
-  {
     path: '/article/edit/new',
     element: <Layout><ArticleEditPage /></Layout>,
   },
   {
     path: '/article/edit/:id',
     element: <Layout><ArticleEditPage /></Layout>,
+  },
+  {
+    path: '/article/:id',
+    element: <Layout><ArticleViewPage /></Layout>,
+  },
+  // Post routes - note the order is important
+  {
+    path: '/post',
+    element: <Layout><PostsPage /></Layout>,
+  },
+  {
+    path: '/post/edit/new',
+    element: <Layout><PostEditPage /></Layout>,
+  },
+  {
+    path: '/post/edit/:id',
+    element: <Layout><PostEditPage /></Layout>,
+  },
+  {
+    path: '/post/:id',
+    element: <Layout><PostPage /></Layout>,
   },
 ])
 

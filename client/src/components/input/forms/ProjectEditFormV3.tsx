@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
 import PageSection from "@/components/sections/PageSection"
 import CategorySection from "@/components/sections/CategorySection"
@@ -2240,18 +2240,14 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
           </div>
         </PageSection>
 
-        <div className="flex justify-center">
-          <button
-            type="submit"
+        <div className="mt-8 flex justify-end">
+          <Button 
+            type="submit" 
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
             disabled={saving}
-            className={`px-4 py-2 ${
-              saving 
-                ? 'bg-gray-400' 
-                : 'bg-indigo-600 hover:bg-indigo-700'
-            } text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
           >
             {saving ? 'Saving...' : 'Save Changes'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

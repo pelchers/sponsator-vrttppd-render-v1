@@ -3,10 +3,16 @@ import { Link } from 'react-router-dom';
 import { fetchArticles, deleteArticle } from '@/api/articles';
 import { Button } from '@/components/ui/button';
 
+interface Article {
+  id: string;
+  title: string;
+  tags?: string[];
+}
+
 export default function ArticlesPage() {
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -31,7 +37,7 @@ export default function ArticlesPage() {
     loadArticles();
   }, [page]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
       try {
         await deleteArticle(id);

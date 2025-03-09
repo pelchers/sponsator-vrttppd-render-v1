@@ -291,6 +291,7 @@ export default function ArticleEditPage() {
                     value={section.type}
                     onChange={(e) => updateSection(index, { type: e.target.value as SectionType })}
                     className="w-1/3 p-2 border rounded ml-2"
+                    aria-label="Section type"
                   >
                     <option value="full-width-text">Full Width Text</option>
                     <option value="full-width-media">Full Width Media</option>

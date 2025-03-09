@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import projectRoutes from './routes/projectRoutes';
 import authRoutes from './routes/auth';
 import articleRoutes from './routes/articleRoutes';
+import postRoutes from './routes/postRoutes';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
+app.use('/api/posts', postRoutes);
 
 // Define routes directly
 app.post('/api/register', async (req, res) => {
