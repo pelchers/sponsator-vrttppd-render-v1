@@ -12,6 +12,7 @@ import projectRoutes from './routes/projectRoutes';
 import authRoutes from './routes/auth';
 import articleRoutes from './routes/articleRoutes';
 import postRoutes from './routes/postRoutes';
+import exploreRoutes from './routes/exploreRoutes';
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/explore', exploreRoutes);
 
 // Define routes directly
 app.post('/api/register', async (req, res) => {

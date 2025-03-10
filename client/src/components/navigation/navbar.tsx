@@ -42,6 +42,9 @@ export default function Navbar() {
               <Button variant="ghost" onClick={() => navigate('/post')}>
                 Posts
               </Button>
+              <Button variant="ghost" onClick={() => navigate('/explore')}>
+                Explore
+              </Button>
             </div>
           </div>
 

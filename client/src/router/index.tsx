@@ -18,6 +18,7 @@ import ArticleEditPage from '@/pages/article/editarticle'
 import PostsPage from '../pages/post/postslist'
 import PostPage from '../pages/post/post'
 import PostEditPage from '../pages/post/editpost'
+import ExplorePage from '../pages/explore/Explore'
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
   {
     path: '/post/:id',
     element: <Layout><PostPage /></Layout>,
+  },
+  {
+    path: '/explore',
+    element: <Layout><ExplorePage /></Layout>,
   },
 ])
 
