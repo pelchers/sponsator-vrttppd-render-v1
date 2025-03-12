@@ -6,6 +6,7 @@ import SearchBar from '@/components/search/SearchBar';
 import FilterGroup from '@/components/filters/FilterGroup';
 import ResultsGrid from '@/components/results/ResultsGrid';
 import { searchAll } from '@/api/explore';
+import { useBatchLikeStatus } from '@/hooks/batchHooks';
 
 // Define content types for "Show" filter
 const contentTypes = [
@@ -97,6 +98,11 @@ export default function ExplorePage() {
   useEffect(() => {
     fetchResults();
   }, [searchQuery, selectedContentTypes, selectedUserTypes, page]);
+
+  // Inside the component, add this hook
+  const { likeStatuses: postLikeStatuses } = useBatchLikeStatus(results.posts, 'post');
+  const { likeStatuses: articleLikeStatuses } = useBatchLikeStatus(results.articles, 'article');
+  const { likeStatuses: projectLikeStatuses } = useBatchLikeStatus(results.projects, 'project');
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -143,6 +149,11 @@ export default function ExplorePage() {
           results={results} 
           loading={loading} 
           contentTypes={selectedContentTypes}
+          likeStatuses={{
+            posts: postLikeStatuses,
+            articles: articleLikeStatuses,
+            projects: projectLikeStatuses
+          }}
         />
       )}
       

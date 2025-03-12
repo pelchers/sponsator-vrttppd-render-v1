@@ -372,4 +372,201 @@ export async function createUser(userData: { username: string; email: string; pa
     console.error('Error in createUser:', error);
     throw error;
   }
-} 
+}
+
+/**
+ * Get all content liked by a user
+ */
+export const getUserLikedContent = async (
+  userId: string,
+  contentTypes: string[],
+  page: number,
+  limit: number
+) => {
+  console.log(`[USER SERVICE] Getting liked content for user=${userId}, types=${contentTypes.join(',')}, page=${page}, limit=${limit}`);
+  
+  // Calculate pagination
+  const skip = (page - 1) * limit;
+  
+  // Initialize results object
+  const results: any = {
+    posts: [],
+    articles: [],
+    projects: []
+  };
+  
+  // Get total counts for pagination
+  const totalCounts: any = {};
+  
+  // Process each content type if requested
+  const promises = [];
+  
+  if (contentTypes.includes('posts')) {
+    promises.push(
+      (async () => {
+        // Get liked post IDs
+        const likedPosts = await prisma.likes.findMany({
+          where: {
+            user_id: userId,
+            entity_type: 'post'
+          },
+          select: {
+            entity_id: true
+          }
+        });
+        
+        const postIds = likedPosts.map(like => like.entity_id);
+        
+        // Get total count
+        totalCounts.posts = postIds.length;
+        
+        // Skip if no liked posts
+        if (postIds.length === 0) {
+          results.posts = [];
+          return;
+        }
+        
+        // Get post data with pagination
+        const posts = await prisma.posts.findMany({
+          where: {
+            id: { in: postIds }
+          },
+          include: {
+            users: {
+              select: {
+                id: true,
+                username: true,
+                avatar_url: true
+              }
+            }
+          },
+          orderBy: {
+            created_at: 'desc'
+          },
+          skip,
+          take: limit
+        });
+        
+        results.posts = posts;
+      })()
+    );
+  }
+  
+  if (contentTypes.includes('articles')) {
+    promises.push(
+      (async () => {
+        // Get liked article IDs
+        const likedArticles = await prisma.likes.findMany({
+          where: {
+            user_id: userId,
+            entity_type: 'article'
+          },
+          select: {
+            entity_id: true
+          }
+        });
+        
+        const articleIds = likedArticles.map(like => like.entity_id);
+        
+        // Get total count
+        totalCounts.articles = articleIds.length;
+        
+        // Skip if no liked articles
+        if (articleIds.length === 0) {
+          results.articles = [];
+          return;
+        }
+        
+        // Get article data with pagination
+        const articles = await prisma.articles.findMany({
+          where: {
+            id: { in: articleIds }
+          },
+          include: {
+            users: {
+              select: {
+                id: true,
+                username: true,
+                avatar_url: true
+              }
+            }
+          },
+          orderBy: {
+            created_at: 'desc'
+          },
+          skip,
+          take: limit
+        });
+        
+        results.articles = articles;
+      })()
+    );
+  }
+  
+  if (contentTypes.includes('projects')) {
+    promises.push(
+      (async () => {
+        // Get liked project IDs
+        const likedProjects = await prisma.likes.findMany({
+          where: {
+            user_id: userId,
+            entity_type: 'project'
+          },
+          select: {
+            entity_id: true
+          }
+        });
+        
+        const projectIds = likedProjects.map(like => like.entity_id);
+        
+        // Get total count
+        totalCounts.projects = projectIds.length;
+        
+        // Skip if no liked projects
+        if (projectIds.length === 0) {
+          results.projects = [];
+          return;
+        }
+        
+        // Get project data with pagination
+        const projects = await prisma.projects.findMany({
+          where: {
+            id: { in: projectIds }
+          },
+          include: {
+            users: {
+              select: {
+                id: true,
+                username: true,
+                avatar_url: true
+              }
+            }
+          },
+          orderBy: {
+            created_at: 'desc'
+          },
+          skip,
+          take: limit
+        });
+        
+        results.projects = projects;
+      })()
+    );
+  }
+  
+  // Wait for all queries to complete
+  await Promise.all(promises);
+  
+  // Calculate total items and pages
+  const totalItems = Object.values(totalCounts).reduce((sum: number, count: number) => sum + count, 0);
+  const totalPages = Math.ceil(totalItems / limit) || 1;
+  
+  console.log(`[USER SERVICE] Found ${totalItems} liked items across ${Object.keys(totalCounts).length} content types`);
+  
+  return {
+    results,
+    page,
+    totalPages,
+    totalItems
+  };
+}; 

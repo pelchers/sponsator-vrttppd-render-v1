@@ -19,6 +19,7 @@ import PostsPage from '../pages/post/postslist'
 import PostPage from '../pages/post/post'
 import PostEditPage from '../pages/post/editpost'
 import ExplorePage from '../pages/explore/Explore'
+import LikesPage from '@/pages/likes/Likes'
 
 export const router = createBrowserRouter([
   {
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
   {
     path: '/explore',
     element: <Layout><ExplorePage /></Layout>,
+  },
+  {
+    path: '/likes',
+    element: <Layout><LikesPage /></Layout>,
   },
 ])
 

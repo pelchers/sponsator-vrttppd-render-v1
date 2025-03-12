@@ -204,4 +204,33 @@ export async function loginUser(req: Request, res: Response) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Error logging in' });
   }
-} 
+}
+
+/**
+ * Get all content liked by the current user
+ */
+export const getUserLikes = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    // Parse query parameters
+    const contentTypes = req.query.contentTypes 
+      ? (req.query.contentTypes as string).split(',') 
+      : ['posts', 'articles', 'projects'];
+    
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 12;
+    
+    // Get liked content from service
+    const result = await userService.getUserLikedContent(userId, contentTypes, page, limit);
+    
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('[USER CONTROLLER] Error getting user likes:', error);
+    return res.status(500).json({ message: 'Failed to get liked content' });
+  }
+}; 

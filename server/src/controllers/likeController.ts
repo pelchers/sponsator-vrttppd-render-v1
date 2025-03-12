@@ -6,6 +6,7 @@ import * as likeService from '../services/likeService';
  */
 export const createLike = async (req: Request, res: Response) => {
   try {
+    // Extract data from request body
     const { entity_type, entity_id } = req.body;
     const userId = req.user.id;
     
@@ -23,7 +24,7 @@ export const createLike = async (req: Request, res: Response) => {
     // Create like
     const like = await likeService.createLike(userId, entity_type, entity_id);
     
-    // Update like count on the entity
+    // Update like count
     await likeService.incrementLikeCount(entity_type, entity_id);
     
     return res.status(201).json(like);
@@ -38,6 +39,7 @@ export const createLike = async (req: Request, res: Response) => {
  */
 export const deleteLike = async (req: Request, res: Response) => {
   try {
+    // Extract data from request body
     const { entity_type, entity_id } = req.body;
     const userId = req.user.id;
     
@@ -55,7 +57,7 @@ export const deleteLike = async (req: Request, res: Response) => {
     // Delete like
     await likeService.deleteLike(existingLike.id);
     
-    // Update like count on the entity
+    // Update like count
     await likeService.decrementLikeCount(entity_type, entity_id);
     
     return res.status(200).json({ message: 'Like removed' });
@@ -70,6 +72,7 @@ export const deleteLike = async (req: Request, res: Response) => {
  */
 export const getLikeStatus = async (req: Request, res: Response) => {
   try {
+    // Extract data from query parameters
     const { entity_type, entity_id } = req.query;
     const userId = req.user.id;
     
@@ -81,7 +84,7 @@ export const getLikeStatus = async (req: Request, res: Response) => {
     // Check if like exists
     const existingLike = await likeService.getLike(
       userId, 
-      entity_type as string, 
+      entity_type as string,
       entity_id as string
     );
     
@@ -97,6 +100,7 @@ export const getLikeStatus = async (req: Request, res: Response) => {
  */
 export const getLikeCount = async (req: Request, res: Response) => {
   try {
+    // Extract data from query parameters
     const { entity_type, entity_id } = req.query;
     
     // Validate input
@@ -106,7 +110,7 @@ export const getLikeCount = async (req: Request, res: Response) => {
     
     // Get like count
     const count = await likeService.getLikeCount(
-      entity_type as string, 
+      entity_type as string,
       entity_id as string
     );
     

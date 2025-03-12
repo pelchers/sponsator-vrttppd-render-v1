@@ -20,7 +20,7 @@ model users {
   id                             String    @id @default(uuid())
   profile_image                  String?
   username                       String?
-  email                         String    @unique
+  email                         String    @unique  // This field already has a unique constraint in the database
   bio                           String?
   user_type                     String?
   career_title                  String?
@@ -67,6 +67,9 @@ model users {
   last_active                   DateTime?
   created_at                    DateTime? @default(now())
   updated_at                    DateTime? @default(now())
+  likes_count                   Int       @default(0)
+  follows_count                 Int       @default(0)
+  watches_count                 Int       @default(0)
 
   // Child relations:
   user_work_experience   user_work_experience[]
@@ -189,6 +192,9 @@ model posts {
   description String?
   likes       Int      @default(0)
   comments    Int      @default(0)
+  likes_count Int      @default(0)
+  follows_count Int      @default(0)
+  watches_count Int      @default(0)
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -268,6 +274,10 @@ model projects {
   partners                           Json?
   testimonials                       Json?
 
+  likes_count                    Int       @default(0)
+  follows_count                  Int       @default(0)
+  watches_count                  Int       @default(0)
+
   created_at                         DateTime? @default(now())
   updated_at                         DateTime? @default(now())
 
@@ -289,6 +299,9 @@ model articles {
   related_media String[]
   created_at    DateTime? @default(now())
   updated_at    DateTime? @default(now())
+  likes_count   Int       @default(0)
+  follows_count Int       @default(0)
+  watches_count Int       @default(0)
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
   article_sections article_sections[]
@@ -320,6 +333,8 @@ model comments {
 
   // If you want a quick count of how many likes a comment has
   likes_count Int      @default(0)
+  follows_count Int      @default(0)
+  watches_count Int      @default(0)
 
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())

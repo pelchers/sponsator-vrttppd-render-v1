@@ -12,12 +12,18 @@ interface ResultsGridProps {
   };
   loading: boolean;
   contentTypes: string[];
+  likeStatuses?: {
+    posts: Record<string, boolean>;
+    articles: Record<string, boolean>;
+    projects: Record<string, boolean>;
+  };
 }
 
 export default function ResultsGrid({ 
   results, 
   loading, 
-  contentTypes 
+  contentTypes, 
+  likeStatuses
 }: ResultsGridProps) {
   // Determine which content types to show
   const showAll = contentTypes.includes('all');
@@ -55,20 +61,35 @@ export default function ResultsGrid({
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {allResults.map((item, index) => {
-        switch (item.type) {
-          case 'user':
-            return <UserCard key={`user-${item.id || index}`} user={item} />;
-          case 'project':
-            return <ProjectCard key={`project-${item.id || index}`} project={item} />;
-          case 'article':
-            return <ArticleCard key={`article-${item.id || index}`} article={item} />;
-          case 'post':
-            return <PostCard key={`post-${item.id || index}`} post={item} />;
-          default:
-            return null;
-        }
-      })}
+      {showUsers && results.users.map((user, index) => (
+        <div key={`user-${user.id || index}`} className="col-span-1">
+          <UserCard user={user} />
+        </div>
+      ))}
+      {showProjects && results.projects.map((project, index) => (
+        <div key={`project-${project.id || index}`} className="col-span-1">
+          <ProjectCard 
+            project={project} 
+            userHasLiked={likeStatuses?.projects[project.id] || false}
+          />
+        </div>
+      ))}
+      {showArticles && results.articles.map((article, index) => (
+        <div key={`article-${article.id || index}`} className="col-span-1">
+          <ArticleCard 
+            article={article} 
+            userHasLiked={likeStatuses?.articles[article.id] || false}
+          />
+        </div>
+      ))}
+      {showPosts && results.posts.map((post, index) => (
+        <div key={`post-${post.id || index}`} className="col-span-1">
+          <PostCard 
+            post={post} 
+            userHasLiked={likeStatuses?.posts[post.id] || false}
+          />
+        </div>
+      ))}
     </div>
   );
 } 

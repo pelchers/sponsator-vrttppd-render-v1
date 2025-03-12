@@ -13,6 +13,7 @@ import authRoutes from './routes/auth';
 import articleRoutes from './routes/articleRoutes';
 import postRoutes from './routes/postRoutes';
 import exploreRoutes from './routes/exploreRoutes';
+import routes from './routes';
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/explore', exploreRoutes);
+app.use('/api', routes);
 
 // Define routes directly
 app.post('/api/register', async (req, res) => {

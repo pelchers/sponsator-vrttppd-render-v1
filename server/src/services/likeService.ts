@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma';
+import prisma from '../lib/prisma';
 
 /**
  * Create a new like
@@ -79,9 +79,9 @@ export const incrementLikeCount = async (entityType: string, entityId: string) =
     case 'post':
       result = await prisma.posts.update({
         where: { id: entityId },
-        data: { likes: { increment: 1 } }
+        data: { likes_count: { increment: 1 } }
       });
-      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes}`);
+      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes_count}`);
       break;
     case 'article':
       result = await prisma.articles.update({
@@ -124,9 +124,9 @@ export const decrementLikeCount = async (entityType: string, entityId: string) =
     case 'post':
       result = await prisma.posts.update({
         where: { id: entityId },
-        data: { likes: { decrement: 1 } }
+        data: { likes_count: { decrement: 1 } }
       });
-      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes}`);
+      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes_count}`);
       break;
     case 'article':
       result = await prisma.articles.update({

@@ -1,60 +1,92 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { HeartIcon } from '@/components/icons/HeartIcon';
+import { likeEntity, unlikeEntity } from '@/api/likes';
 
 interface ProjectCardProps {
-  project: any;
+  project: {
+    id: string;
+    title: string;
+    description?: string;
+    tags: string[];
+    project_followers: number;
+    user_id: string;
+    username: string;
+    created_at: string;
+  };
+  userHasLiked?: boolean;
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({ project, userHasLiked = false }: ProjectCardProps) {
+  const [liked, setLiked] = useState(userHasLiked);
+  const [likeCount, setLikeCount] = useState(project.project_followers || 0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation when clicking the like button
+    e.stopPropagation(); // Prevent event bubbling
+    
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    
+    // Optimistic update
+    setLiked(!liked);
+    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
+    
+    try {
+      if (liked) {
+        await unlikeEntity('project', project.id);
+      } else {
+        await likeEntity('project', project.id);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      // Revert optimistic update on error
+      setLiked(liked);
+      setLikeCount(prev => liked ? prev + 1 : Math.max(0, prev - 1));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col">
-      {project.project_image && (
-        <div className="h-40 overflow-hidden">
-          <img 
-            src={project.project_image} 
-            alt={project.title} 
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = 'https://via.placeholder.com/300x150?text=Project';
-            }}
-          />
-        </div>
-      )}
-      
-      <div className="p-4 flex-grow">
-        <h3 className="font-medium text-gray-900 mb-1">{project.title}</h3>
-        <p className="text-sm text-gray-500 mb-3">
-          By {project.username || 'Unknown'} • {project.project_type?.replace('_', ' ')}
-        </p>
-        
-        <p className="text-gray-700 line-clamp-3 mb-4">
-          {project.description || 'No description available'}
-        </p>
-        
-        {project.tags && project.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {project.tags.slice(0, 3).map((tag: string, index: number) => (
-              <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs">
+    <Card className="h-full flex flex-col overflow-hidden">
+      <Link to={`/projects/${project.id}`} className="flex-grow">
+        <CardContent className="p-4">
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{project.title}</h3>
+          {project.description && (
+            <p className="text-sm text-gray-600 mb-3 line-clamp-3">{project.description}</p>
+          )}
+          <div className="flex flex-wrap gap-1 mb-2">
+            {project.tags.slice(0, 3).map((tag, index) => (
+              <span key={index} className="bg-gray-100 text-xs px-2 py-1 rounded">
                 {tag}
               </span>
             ))}
             {project.tags.length > 3 && (
-              <span className="bg-gray-100 px-2 py-1 rounded text-xs">
-                +{project.tags.length - 3} more
-              </span>
+              <span className="text-xs text-gray-500">+{project.tags.length - 3} more</span>
             )}
           </div>
-        )}
-      </div>
-      
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-        <Link 
-          to={`/projects/${project.id}`}
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+        </CardContent>
+      </Link>
+      <CardFooter className="p-4 pt-0 flex justify-between items-center">
+        <div className="text-sm text-gray-500">
+          By {project.username}
+        </div>
+        <button 
+          onClick={handleLikeToggle}
+          disabled={isLoading}
+          className={`flex items-center gap-1 text-sm ${
+            liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+          } transition-colors`}
+          aria-label={liked ? "Unlike" : "Like"}
         >
-          View Project
-        </Link>
-      </div>
-    </div>
+          <HeartIcon filled={liked} className="w-4 h-4" />
+          <span>{likeCount}</span>
+        </button>
+      </CardFooter>
+    </Card>
   );
 } 
