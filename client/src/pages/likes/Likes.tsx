@@ -23,6 +23,7 @@ export default function LikesPage() {
   
   // State for results
   const [results, setResults] = useState({
+    users: [],
     posts: [],
     articles: [],
     projects: []
@@ -52,10 +53,23 @@ export default function LikesPage() {
         limit: 12
       });
       
-      setResults(data.results);
+      // Ensure all arrays exist even if API doesn't return them
+      setResults({
+        users: data.results.users || [],
+        posts: data.results.posts || [],
+        articles: data.results.articles || [],
+        projects: data.results.projects || []
+      });
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching liked content:', error);
+      // Reset to empty arrays on error
+      setResults({
+        users: [],
+        posts: [],
+        articles: [],
+        projects: []
+      });
     } finally {
       setLoading(false);
     }
@@ -67,7 +81,8 @@ export default function LikesPage() {
   }, [selectedContentTypes, page]);
   
   // Check if there are any results
-  const hasResults = results.posts.length > 0 || 
+  const hasResults = results.users.length > 0 || 
+                     results.posts.length > 0 || 
                      results.articles.length > 0 || 
                      results.projects.length > 0;
   

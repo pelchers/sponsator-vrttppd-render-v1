@@ -8,16 +8,32 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4100/api'
  */
 export const likeEntity = async (entityType: string, entityId: string) => {
   try {
+    // First check if already liked
+    const alreadyLiked = await checkLikeStatus(entityType, entityId);
+    
+    if (alreadyLiked) {
+      // If already liked, unlike it instead
+      console.log(`${entityType} already liked, unliking instead`);
+      return unlikeEntity(entityType, entityId);
+    }
+    
+    // Otherwise proceed with like
     const response = await axios.post(`${API_URL}/likes`, {
       entity_type: entityType,
       entity_id: entityId
     }, {
       headers: getAuthHeaders()
-    })
-    return response.data
+    });
+    
+    return response.data;
   } catch (error) {
-    console.error(`Error liking ${entityType}:`, error)
-    throw error
+    // If it's already liked (409 Conflict), don't treat as an error
+    if (error.response && error.response.status === 409) {
+      console.log(`${entityType} already liked, ignoring`);
+      return { alreadyLiked: true };
+    }
+    console.error(`Error liking ${entityType}:`, error);
+    throw error;
   }
 }
 

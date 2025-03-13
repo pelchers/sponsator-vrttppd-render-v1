@@ -25,6 +25,14 @@ export default function ResultsGrid({
   contentTypes, 
   likeStatuses
 }: ResultsGridProps) {
+  // Ensure all arrays exist
+  const safeResults = {
+    users: results.users || [],
+    posts: results.posts || [],
+    articles: results.articles || [],
+    projects: results.projects || []
+  };
+  
   // Determine which content types to show
   const showAll = contentTypes.includes('all');
   const showUsers = showAll || contentTypes.includes('users');
@@ -34,10 +42,10 @@ export default function ResultsGrid({
   
   // Combine all results based on selected content types
   const allResults = [
-    ...(showUsers ? results.users.map(item => ({ ...item, type: 'user' })) : []),
-    ...(showProjects ? results.projects.map(item => ({ ...item, type: 'project' })) : []),
-    ...(showArticles ? results.articles.map(item => ({ ...item, type: 'article' })) : []),
-    ...(showPosts ? results.posts.map(item => ({ ...item, type: 'post' })) : [])
+    ...(showUsers ? safeResults.users.map(item => ({ ...item, type: 'user' })) : []),
+    ...(showProjects ? safeResults.projects.map(item => ({ ...item, type: 'project' })) : []),
+    ...(showArticles ? safeResults.articles.map(item => ({ ...item, type: 'article' })) : []),
+    ...(showPosts ? safeResults.posts.map(item => ({ ...item, type: 'post' })) : [])
   ];
   
   if (loading) {
@@ -61,12 +69,12 @@ export default function ResultsGrid({
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {showUsers && results.users.map((user, index) => (
+      {showUsers && safeResults.users.map((user, index) => (
         <div key={`user-${user.id || index}`} className="col-span-1">
           <UserCard user={user} />
         </div>
       ))}
-      {showProjects && results.projects.map((project, index) => (
+      {showProjects && safeResults.projects.map((project, index) => (
         <div key={`project-${project.id || index}`} className="col-span-1">
           <ProjectCard 
             project={project} 
@@ -74,7 +82,7 @@ export default function ResultsGrid({
           />
         </div>
       ))}
-      {showArticles && results.articles.map((article, index) => (
+      {showArticles && safeResults.articles.map((article, index) => (
         <div key={`article-${article.id || index}`} className="col-span-1">
           <ArticleCard 
             article={article} 
@@ -82,7 +90,7 @@ export default function ResultsGrid({
           />
         </div>
       ))}
-      {showPosts && results.posts.map((post, index) => (
+      {showPosts && safeResults.posts.map((post, index) => (
         <div key={`post-${post.id || index}`} className="col-span-1">
           <PostCard 
             post={post} 

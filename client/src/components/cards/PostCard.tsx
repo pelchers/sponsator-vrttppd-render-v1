@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
-import { likeEntity, unlikeEntity } from '@/api/likes';
+import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 
 interface PostCardProps {
   post: {
@@ -24,6 +24,26 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
   const [likeCount, setLikeCount] = useState(post.likes_count || 0);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchLikeData = async () => {
+      try {
+        // Get current like count
+        const count = await getLikeCount('post', post.id);
+        setLikeCount(count);
+        
+        // Check if user has liked this post
+        if (!userHasLiked) {
+          const hasLiked = await checkLikeStatus('post', post.id);
+          setLiked(hasLiked);
+        }
+      } catch (error) {
+        console.error('Error fetching like data:', error);
+      }
+    };
+    
+    fetchLikeData();
+  }, [post.id, userHasLiked]);
+
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation when clicking the like button
     e.stopPropagation(); // Prevent event bubbling
@@ -39,14 +59,19 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
     try {
       if (liked) {
         await unlikeEntity('post', post.id);
+        setLiked(false);
+        setLikeCount(prev => Math.max(0, prev - 1));
       } else {
         await likeEntity('post', post.id);
+        setLiked(true);
+        setLikeCount(prev => prev + 1);
       }
     } catch (error) {
       console.error('Error toggling like:', error);
-      // Revert optimistic update on error
-      setLiked(liked);
-      setLikeCount(prev => liked ? prev + 1 : Math.max(0, prev - 1));
+      // If we get a 409 error (already liked), just update the UI to show as liked
+      if (error.response && error.response.status === 409) {
+        setLiked(true);
+      }
     } finally {
       setIsLoading(false);
     }
