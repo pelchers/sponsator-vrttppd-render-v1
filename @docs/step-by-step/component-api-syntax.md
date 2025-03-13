@@ -62,6 +62,76 @@ export function HeartIcon({ filled = false, className = "" }: HeartIconProps) {
 }
 ```
 
+#### Detailed Explanation of HeartIcon Component Syntax:
+
+1. **Interface Definition**:
+   ```typescript
+   interface HeartIconProps {
+     filled?: boolean
+     className?: string
+   }
+   ```
+   - This creates a TypeScript interface that defines the shape of props the component accepts
+   - The `?` symbol makes both properties optional (not required when using the component)
+   - `filled?: boolean` - Optional boolean prop that determines if heart is filled or outlined
+   - `className?: string` - Optional string prop for custom CSS classes
+
+2. **Component Function Declaration**:
+   ```typescript
+   export function HeartIcon({ filled = false, className = "" }: HeartIconProps) {
+   ```
+   - `export function` - Makes the component available for import in other files
+   - `HeartIcon` - The name of the component (PascalCase as per React convention)
+   - `{ filled = false, className = "" }` - Destructuring the props object with default values:
+     - If `filled` isn't provided, it defaults to `false`
+     - If `className` isn't provided, it defaults to an empty string `""`
+   - `: HeartIconProps` - TypeScript type annotation specifying this function accepts props matching the HeartIconProps interface
+
+3. **Conditional Rendering with Ternary Operator**:
+   ```typescript
+   return filled ? (
+     // Filled SVG
+   ) : (
+     // Outlined SVG
+   )
+   ```
+   - The ternary operator (`condition ? trueResult : falseResult`) determines which SVG to render
+   - If `filled` is true, returns the filled heart SVG
+   - If `filled` is false, returns the outlined heart SVG
+
+4. **SVG Element Properties**:
+   ```typescript
+   <svg 
+     xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 24 24" 
+     fill="currentColor"
+     className={className}
+   >
+   ```
+   - Standard SVG attributes like `xmlns` and `viewBox` define the SVG properties
+   - `fill="currentColor"` - Uses the current text color from CSS (inherits from parent)
+   - `className={className}` - Passes through any custom CSS classes from props
+   - The curly braces `{}` are used for embedding JavaScript expressions in JSX
+
+5. **Path Element**:
+   - Contains the SVG path data that defines the actual heart shape
+   - Different between the filled and outlined versions
+
+6. **Usage Example**:
+   ```jsx
+   // Default (outlined heart)
+   <HeartIcon />
+   
+   // Filled heart
+   <HeartIcon filled={true} />
+   
+   // With custom CSS class
+   <HeartIcon className="w-6 h-6 text-red-500" />
+   
+   // Both filled and with custom class
+   <HeartIcon filled={true} className="w-6 h-6 text-red-500" />
+   ```
+
 ### 2. Like Button Component
 **File: `client/src/components/buttons/LikeButton.tsx`**
 
@@ -84,87 +154,221 @@ interface LikeButtonProps {
 
 // Component definition with default prop values
 export default function LikeButton({
-    entityType,
-    entityId,
-    initialLikeCount,
-    initialLiked,
-    size = "md",
-    variant = "card",
-    className = "",
-    onLikeChange
-  }: LikeButtonProps) {
-    // Local state management
-    const [liked, setLiked] = useState(initialLiked)  // Track liked status
-    const [likeCount, setLikeCount] = useState(initialLikeCount)  // Track like count
-    const [isLoading, setIsLoading] = useState(false)  // Track loading state during API calls
+  entityType,
+  entityId,
+  initialLikeCount,
+  initialLiked,
+  size = "md",
+  variant = "card",
+  className = "",
+  onLikeChange
+}: LikeButtonProps) {
+  // Local state management
+  const [liked, setLiked] = useState(initialLiked)  // Track liked status
+  const [likeCount, setLikeCount] = useState(initialLikeCount)  // Track like count
+  const [isLoading, setIsLoading] = useState(false)  // Track loading state during API calls
   
-    // Handler function for like/unlike button click
-    const handleLikeToggle = async () => {
-      if (isLoading) return  // Prevent multiple clicks during API call
-      
-      setIsLoading(true)  // Set loading state to prevent additional clicks
-      
-      // Optimistic update - update UI immediately before API call completes
-      setLiked(!liked)  // Toggle liked state
-      setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1))  // Update count
-      
-      try {
-        // Make the appropriate API call based on current state
-        if (liked) {
-          // If currently liked, unlike it
-          await unlikeEntity(entityType, entityId)  // Call API function from likes.ts
-        } else {
-          // If not currently liked, like it
-          await likeEntity(entityType, entityId)  // Call API function from likes.ts
-        }
-        
-        // Notify parent component if callback provided
-        if (onLikeChange) {
-          onLikeChange(!liked)  // Pass the new liked state to parent
-        }
-      } catch (error) {
-        console.error('Error toggling like:', error)
-        // Revert optimistic update if there's an error
-        setLiked(liked)  // Revert to original liked state
-        setLikeCount(prev => liked ? prev + 1 : Math.max(0, prev - 1))  // Revert count
-      } finally {
-        setIsLoading(false)  // Reset loading state regardless of success/failure
+  // Handler function for like/unlike button click
+  const handleLikeToggle = async () => {
+    if (isLoading) return  // Prevent multiple clicks during API call
+    
+    setIsLoading(true)  // Set loading state to prevent additional clicks
+    
+    // Optimistic update - update UI immediately before API call completes
+    setLiked(!liked)  // Toggle liked state
+    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1))  // Update count
+    
+    try {
+      // Make the appropriate API call based on current state
+      if (liked) {
+        // If currently liked, unlike it
+        await unlikeEntity(entityType, entityId)  // Call API function from likes.ts
+      } else {
+        // If not currently liked, like it
+        await likeEntity(entityType, entityId)  // Call API function from likes.ts
       }
+      
+      // Notify parent component if callback provided
+      if (onLikeChange) {
+        onLikeChange(!liked)  // Pass the new liked state to parent
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error)
+      // Revert optimistic update if there's an error
+      setLiked(liked)  // Revert to original liked state
+      setLikeCount(prev => liked ? prev + 1 : Math.max(0, prev - 1))  // Revert count
+    } finally {
+      setIsLoading(false)  // Reset loading state regardless of success/failure
     }
+  }
   
-    // Determine size-based classes for consistent styling
-    const sizeClasses = {
-      sm: "text-xs",
-      md: "text-sm",
-      lg: "text-base"
-    }[size]
-  
-    // Determine variant-based classes for different contexts
-    const variantClasses = {
-      card: "gap-1",  // Less spacing for card view
-      page: "gap-2"   // More spacing for page view
-    }[variant]
-  
-    // Render the button with appropriate styling and behavior
-    return (
-      <button
-        onClick={handleLikeToggle}  // Attach click handler
-        disabled={isLoading}        // Disable during API calls
-        className={`flex items-center ${sizeClasses} ${variantClasses} ${
-          liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-        } transition-colors ${className}`}  // Dynamic classes based on state
-        aria-label={liked ? "Unlike" : "Like"}  // Accessibility label
-        title={liked ? "Unlike" : "Like"}       // Tooltip text
-      >
-        <HeartIcon 
-          filled={liked}  // Pass liked state to heart icon
-          className={size === "lg" ? "w-5 h-5" : "w-4 h-4"}  // Size based on prop
-        />
-        <span>{likeCount}</span>  // Display the like count
-      </button>
+  // Determine size-based classes for consistent styling
+  const sizeClasses = {
+    sm: "text-xs",
+    md: "text-sm",
+    lg: "text-base"
+  }[size]
+
+  // Determine variant-based classes for different contexts
+  const variantClasses = {
+    card: "gap-1",  // Less spacing for card view
+    page: "gap-2"   // More spacing for page view
+  }[variant]
+
+  // Render the button with appropriate styling and behavior
+  return (
+    <button
+      onClick={handleLikeToggle}  // Attach click handler
+      disabled={isLoading}        // Disable during API calls
+      className={`flex items-center ${sizeClasses} ${variantClasses} ${
+        liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+      } transition-colors ${className}`}  // Dynamic classes based on state
+      aria-label={liked ? "Unlike" : "Like"}  // Accessibility label
+      title={liked ? "Unlike" : "Like"}       // Tooltip text
+    >
+      <HeartIcon 
+        filled={liked}  // Pass liked state to heart icon
+        className={size === "lg" ? "w-5 h-5" : "w-4 h-4"}  // Size based on prop
+      />
+      <span>{likeCount}</span>  // Display the like count
+    </button>
   )
 }
 ```
+
+#### Detailed Explanation of LikeButton Component:
+
+1. **Imports**:
+   ```typescript
+   import { useState } from "react"
+   import { HeartIcon } from "@/components/icons/HeartIcon"
+   import { likeEntity, unlikeEntity } from "@/api/likes"
+   ```
+   - `useState` - React hook for creating and updating component state
+   - `HeartIcon` - Our custom icon component we defined earlier
+   - `likeEntity/unlikeEntity` - API functions that make HTTP requests to our backend
+
+2. **Props Interface Definition**:
+   ```typescript
+   interface LikeButtonProps {
+     entityType: string
+     entityId: string
+     initialLikeCount: number
+     initialLiked: boolean
+     size?: "sm" | "md" | "lg"
+     variant?: "card" | "page"
+     className?: string
+     onLikeChange?: (liked: boolean) => void
+   }
+   ```
+   - Defines the shape of props the component accepts
+   - Required props: `entityType`, `entityId`, `initialLikeCount`, `initialLiked`
+   - Optional props (with `?`): `size`, `variant`, `className`, `onLikeChange`
+   - TypeScript union types (`"sm" | "md" | "lg"`) restrict values to specific options
+   - Function type for callback: `(liked: boolean) => void`
+
+3. **Component Function Declaration**:
+   ```typescript
+   export default function LikeButton({
+     entityType,
+     entityId,
+     initialLikeCount,
+     initialLiked,
+     size = "md",
+     variant = "card",
+     className = "",
+     onLikeChange
+   }: LikeButtonProps) {
+   ```
+   - `export default function` - Makes this the default export from the file
+   - Props destructuring with default values for optional props
+   - Type annotation ensures props match the interface
+
+4. **State Initialization**:
+   ```typescript
+   const [liked, setLiked] = useState(initialLiked)
+   const [likeCount, setLikeCount] = useState(initialLikeCount)
+   const [isLoading, setIsLoading] = useState(false)
+   ```
+   - Three state variables with their setter functions
+   - Initial values come from props or defaults
+   - Each state serves a specific purpose (tracking like status, count, and loading state)
+
+5. **Event Handler Function**:
+   ```typescript
+   const handleLikeToggle = async () => {
+     // Function body...
+   }
+   ```
+   - `async` function allows using `await` for API calls
+   - Handles the entire like/unlike flow including optimistic updates and error handling
+
+6. **Optimistic UI Update Pattern**:
+   ```typescript
+   setLiked(!liked)
+   setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1))
+   ```
+   - Updates UI immediately before API call completes
+   - Uses functional update pattern with previous state (`prev =>`)
+   - `Math.max(0, prev - 1)` prevents negative counts
+
+7. **Try/Catch/Finally Pattern**:
+   ```typescript
+   try {
+     // API calls
+   } catch (error) {
+     // Error handling and UI reversion
+   } finally {
+     // Cleanup regardless of success/failure
+   }
+   ```
+   - Robust error handling pattern
+   - `finally` block ensures loading state is reset even if errors occur
+
+8. **Dynamic Styling with Object Lookup**:
+   ```typescript
+   const sizeClasses = {
+     sm: "text-xs",
+     md: "text-sm",
+     lg: "text-base"
+   }[size]
+   ```
+   - Uses object lookup pattern to map prop values to CSS classes
+   - More maintainable than multiple if/else statements
+   - Ensures only valid values are used
+
+9. **JSX Return with Conditional Classes**:
+   ```typescript
+   return (
+     <button
+       className={`flex items-center ${sizeClasses} ${variantClasses} ${
+         liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+       } transition-colors ${className}`}
+       // Other props...
+     >
+       // Button content...
+     </button>
+   )
+   ```
+   - Template literals for dynamic class composition
+   - Ternary operator for conditional styling based on state
+   - Passes through custom `className` from props
+
+10. **Accessibility Attributes**:
+    ```typescript
+    aria-label={liked ? "Unlike" : "Like"}
+    title={liked ? "Unlike" : "Like"}
+    ```
+    - Dynamic accessibility attributes based on current state
+    - Improves usability for screen readers and shows tooltips on hover
+
+This component demonstrates several React best practices:
+- Controlled component pattern with props and state
+- Optimistic UI updates for better user experience
+- Proper TypeScript typing for props and state
+- Flexible styling with variant props and className forwarding
+- Error handling with graceful UI recovery
+- Parent communication through callback props
 
 ### 3. API Service
 **File: `client/src/api/likes.ts`**
@@ -249,6 +453,80 @@ export const getLikeCount = async (entityType: string, entityId: string) => {
 }
 ```
 
+#### Detailed Explanation of API Service Functions:
+
+1. **Imports and Setup**:
+   ```typescript
+   import axios from 'axios'
+   import { getAuthHeaders } from '@/utils/auth'
+   
+   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4100/api'
+   ```
+   - `axios` - Popular HTTP client library for making API requests
+   - `getAuthHeaders` - Utility function that retrieves authentication headers
+   - `API_URL` - Environment variable with fallback for local development
+
+2. **Like Entity Function**:
+   ```typescript
+   export const likeEntity = async (entityType: string, entityId: string) => {
+     // Function implementation...
+   }
+   ```
+   - `async` function that returns a Promise
+   - Takes entity type and ID as parameters
+   - Uses try/catch for error handling
+   - Makes POST request to create a new like
+
+3. **Unlike Entity Function**:
+   ```typescript
+   export const unlikeEntity = async (entityType: string, entityId: string) => {
+     // Function implementation...
+   }
+   ```
+   - Similar structure to likeEntity but uses DELETE method
+   - Note that axios DELETE requires data in a `data` property
+   - Same parameters and error handling pattern
+
+4. **Check Like Status Function**:
+   ```typescript
+   export const checkLikeStatus = async (entityType: string, entityId: string) => {
+     // Function implementation...
+   }
+   ```
+   - Makes GET request with query parameters
+   - Returns boolean value from response
+   - Returns false on error (graceful degradation)
+
+5. **Get Like Count Function**:
+   ```typescript
+   export const getLikeCount = async (entityType: string, entityId: string) => {
+     // Function implementation...
+   }
+   ```
+   - Public endpoint (no auth headers required)
+   - Returns numeric count from response
+   - Returns 0 on error (graceful degradation)
+
+6. **Error Handling Pattern**:
+   ```typescript
+   try {
+     // API request
+   } catch (error) {
+     console.error(`Error message:`, error)
+     throw error // or return default value
+   }
+   ```
+   - Consistent error handling across all functions
+   - Logs errors for debugging
+   - Either re-throws (for component to handle) or returns sensible default
+
+These API service functions demonstrate several best practices:
+- Centralized API communication
+- Consistent error handling
+- Authentication header inclusion
+- Graceful degradation with sensible defaults
+- Clear function naming and documentation
+
 ### 4. Batch Hooks
 **File: `client/src/hooks/batchHooks.ts`**
 
@@ -306,10 +584,111 @@ export function useBatchLikeStatus(items: any[], entityType: string) {
   // Return both the statuses object and loading state
   return { likeStatuses, loading }
 }
-
-// Additional batch hooks can be added here in the future
-// e.g., useBatchFollowStatus, useBatchWatchStatus, etc.
 ```
+
+#### Detailed Explanation of Batch Hooks:
+
+1. **Imports**:
+   ```typescript
+   import { useState, useEffect } from 'react'
+   import { checkLikeStatus } from '@/api/likes'
+   import { getToken } from '@/api/auth'
+   ```
+   - React hooks for state and side effects
+   - API function for checking like status
+   - Auth utility for checking if user is logged in
+
+2. **Hook Function Declaration**:
+   ```typescript
+   export function useBatchLikeStatus(items: any[], entityType: string) {
+     // Hook implementation...
+   }
+   ```
+   - Custom React hook that follows the "use" naming convention
+   - Takes an array of items and the entity type as parameters
+   - Returns an object with like statuses and loading state
+
+3. **State Initialization**:
+   ```typescript
+   const [likeStatuses, setLikeStatuses] = useState<Record<string, boolean>>({})
+   const [loading, setLoading] = useState(true)
+   ```
+   - `likeStatuses` - Object mapping item IDs to boolean liked status
+   - `loading` - Boolean tracking if API requests are in progress
+   - TypeScript generic `Record<string, boolean>` defines the shape of the statuses object
+
+4. **Effect Hook with Dependencies**:
+   ```typescript
+   useEffect(() => {
+     // Effect implementation...
+   }, [items, entityType])
+   ```
+   - Runs when component mounts and when dependencies change
+   - Dependencies array ensures effect reruns when items or entity type changes
+
+5. **Early Return Pattern**:
+   ```typescript
+   // Skip API calls if no items or not authenticated
+   const token = getToken()
+   if (!token || !items.length) {
+     setLoading(false)
+     return
+   }
+   ```
+   - Optimization to avoid unnecessary API calls
+   - Sets loading to false and returns early if conditions aren't met
+
+6. **Promise.all for Parallel Requests**:
+   ```typescript
+   // Create an array of promises, one for each item
+   const promises = items.map(item => 
+     checkLikeStatus(entityType, item.id)
+       .then(liked => ({ id: item.id, liked }))
+   )
+   
+   // Wait for all promises to resolve
+   Promise.all(promises)
+     .then(/* ... */)
+     .catch(/* ... */)
+   ```
+   - Maps each item to a promise that checks its like status
+   - Uses `Promise.all` to wait for all requests to complete in parallel
+   - More efficient than sequential requests
+
+7. **Result Processing**:
+   ```typescript
+   .then(results => {
+     // Convert array of results to a lookup object by ID
+     const newStatuses: Record<string, boolean> = {}
+     results.forEach(result => {
+       newStatuses[result.id] = result.liked
+     })
+     setLikeStatuses(newStatuses)
+     setLoading(false)
+   })
+   ```
+   - Transforms array of results into a lookup object for efficient access
+   - Updates state with the new statuses
+   - Sets loading to false when complete
+
+8. **Error Handling**:
+   ```typescript
+   .catch(error => {
+     console.error('Error checking batch like status:', error)
+     setLoading(false)
+   })
+   ```
+   - Logs error for debugging
+   - Ensures loading state is set to false even on error
+
+This custom hook demonstrates several advanced React patterns:
+- Custom hook composition
+- Efficient batch API requests
+- Dependency array optimization
+- Early return pattern
+- Promise.all for parallel requests
+- Error handling
+- Loading state management
 
 ## Communication Flow
 
@@ -638,9 +1017,9 @@ export const incrementLikeCount = async (entityType: string, entityId: string) =
       // 3. Returns the updated post record
       result = await prisma.posts.update({        // This initiates the update operation
         where: { id: entityId },                  // Specifies which post to update
-        data: { likes: { increment: 1 } }         // Uses atomic increment for thread safety
+        data: { likes_count: { increment: 1 } }         // Uses atomic increment for thread safety
       });  // The await keyword pauses execution until update completes
-      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes}`);
+      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes_count}`);
       break;
     case 'article':
       // Similar process for articles table
@@ -692,9 +1071,9 @@ export const decrementLikeCount = async (entityType: string, entityId: string) =
       // 3. Returns the updated post record
       result = await prisma.posts.update({        // This initiates the update operation
         where: { id: entityId },                  // Specifies which post to update
-        data: { likes: { decrement: 1 } }         // Uses atomic decrement for thread safety
+        data: { likes_count: { decrement: 1 } }         // Uses atomic decrement for thread safety
       });  // The await keyword pauses execution until update completes
-      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes}`);
+      console.log(`[LIKE SERVICE] Post like count updated: ${result.likes_count}`);
       break;
     case 'article':
       // Similar process for articles table
