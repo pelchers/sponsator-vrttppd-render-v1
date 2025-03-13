@@ -5,6 +5,7 @@ import projectRoutes from './projectRoutes';
 import articleRoutes from './articleRoutes';
 import likeRoutes from './likeRoutes';
 import followRoutes from './followRoutes';
+import watchRoutes from './watchRoutes';
 import userRoutes from './userRoutes';
 
 const router = Router();
@@ -15,6 +16,7 @@ router.use('/projects', projectRoutes);
 router.use('/articles', articleRoutes);
 router.use('/likes', likeRoutes);
 router.use('/follows', followRoutes);
+router.use('/watches', watchRoutes);
 router.use('/user', userRoutes);
 
 export default router; 

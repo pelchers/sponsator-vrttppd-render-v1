@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { checkLikeStatus } from '@/api/likes'
 import { getToken } from '@/api/auth'
 import { checkFollowStatus } from '@/api/follows'
+import { checkWatchStatus } from '@/api/watches'
 
 /**
  * Hook to check like status for multiple entities at once
@@ -91,6 +92,50 @@ export function useBatchFollowStatus(entities: any[], entityType: string) {
   }, [entities, entityType]);
 
   return { followStatuses, loading };
+}
+
+/**
+ * Hook to check watch status for multiple entities at once
+ */
+export function useBatchWatchStatus(entities: any[], entityType: string) {
+  const [watchStatuses, setWatchStatuses] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWatchStatuses = async () => {
+      if (!entities || entities.length === 0) {
+        setWatchStatuses({});
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      
+      try {
+        // Create a map to store watch statuses
+        const statusMap: Record<string, boolean> = {};
+        
+        // Check watch status for each entity
+        // In a real implementation, we would batch this into a single API call
+        for (const entity of entities) {
+          if (entity && entity.id) {
+            const isWatching = await checkWatchStatus(entityType, entity.id);
+            statusMap[entity.id] = isWatching;
+          }
+        }
+        
+        setWatchStatuses(statusMap);
+      } catch (error) {
+        console.error(`Error fetching watch statuses for ${entityType}s:`, error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWatchStatuses();
+  }, [entities, entityType]);
+
+  return { watchStatuses, loading };
 }
 
 // Additional batch hooks can be added here in the future

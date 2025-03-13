@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
 
 interface ArticleCardProps {
   article: {
@@ -11,14 +13,23 @@ interface ArticleCardProps {
     content?: string;
     tags: string[];
     likes: number;
+    follows_count?: number;
+    watches_count?: number;
     user_id: string;
     username: string;
     created_at: string;
   };
   userHasLiked?: boolean;
+  userIsFollowing?: boolean;
+  userIsWatching?: boolean;
 }
 
-export default function ArticleCard({ article, userHasLiked = false }: ArticleCardProps) {
+export default function ArticleCard({ 
+  article, 
+  userHasLiked = false,
+  userIsFollowing = false,
+  userIsWatching = false
+}: ArticleCardProps) {
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(article.likes || 0);
   const [isLoading, setIsLoading] = useState(false);
@@ -124,17 +135,37 @@ export default function ArticleCard({ article, userHasLiked = false }: ArticleCa
         <div className="text-sm text-gray-500">
           By {article.username}
         </div>
-        <button 
-          onClick={handleLikeToggle}
-          disabled={isLoading}
-          className={`flex items-center gap-1 text-sm ${
-            liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-          } transition-colors`}
-          aria-label={liked ? "Unlike" : "Like"}
-        >
-          <HeartIcon filled={liked} className="w-4 h-4" />
-          <span>{likeCount}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <WatchButton 
+            entityType="article"
+            entityId={article.id}
+            initialWatching={userIsWatching}
+            initialCount={article.watches_count || 0}
+            showCount={false}
+            size="sm"
+            variant="ghost"
+          />
+          <FollowButton 
+            entityType="article"
+            entityId={article.id}
+            initialFollowing={userIsFollowing}
+            initialCount={article.follows_count || 0}
+            showCount={false}
+            size="sm"
+            variant="ghost"
+          />
+          <button 
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 text-sm ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            } transition-colors`}
+            aria-label={liked ? "Unlike" : "Like"}
+          >
+            <HeartIcon filled={liked} className="w-4 h-4" />
+            <span>{likeCount}</span>
+          </button>
+        </div>
       </CardFooter>
     </Card>
   );

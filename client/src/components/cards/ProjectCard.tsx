@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
 
 interface ProjectCardProps {
   project: {
@@ -13,18 +14,21 @@ interface ProjectCardProps {
     tags: string[];
     project_followers: number;
     follows_count?: number;
+    watches_count?: number;
     user_id: string;
     username: string;
     created_at: string;
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
+  userIsWatching?: boolean;
 }
 
 export default function ProjectCard({ 
   project, 
   userHasLiked = false,
-  userIsFollowing = false 
+  userIsFollowing = false,
+  userIsWatching = false
 }: ProjectCardProps) {
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(project.project_followers || 0);
@@ -102,6 +106,15 @@ export default function ProjectCard({
           By {project.username}
         </div>
         <div className="flex items-center gap-2">
+          <WatchButton 
+            entityType="project"
+            entityId={project.id}
+            initialWatching={userIsWatching}
+            initialCount={project.watches_count || 0}
+            showCount={false}
+            size="sm"
+            variant="ghost"
+          />
           <FollowButton 
             entityType="project"
             entityId={project.id}
