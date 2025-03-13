@@ -38,6 +38,9 @@ router.post('/login', userController.loginUser);
 // Protected routes (require authentication)
 router.get('/likes', authenticate, userController.getUserLikes);
 
+// Get user interactions (likes, follows, watches)
+router.get('/interactions', authenticate, userController.getUserInteractions);
+
 // Add a test endpoint to check database connection
 router.get('/test-db', async (req, res) => {
   try {

@@ -233,4 +233,47 @@ export const getUserLikes = async (req: Request, res: Response) => {
     console.error('[USER CONTROLLER] Error getting user likes:', error);
     return res.status(500).json({ message: 'Failed to get liked content' });
   }
+};
+
+/**
+ * Get user interactions (likes, follows, watches) with filtering
+ */
+export const getUserInteractions = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    // Parse query parameters
+    const contentTypes = req.query.contentTypes 
+      ? (req.query.contentTypes as string).split(',') 
+      : ['users', 'projects', 'posts', 'articles'];
+      
+    const interactionTypes = req.query.interactionTypes 
+      ? (req.query.interactionTypes as string).split(',') 
+      : ['likes', 'follows', 'watches'];
+      
+    const page = parseInt(req.query.page as string || '1', 10);
+    const limit = parseInt(req.query.limit as string || '12', 10);
+    
+    console.log(`[USER CONTROLLER] Getting interactions for user ${userId}`);
+    console.log(`[USER CONTROLLER] Content types: ${contentTypes.join(', ')}`);
+    console.log(`[USER CONTROLLER] Interaction types: ${interactionTypes.join(', ')}`);
+    
+    // Get interactions from service
+    const result = await userService.getUserInteractions(
+      userId,
+      contentTypes,
+      interactionTypes,
+      page,
+      limit
+    );
+    
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('[USER CONTROLLER] Error getting user interactions:', error);
+    return res.status(500).json({ message: 'Failed to get user interactions' });
+  }
 }; 

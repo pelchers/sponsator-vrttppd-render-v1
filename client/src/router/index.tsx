@@ -20,6 +20,7 @@ import PostPage from '../pages/post/post'
 import PostEditPage from '../pages/post/editpost'
 import ExplorePage from '../pages/explore/Explore'
 import LikesPage from '@/pages/likes/Likes'
+import MyStuffPage from '@/pages/mystuff/mystuff'
 
 export const router = createBrowserRouter([
   {
@@ -104,6 +105,10 @@ export const router = createBrowserRouter([
     path: '/likes',
     element: <Layout><LikesPage /></Layout>,
   },
+  {
+    path: '/mystuff',
+    element: <Layout><MyStuffPage /></Layout>,
+  }
 ])
 
 export default router 
