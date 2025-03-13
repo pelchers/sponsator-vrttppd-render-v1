@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { checkLikeStatus } from '@/api/likes'
 import { getToken } from '@/api/auth'
+import { checkFollowStatus } from '@/api/follows'
 
 /**
  * Hook to check like status for multiple entities at once
@@ -48,5 +49,49 @@ export function useBatchLikeStatus(items: any[], entityType: string) {
   return { likeStatuses, loading }
 }
 
+/**
+ * Hook to check follow status for multiple entities at once
+ */
+export function useBatchFollowStatus(entities: any[], entityType: string) {
+  const [followStatuses, setFollowStatuses] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFollowStatuses = async () => {
+      if (!entities || entities.length === 0) {
+        setFollowStatuses({});
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      
+      try {
+        // Create a map to store follow statuses
+        const statusMap: Record<string, boolean> = {};
+        
+        // Check follow status for each entity
+        // In a real implementation, we would batch this into a single API call
+        for (const entity of entities) {
+          if (entity && entity.id) {
+            const isFollowing = await checkFollowStatus(entityType, entity.id);
+            statusMap[entity.id] = isFollowing;
+          }
+        }
+        
+        setFollowStatuses(statusMap);
+      } catch (error) {
+        console.error(`Error fetching follow statuses for ${entityType}s:`, error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFollowStatuses();
+  }, [entities, entityType]);
+
+  return { followStatuses, loading };
+}
+
 // Additional batch hooks can be added here in the future
-// e.g., useBatchFollowStatus, useBatchWatchStatus, etc. 
+// e.g., useBatchWatchStatus, etc. 

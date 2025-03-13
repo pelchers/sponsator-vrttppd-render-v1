@@ -70,6 +70,7 @@ model users {
   likes_count                   Int       @default(0)
   follows_count                 Int       @default(0)
   watches_count                 Int       @default(0)
+  followers_count               Int       @default(0)
 
   // Child relations:
   user_work_experience   user_work_experience[]
@@ -360,15 +361,15 @@ model likes {
 }
 
 model follows {
-  id             String   @id @default(uuid())
-  follower_id    String
-  followed_type  String   // e.g., "user", "project", "post", "article"
-  followed_id    String
+  id          String   @id @default(uuid())
+  user_id     String
+  entity_type String   // e.g., "user", "project", "article"
+  entity_id   String   // The ID of the item being followed
 
-  created_at     DateTime @default(now())
+  created_at  DateTime @default(now())
 
-  // The user who is following
-  users          users?   @relation(fields: [follower_id], references: [id], onDelete: Cascade)
+  // The user performing the "follow"
+  users       users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("follows")
 }
@@ -376,12 +377,12 @@ model follows {
 model watches {
   id          String   @id @default(uuid())
   user_id     String
-  watch_type  String   // e.g., "user", "project", "post", "article"
-  watch_id    String
+  entity_type String   // e.g., "project", "article"
+  entity_id   String   // The ID of the item being watched
 
   created_at  DateTime @default(now())
 
-  // The user who is watching
+  // The user performing the "watch"
   users       users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("watches")

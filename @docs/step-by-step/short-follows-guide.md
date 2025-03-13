@@ -45,6 +45,7 @@ Create `client/src/api/follows.ts`:
 - `unfollowEntity(entityType, entityId)` - Unfollow any content type
 - `checkFollowStatus(entityType, entityId)` - Check if current user is following content
 - `getFollowCount(entityType, entityId)` - Get the follow count for content
+- `getUserFollowsCount(entityType)` - Get the count of entities of a specific type that the current user follows
 
 ## 3. Component-API Interaction Flow
 
@@ -102,6 +103,7 @@ Create `server/src/controllers/followController.ts`:
 - `deleteFollow` - Handle follow removal
 - `getFollowStatus` - Check if a user is following content
 - `getFollowCount` - Get follow count for content
+- `getUserFollowsCount` - Get count of entities a user is following by type
 
 ### C. Service
 Create `server/src/services/followService.ts`:
@@ -112,11 +114,29 @@ Create `server/src/services/followService.ts`:
   - `projects.follows_count` for projects
   - `articles.follows_count` for articles
 - Proper error handling and logging
+- Functions to get counts of entities a user is following:
+  ```typescript
+  // Get count of entities a user is following by type
+  export const getUserFollowsCount = async (userId: string, entityType: string) => {
+    const count = await prisma.follows.count({
+      where: {
+        user_id: userId,
+        entity_type: entityType
+      }
+    });
+    return count;
+  };
+  ```
 
 ### D. Routes
 Create `server/src/routes/followRoutes.ts`:
 - Define API endpoints for follow operations
 - Apply authentication middleware
+- Add endpoint for getting user follows count:
+  ```typescript
+  // Get count of entities a user is following by type
+  router.get('/user-count', authenticate, followController.getUserFollowsCount);
+  ```
 
 ## 5. Key Implementation Details
 
@@ -153,6 +173,7 @@ Create `client/src/pages/follows/Follows.tsx`:
 - Fetch followed content using API
 - Handle empty states and loading
 - Support pagination
+- Show counts of different entity types the user is following
 
 ## 7. API Service for User Follows
 
@@ -161,6 +182,23 @@ Update `client/src/api/userContent.ts`:
 - Support filtering by content type
 - Support pagination
 - Handle errors gracefully
+- Include counts of different entity types:
+  ```typescript
+  // Example response structure
+  {
+    results: {
+      users: [...],
+      projects: [...],
+      articles: [...]
+    },
+    counts: {
+      users: 5,
+      projects: 12,
+      articles: 8
+    },
+    totalPages: 3
+  }
+  ```
 
 ## 8. Implementation Steps
 

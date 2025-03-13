@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import FollowButton from '@/components/buttons/FollowButton';
 
 interface ProjectCardProps {
   project: {
@@ -11,14 +12,20 @@ interface ProjectCardProps {
     description?: string;
     tags: string[];
     project_followers: number;
+    follows_count?: number;
     user_id: string;
     username: string;
     created_at: string;
   };
   userHasLiked?: boolean;
+  userIsFollowing?: boolean;
 }
 
-export default function ProjectCard({ project, userHasLiked = false }: ProjectCardProps) {
+export default function ProjectCard({ 
+  project, 
+  userHasLiked = false,
+  userIsFollowing = false 
+}: ProjectCardProps) {
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(project.project_followers || 0);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,17 +101,28 @@ export default function ProjectCard({ project, userHasLiked = false }: ProjectCa
         <div className="text-sm text-gray-500">
           By {project.username}
         </div>
-        <button 
-          onClick={handleLikeToggle}
-          disabled={isLoading}
-          className={`flex items-center gap-1 text-sm ${
-            liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-          } transition-colors`}
-          aria-label={liked ? "Unlike" : "Like"}
-        >
-          <HeartIcon filled={liked} className="w-4 h-4" />
-          <span>{likeCount}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <FollowButton 
+            entityType="project"
+            entityId={project.id}
+            initialFollowing={userIsFollowing}
+            initialCount={project.follows_count || 0}
+            showCount={false}
+            size="sm"
+            variant="ghost"
+          />
+          <button 
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 text-sm ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            } transition-colors`}
+            aria-label={liked ? "Unlike" : "Like"}
+          >
+            <HeartIcon filled={liked} className="w-4 h-4" />
+            <span>{likeCount}</span>
+          </button>
+        </div>
       </CardFooter>
     </Card>
   );

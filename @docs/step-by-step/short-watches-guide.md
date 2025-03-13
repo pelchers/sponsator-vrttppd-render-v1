@@ -44,6 +44,7 @@ Create `client/src/api/watches.ts`:
 - `unwatchEntity(entityType, entityId)` - Unwatch any content type
 - `checkWatchStatus(entityType, entityId)` - Check if current user is watching content
 - `getWatchCount(entityType, entityId)` - Get the watch count for content
+- `getUserWatchesCount(entityType)` - Get the count of entities of a specific type that the current user is watching
 
 ## 3. Component-API Interaction Flow
 
@@ -101,6 +102,7 @@ Create `server/src/controllers/watchController.ts`:
 - `deleteWatch` - Handle watch removal
 - `getWatchStatus` - Check if a user is watching content
 - `getWatchCount` - Get watch count for content
+- `getUserWatchesCount` - Get count of entities a user is watching by type
 
 ### C. Service
 Create `server/src/services/watchService.ts`:
@@ -110,11 +112,29 @@ Create `server/src/services/watchService.ts`:
   - `projects.watches_count` for projects
   - `articles.watches_count` for articles
 - Proper error handling and logging
+- Functions to get counts of entities a user is watching:
+  ```typescript
+  // Get count of entities a user is watching by type
+  export const getUserWatchesCount = async (userId: string, entityType: string) => {
+    const count = await prisma.watches.count({
+      where: {
+        user_id: userId,
+        entity_type: entityType
+      }
+    });
+    return count;
+  };
+  ```
 
 ### D. Routes
 Create `server/src/routes/watchRoutes.ts`:
 - Define API endpoints for watch operations
 - Apply authentication middleware
+- Add endpoint for getting user watches count:
+  ```typescript
+  // Get count of entities a user is watching by type
+  router.get('/user-count', authenticate, watchController.getUserWatchesCount);
+  ```
 
 ## 5. Key Implementation Details
 
@@ -150,6 +170,7 @@ Create `client/src/pages/watches/Watches.tsx`:
 - Fetch watched content using API
 - Handle empty states and loading
 - Support pagination
+- Show counts of different entity types the user is watching
 
 ## 7. API Service for User Watches
 
@@ -158,6 +179,21 @@ Update `client/src/api/userContent.ts`:
 - Support filtering by content type
 - Support pagination
 - Handle errors gracefully
+- Include counts of different entity types:
+  ```typescript
+  // Example response structure
+  {
+    results: {
+      projects: [...],
+      articles: [...]
+    },
+    counts: {
+      projects: 7,
+      articles: 15
+    },
+    totalPages: 2
+  }
+  ```
 
 ## 8. Implementation Steps
 
