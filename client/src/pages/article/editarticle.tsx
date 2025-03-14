@@ -9,12 +9,14 @@ import { createArticle, updateArticle, fetchArticle } from "@/api/articles"
 type SectionType = "full-width-text" | "full-width-media" | "left-media-right-text" | "left-text-right-media"
 
 interface Section {
+  id?: string
   type: SectionType
   title: string
   subtitle?: string
   text?: string
   mediaUrl?: string
   mediaSubtext?: string
+  order?: number
 }
 
 export default function ArticleEditPage() {
@@ -37,7 +39,17 @@ export default function ArticleEditPage() {
         .then(data => {
           if (data) {
             setTitle(data.title || '');
-            setSections(data.sections || []);
+            
+            // Sort sections by order if available
+            const sortedSections = [...(data.sections || [])];
+            sortedSections.sort((a, b) => {
+              if (a.order !== undefined && b.order !== undefined) {
+                return a.order - b.order;
+              }
+              return 0;
+            });
+            
+            setSections(sortedSections);
             setCitations(data.citations || []);
             setContributors(data.contributors || []);
             setRelatedMedia(data.related_media || []);
@@ -58,10 +70,16 @@ export default function ArticleEditPage() {
     setSaving(true);
     
     try {
+      // Ensure all sections have an order value
+      const orderedSections = sections.map((section, index) => ({
+        ...section,
+        order: section.order !== undefined ? section.order : index
+      }));
+      
       // Prepare data for API
       const articleData = {
         title,
-        sections,
+        sections: orderedSections,
         citations,
         contributors,
         related_media: relatedMedia,
@@ -69,7 +87,6 @@ export default function ArticleEditPage() {
       };
       
       console.log('Submitting article data:', articleData);
-      console.log('API URL:', import.meta.env.VITE_API_URL);
       
       let response;
       if (id && id !== 'new') {
@@ -93,7 +110,14 @@ export default function ArticleEditPage() {
   };
 
   const addSection = () => {
-    setSections([...sections, { type: "full-width-text", title: "" }])
+    const newOrder = sections.length > 0 
+      ? Math.max(...sections.map(s => s.order || 0)) + 1 
+      : 0;
+    setSections([...sections, { 
+      type: "full-width-text", 
+      title: "",
+      order: newOrder 
+    }]);
   };
 
   const updateSection = (index: number, updates: Partial<Section>) => {
@@ -104,7 +128,32 @@ export default function ArticleEditPage() {
 
   const removeSection = (index: number) => {
     const newSections = sections.filter((_, i) => i !== index)
+    // Update order values to be sequential
+    newSections.forEach((section, idx) => {
+      section.order = idx;
+    });
     setSections(newSections)
+  };
+  
+  const moveSection = (index: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && index === 0) || 
+        (direction === 'down' && index === sections.length - 1)) {
+      return; // Can't move further in this direction
+    }
+    
+    const newSections = [...sections];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Swap the sections
+    [newSections[index], newSections[targetIndex]] = 
+    [newSections[targetIndex], newSections[index]];
+    
+    // Update orders to match new positions
+    newSections.forEach((section, idx) => {
+      section.order = idx;
+    });
+    
+    setSections(newSections);
   };
 
   const renderSectionFields = (section: Section, index: number) => {
@@ -277,7 +326,29 @@ export default function ArticleEditPage() {
         <PageSection title="Article Sections">
           {sections.map((section, index) => (
             <div key={index} className="bg-white shadow rounded-lg p-6 mb-4">
-              <h3 className="text-lg font-medium mb-4">Section {index + 1}</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium">Section {index + 1}</h3>
+                <div className="flex space-x-2">
+                  <Button 
+                    onClick={() => moveSection(index, 'up')} 
+                    disabled={index === 0}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                  >
+                    Move Up
+                  </Button>
+                  <Button 
+                    onClick={() => moveSection(index, 'down')} 
+                    disabled={index === sections.length - 1}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                  >
+                    Move Down
+                  </Button>
+                </div>
+              </div>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <input

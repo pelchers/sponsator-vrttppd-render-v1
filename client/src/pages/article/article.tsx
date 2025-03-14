@@ -20,6 +20,21 @@ export default function ArticleViewPage() {
       fetchArticle(id)
         .then(data => {
           console.log('Fetched article data:', data);
+          
+          // Sort sections by id or created_at if available
+          if (data.sections && Array.isArray(data.sections)) {
+            // Sort sections by their natural order in the database
+            // This assumes sections have some sort of order indicator
+            data.sections.sort((a, b) => {
+              // If sections have an explicit order field, use that
+              if (a.order !== undefined && b.order !== undefined) {
+                return a.order - b.order;
+              }
+              // Otherwise, sort by ID which should preserve creation order
+              return a.id.localeCompare(b.id);
+            });
+          }
+          
           setArticle(data);
           // In a real app, you'd fetch comments separately or they'd be included in the article data
           setComments(data.comments || []);
