@@ -1111,4 +1111,188 @@ export const getUserInteractions = async (
     totalPages,
     totalItems
   };
-}; 
+};
+
+// Get user's portfolio (content they created)
+export async function getUserPortfolio(userId: string, options: {
+  contentTypes: string[];
+  page: number;
+  limit: number;
+}) {
+  const { contentTypes, page, limit } = options;
+  const skip = (page - 1) * limit;
+  
+  // Initialize results object
+  const results: any = {
+    posts: [],
+    articles: [],
+    projects: []
+  };
+  
+  // Initialize counts
+  let totalCount = 0;
+  const counts = {
+    posts: 0,
+    articles: 0,
+    projects: 0
+  };
+  
+  // Process each content type in parallel
+  const promises = [];
+  
+  // Process posts if requested
+  if (contentTypes.includes('posts')) {
+    promises.push(
+      (async () => {
+        // Get posts count
+        counts.posts = await prisma.posts.count({
+          where: { user_id: userId }
+        });
+        
+        // Add to total count
+        totalCount += counts.posts;
+        
+        // Get posts data with pagination
+        if (contentTypes.length === 1 || page === 1) {
+          const posts = await prisma.posts.findMany({
+            where: { user_id: userId },
+            skip: contentTypes.length === 1 ? skip : 0,
+            take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
+            orderBy: { created_at: 'desc' },
+            include: {
+              users: {
+                select: {
+                  id: true,
+                  username: true,
+                  profile_image: true
+                }
+              }
+            }
+          });
+          
+          // Transform posts for API response
+          results.posts = posts.map(post => ({
+            id: post.id,
+            title: post.title,
+            content: post.content,
+            created_at: post.created_at,
+            user: {
+              id: post.users.id,
+              username: post.users.username,
+              profile_image: post.users.profile_image
+            }
+          }));
+        }
+      })()
+    );
+  }
+  
+  // Process articles if requested
+  if (contentTypes.includes('articles')) {
+    promises.push(
+      (async () => {
+        // Get articles count
+        counts.articles = await prisma.articles.count({
+          where: { user_id: userId }
+        });
+        
+        // Add to total count
+        totalCount += counts.articles;
+        
+        // Get articles data with pagination
+        if (contentTypes.length === 1 || page === 1) {
+          const articles = await prisma.articles.findMany({
+            where: { user_id: userId },
+            skip: contentTypes.length === 1 ? skip : 0,
+            take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
+            orderBy: { created_at: 'desc' },
+            include: {
+              users: {
+                select: {
+                  id: true,
+                  username: true,
+                  profile_image: true
+                }
+              },
+              article_sections: true
+            }
+          });
+          
+          // Transform articles for API response
+          results.articles = articles.map(article => ({
+            id: article.id,
+            title: article.title,
+            sections: article.article_sections,
+            created_at: article.created_at,
+            user: {
+              id: article.users.id,
+              username: article.users.username,
+              profile_image: article.users.profile_image
+            }
+          }));
+        }
+      })()
+    );
+  }
+  
+  // Process projects if requested
+  if (contentTypes.includes('projects')) {
+    promises.push(
+      (async () => {
+        // Get projects count
+        counts.projects = await prisma.projects.count({
+          where: { user_id: userId }
+        });
+        
+        // Add to total count
+        totalCount += counts.projects;
+        
+        // Get projects data with pagination
+        if (contentTypes.length === 1 || page === 1) {
+          const projects = await prisma.projects.findMany({
+            where: { user_id: userId },
+            skip: contentTypes.length === 1 ? skip : 0,
+            take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
+            orderBy: { created_at: 'desc' },
+            include: {
+              users: {
+                select: {
+                  id: true,
+                  username: true,
+                  profile_image: true
+                }
+              }
+            }
+          });
+          
+          // Transform projects for API response
+          results.projects = projects.map(project => ({
+            id: project.id,
+            title: project.title,
+            description: project.description,
+            created_at: project.created_at,
+            user: {
+              id: project.users.id,
+              username: project.users.username,
+              profile_image: project.users.profile_image
+            }
+          }));
+        }
+      })()
+    );
+  }
+  
+  // Wait for all queries to complete
+  await Promise.all(promises);
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(totalCount / limit);
+  
+  return {
+    results,
+    counts,
+    page,
+    limit,
+    totalPages
+  };
+} 

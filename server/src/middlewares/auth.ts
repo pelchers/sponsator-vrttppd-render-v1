@@ -14,32 +14,22 @@ declare global {
   }
 }
 
-export function authenticate(req: Request, res: Response, next: NextFunction) {
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.headers.authorization;
+    const token = req.headers.authorization?.split(' ')[1];
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
       return res.status(401).json({ message: 'Authentication required' });
     }
     
-    const token = authHeader.split(' ')[1];
-    
-    if (!process.env.JWT_SECRET) {
-      throw new Error('JWT_SECRET not configured');
-    }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
-      id: string;
-      email: string;
-      [key: string]: any;
-    };
-    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     req.user = decoded;
+    
+    console.log('Authenticated user:', req.user);
+    
     next();
   } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-    return res.status(500).json({ message: 'Authentication error' });
+    console.error('Authentication error:', error);
+    return res.status(401).json({ message: 'Invalid token' });
   }
-} 
+}; 

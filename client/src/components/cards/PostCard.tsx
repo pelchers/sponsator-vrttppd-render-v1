@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -7,14 +8,20 @@ import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/l
 interface PostCardProps {
   post: {
     id: string;
-    title: string;
+    title?: string;
+    content?: string;
+    created_at?: string;
+    user?: {
+      id?: string;
+      username?: string;
+      profile_image?: string | null;
+    };
     description?: string;
     mediaUrl?: string;
-    tags: string[];
-    likes_count: number;
-    user_id: string;
-    username: string;
-    created_at: string;
+    tags?: string[];
+    likes_count?: number;
+    user_id?: string;
+    username?: string;
   };
   userHasLiked?: boolean;
 }
@@ -23,6 +30,40 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(post.likes_count || 0);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Add safe fallbacks for all properties
+  const title = post?.title || 'Untitled Post';
+  const content = post?.content || '';
+  const createdAt = post?.created_at ? new Date(post.created_at) : new Date();
+  const userId = post?.user?.id || post?.user_id || '';
+  const username = post?.user?.username || post?.username || 'Anonymous';
+  const profileImage = post?.user?.profile_image || '/placeholder-avatar.png';
+  const tags = post?.tags || [];
+  
+  // Safely truncate content
+  const truncatedContent = content.length > 150 
+    ? content.slice(0, 150) + '...' 
+    : content;
+  
+  // Format the date without date-fns
+  const formatDate = (date: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    
+    if (diffSec < 60) return 'just now';
+    if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+    if (diffHour < 24) return `${diffHour} hour${diffHour > 1 ? 's' : ''} ago`;
+    if (diffDay < 30) return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`;
+    
+    // For older dates, show the actual date
+    return date.toLocaleDateString();
+  };
+  
+  const timeAgo = formatDate(createdAt);
 
   useEffect(() => {
     const fetchLikeData = async () => {
@@ -84,7 +125,7 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
           <div className="aspect-video w-full overflow-hidden">
             <img 
               src={post.mediaUrl} 
-              alt={post.title} 
+              alt={title} 
               className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
@@ -94,25 +135,41 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
           </div>
         )}
         <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{post.title}</h3>
-          {post.description && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-3">{post.description}</p>
-          )}
-          <div className="flex flex-wrap gap-1 mb-2">
-            {post.tags.slice(0, 3).map((tag, index) => (
-              <span key={index} className="bg-gray-100 text-xs px-2 py-1 rounded">
-                {tag}
-              </span>
-            ))}
-            {post.tags.length > 3 && (
-              <span className="text-xs text-gray-500">+{post.tags.length - 3} more</span>
-            )}
+          <div className="flex items-center mb-3">
+            <img 
+              src={profileImage} 
+              alt={username}
+              className="w-10 h-10 rounded-full mr-3"
+              onError={(e) => {
+                e.currentTarget.src = '/placeholder-avatar.png';
+              }}
+            />
+            <div>
+              <Link to={`/profile/${userId}`} className="font-medium text-gray-900 hover:underline">
+                {username}
+              </Link>
+              <p className="text-sm text-gray-500">{timeAgo}</p>
+            </div>
           </div>
+          <h3 className="text-xl font-semibold mb-2 hover:text-blue-600">{title}</h3>
+          <p className="text-gray-700">{truncatedContent}</p>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {tags.slice(0, 3).map((tag, index) => (
+                <span key={index} className="bg-gray-100 text-xs px-2 py-1 rounded">
+                  {tag}
+                </span>
+              ))}
+              {tags.length > 3 && (
+                <span className="text-xs text-gray-500">+{tags.length - 3} more</span>
+              )}
+            </div>
+          )}
         </CardContent>
       </Link>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
         <div className="text-sm text-gray-500">
-          By {post.username}
+          By {username}
         </div>
         <button 
           onClick={handleLikeToggle}

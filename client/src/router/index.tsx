@@ -21,6 +21,7 @@ import PostEditPage from '../pages/post/editpost'
 import ExplorePage from '../pages/explore/Explore'
 import LikesPage from '@/pages/likes/Likes'
 import MyStuffPage from '@/pages/mystuff/mystuff'
+import PortfolioPage from '@/pages/portfolio/portfolio'
 
 export const router = createBrowserRouter([
   {
@@ -108,6 +109,14 @@ export const router = createBrowserRouter([
   {
     path: '/mystuff',
     element: <Layout><MyStuffPage /></Layout>,
+  },
+  {
+    path: '/portfolio',
+    element: <Layout><PortfolioPage /></Layout>,
+  },
+  {
+    path: '/portfolio/:userId',
+    element: <Layout><PortfolioPage /></Layout>,
   }
 ])
 

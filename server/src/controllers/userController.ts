@@ -276,4 +276,35 @@ export const getUserInteractions = async (req: Request, res: Response) => {
     console.error('[USER CONTROLLER] Error getting user interactions:', error);
     return res.status(500).json({ message: 'Failed to get user interactions' });
   }
-}; 
+};
+
+// Get user's portfolio (content they created)
+export async function getUserPortfolio(req: Request, res: Response) {
+  try {
+    // Get query parameters
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const contentTypes = req.query.contentTypes 
+      ? (req.query.contentTypes as string).split(',') 
+      : ['posts', 'articles', 'projects'];
+    
+    // Get user ID (from params or from authenticated user)
+    const userId = req.params.userId || req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+    
+    // Get portfolio data from service
+    const portfolioData = await userService.getUserPortfolio(userId, {
+      contentTypes,
+      page,
+      limit
+    });
+    
+    res.status(200).json(portfolioData);
+  } catch (error) {
+    console.error('Error in getUserPortfolio controller:', error);
+    res.status(500).json({ message: 'Failed to fetch portfolio data' });
+  }
+} 

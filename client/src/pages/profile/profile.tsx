@@ -88,7 +88,26 @@ export default function Profile() {
           <div className="profile-sections-container">
             {/* Basic Information */}
             <div className="profile-section">
-              <h1 className="profile-header">{user.username}'s Profile</h1>
+              <div className="flex justify-between items-center">
+                <h1 className="profile-header">{user.username}'s Profile</h1>
+                <div className="flex space-x-3">
+                  <Button 
+                    onClick={() => navigate(`/portfolio/${id}`)}
+                    className="bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    View Portfolio
+                  </Button>
+                  {/* Only show Edit button if it's the user's own profile */}
+                  {localStorage.getItem('userId') === id && (
+                    <Button 
+                      onClick={() => navigate(`/profile/${id}/edit`)}
+                      className="bg-indigo-600 text-white hover:bg-indigo-700"
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
+              </div>
               <div className="image-container">
                 <img 
                   src={user.profile_image || '/placeholder.svg'} 
@@ -468,18 +487,6 @@ export default function Profile() {
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Add an Edit Profile button at the bottom */}
-            <div className="profile-section">
-              <div className="flex justify-center">
-                <Button 
-                  onClick={() => navigate(`/profile/${id}/edit`)}
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full md:w-auto"
-                >
-                  Edit Profile
-                </Button>
               </div>
             </div>
           </div>

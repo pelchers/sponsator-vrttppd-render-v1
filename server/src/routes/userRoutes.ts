@@ -41,6 +41,12 @@ router.get('/likes', authenticate, userController.getUserLikes);
 // Get user interactions (likes, follows, watches)
 router.get('/interactions', authenticate, userController.getUserInteractions);
 
+// Get specific user's portfolio - this must come BEFORE the general route
+router.get('/portfolio/:userId', userController.getUserPortfolio);
+
+// Get current user's portfolio
+router.get('/portfolio', authenticate, userController.getUserPortfolio);
+
 // Add a test endpoint to check database connection
 router.get('/test-db', async (req, res) => {
   try {

@@ -51,6 +51,18 @@ export default function Navbar() {
               <Button variant="ghost" onClick={() => navigate('/mystuff')}>
                 My Stuff
               </Button>
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  if (userId) {
+                    navigate(`/portfolio/${userId}`);
+                  } else {
+                    navigate('/portfolio');
+                  }
+                }}
+              >
+                Portfolio
+              </Button>
             </div>
           </div>
 
