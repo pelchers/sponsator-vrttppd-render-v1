@@ -1,16 +1,109 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
 import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
+import { HeartIcon } from '@/components/icons/HeartIcon';
+import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 
 interface UserCardProps {
   user: any;
   userIsFollowing?: boolean;
+  userIsWatching?: boolean;
+  userHasLiked?: boolean;
 }
 
-export default function UserCard({ user, userIsFollowing = false }: UserCardProps) {
+export default function UserCard({ 
+  user, 
+  userIsFollowing = false,
+  userIsWatching = false,
+  userHasLiked = false 
+}: UserCardProps) {
+  const [liked, setLiked] = useState(userHasLiked);
+  const [likeCount, setLikeCount] = useState(user.likes_count || 0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchLikeData = async () => {
+      try {
+        // Get current like count
+        const count = await getLikeCount('user', user.id);
+        setLikeCount(count);
+        
+        // Check if user has liked this user
+        if (!userHasLiked) {
+          const hasLiked = await checkLikeStatus('user', user.id);
+          setLiked(hasLiked);
+        }
+      } catch (error) {
+        console.error('Error fetching like data:', error);
+      }
+    };
+    
+    fetchLikeData();
+  }, [user.id, userHasLiked]);
+
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation when clicking the like button
+    e.stopPropagation(); // Prevent event bubbling
+    
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    
+    // Store the current state before optimistic update
+    const wasLiked = liked;
+    const previousCount = likeCount;
+    
+    // Optimistic update
+    setLiked(!liked);
+    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
+    
+    try {
+      let newCount;
+      if (liked) {
+        // Unlike
+        await unlikeEntity('user', user.id);
+        newCount = await getLikeCount('user', user.id);
+        setLiked(false);
+      } else {
+        // Like
+        await likeEntity('user', user.id);
+        newCount = await getLikeCount('user', user.id);
+        setLiked(true);
+      }
+      
+      // Update with the actual count from the server
+      setLikeCount(newCount);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      
+      // Revert to previous state if there was an error
+      setLiked(wasLiked);
+      setLikeCount(previousCount);
+      
+      // If we get a 409 error (already liked), update UI accordingly
+      if (error.response && error.response.status === 409) {
+        setLiked(true);
+        // Fetch the actual count again
+        try {
+          const actualCount = await getLikeCount('user', user.id);
+          setLikeCount(actualCount);
+        } catch (countError) {
+          console.error('Error fetching like count:', countError);
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col">
-      <div className="p-4 flex-grow">
+    <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative">
+      <Link 
+        to={`/profile/${user.id}`}
+        className="flex-grow p-4 flex flex-col"
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             {user.avatar_url ? (
@@ -39,7 +132,28 @@ export default function UserCard({ user, userIsFollowing = false }: UserCardProp
               <p className="text-sm text-gray-500 capitalize">{user.user_type || 'User'}</p>
             </div>
           </div>
-          
+        </div>
+        
+        <p className="text-gray-700 line-clamp-3 mb-4">
+          {user.bio || 'No bio available'}
+        </p>
+      </Link>
+      
+      {/* Add a footer with interaction buttons */}
+      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+        <div className="text-sm text-gray-500">
+          {user.user_type || 'User'}
+        </div>
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          <WatchButton 
+            entityType="user"
+            entityId={user.id}
+            initialWatching={userIsWatching}
+            initialCount={user.watches_count || 0}
+            showCount={false}
+            size="sm"
+            variant="ghost"
+          />
           <FollowButton 
             entityType="user"
             entityId={user.id}
@@ -47,21 +161,20 @@ export default function UserCard({ user, userIsFollowing = false }: UserCardProp
             initialCount={user.followers_count || 0}
             showCount={false}
             size="sm"
+            variant="ghost"
           />
+          <button 
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 text-sm ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            } transition-colors`}
+            aria-label={liked ? "Unlike" : "Like"}
+          >
+            <HeartIcon filled={liked} className="w-4 h-4" />
+            <span>{likeCount}</span>
+          </button>
         </div>
-        
-        <p className="text-gray-700 line-clamp-3 mb-4">
-          {user.bio || 'No bio available'}
-        </p>
-      </div>
-      
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-        <Link 
-          to={`/profile/${user.id}`}
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-        >
-          View Profile
-        </Link>
       </div>
     </div>
   );
