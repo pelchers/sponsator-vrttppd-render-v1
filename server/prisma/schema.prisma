@@ -319,6 +319,7 @@ model article_sections {
   text           String?
   media_url      String?
   media_subtext  String?
+  order          Int?
 
   articles articles @relation(fields: [article_id], references: [id], onDelete: Cascade)
 

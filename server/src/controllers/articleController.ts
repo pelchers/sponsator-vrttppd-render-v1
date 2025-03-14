@@ -40,6 +40,14 @@ export const articleController = {
       const userId = req.user.id;
       const articleData = req.body;
       
+      // Make sure sections have order values if not provided
+      if (req.body.sections) {
+        req.body.sections = req.body.sections.map((section, index) => ({
+          ...section,
+          order: section.order !== undefined ? section.order : index
+        }));
+      }
+      
       const article = await articleService.createArticle(userId, articleData);
       
       res.status(201).json(article);
@@ -55,6 +63,14 @@ export const articleController = {
       const { id } = req.params;
       const userId = req.user.id;
       const articleData = req.body;
+      
+      // Make sure sections have order values if not provided
+      if (req.body.sections) {
+        req.body.sections = req.body.sections.map((section, index) => ({
+          ...section,
+          order: section.order !== undefined ? section.order : index
+        }));
+      }
       
       const article = await articleService.updateArticle(id, userId, articleData);
       

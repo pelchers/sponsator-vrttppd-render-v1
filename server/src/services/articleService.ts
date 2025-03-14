@@ -63,19 +63,7 @@ export const articleService = {
     
     // Create the article sections
     if (sections && sections.length > 0) {
-      await Promise.all(sections.map((section: any) => 
-        prisma.article_sections.create({
-          data: {
-            article_id: article.id,
-            type: section.type,
-            title: section.title,
-            subtitle: section.subtitle,
-            text: section.text,
-            media_url: section.mediaUrl,
-            media_subtext: section.mediaSubtext
-          }
-        })
-      ));
+      await createSections(article.id, sections);
     }
     
     // Fetch the complete article with sections
@@ -123,19 +111,7 @@ export const articleService = {
     
     // Create new sections
     if (sections && sections.length > 0) {
-      await Promise.all(sections.map((section: any) => 
-        prisma.article_sections.create({
-          data: {
-            article_id: id,
-            type: section.type,
-            title: section.title,
-            subtitle: section.subtitle,
-            text: section.text,
-            media_url: section.mediaUrl,
-            media_subtext: section.mediaSubtext
-          }
-        })
-      ));
+      await createSections(id, sections);
     }
     
     // Fetch the updated article with sections
@@ -237,4 +213,24 @@ function transformDbToApi(article: any) {
       mediaSubtext: section.media_subtext
     })) || []
   };
-} 
+}
+
+// When creating article sections
+const createSections = async (articleId, sections) => {
+  const sectionPromises = sections.map((section, index) => {
+    return prisma.article_sections.create({
+      data: {
+        article_id: articleId,
+        type: section.type,
+        title: section.title,
+        subtitle: section.subtitle,
+        text: section.text,
+        media_url: section.mediaUrl,
+        media_subtext: section.mediaSubtext,
+        order: section.order !== undefined ? section.order : index
+      }
+    });
+  });
+  
+  return Promise.all(sectionPromises);
+}; 
