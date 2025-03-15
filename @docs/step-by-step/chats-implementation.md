@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 # Designing a Messaging System: Schema and Implementation Plan
 
 ## Overview
@@ -324,6 +314,7 @@ Here's how the default roles and permissions would be set up:
    - Preview of the last message in each chat
    - Unread message count
    - Search/filter functionality
+   - Button to open CreateChatComponent
 
 2. **ChatPage**
    - Message display with infinite scroll
@@ -331,6 +322,8 @@ Here's how the default roles and permissions would be set up:
    - Participant list with role management
    - Media gallery
    - Pinned messages section
+   - Access to ChatOptionsComponent, UserOptionsComponent, and MessageOptionsComponent
+   - InviteComponent for adding new users
 
 #### Components
 
@@ -343,6 +336,28 @@ Here's how the default roles and permissions would be set up:
 7. **MediaGallery** - Grid of media shared in the chat
 8. **RoleSelector** - Dropdown for changing user roles
 9. **PermissionCheck** - Component to conditionally render UI based on permissions
+10. **CreateChatComponent** - Modal for creating new chats
+    - Form for naming the chat
+    - Options for chat type (direct or group)
+    - User search for inviting initial participants
+    - Role assignment for initial participants
+11. **ChatOptionsComponent** - Modal for managing chat settings
+    - Chat information section (name, type, creation date)
+    - List of participants with roles
+    - Options based on user's role (rename chat, delete chat, etc.)
+    - Access to advanced settings
+12. **UserOptionsComponent** - Modal for user-specific actions in a chat
+    - User profile information
+    - User statistics in the chat (messages sent, join date)
+    - Role-based action buttons (assign role, remove from chat, etc.)
+13. **MessageOptionsComponent** - Modal for message-specific actions
+    - Options based on user's role (pin, edit, delete, etc.)
+    - Message information (sent time, edited status)
+    - Reaction options
+14. **InviteComponent** - Interface for adding new users to a chat
+    - Username search dropdown
+    - Role selector for new participants
+    - Add button
 
 ## Advanced Features (Future Considerations)
 
@@ -546,3 +561,126 @@ And the pages:
 This enhanced messaging system design provides a robust foundation for building a feature-rich chat application with comprehensive role-based permissions. The multi-table approach gives us flexibility to handle various use cases and add new features in the future.
 
 The role-based permission system allows for fine-grained control over who can do what in a chat, making it suitable for a wide range of use cases from simple one-on-one conversations to complex group chats with hierarchical management structures.
+
+## Component Details
+
+### CreateChatComponent
+
+This modal component allows users to create new chats:
+
+- **Functionality**:
+  - Create direct (one-on-one) or group chats
+  - Name group chats (optional for direct chats)
+  - Search and add initial participants
+  - Set initial roles for participants
+
+- **UI Elements**:
+  - Chat type selector (Direct/Group)
+  - Name input field (required for group chats)
+  - User search with dropdown results
+  - Selected users list with role assignment
+  - Create button
+
+- **Permissions**:
+  - All authenticated users can create chats
+
+### ChatOptionsComponent
+
+This modal provides chat management options:
+
+- **Functionality**:
+  - View chat information
+  - Manage chat settings
+  - Perform chat-level actions based on user role
+
+- **UI Elements**:
+  - Chat information section (name, type, created date)
+  - Participant list with roles
+  - Action buttons based on user's role
+  - Advanced settings section
+
+- **Permissions**:
+  - All participants can view basic chat info
+  - Role-based actions (only shown to users with appropriate permissions)
+
+### UserOptionsComponent
+
+This modal shows user information and provides user management options:
+
+- **Functionality**:
+  - View user profile and chat statistics
+  - Perform user-specific actions based on role
+
+- **UI Elements**:
+  - User profile section (avatar, name, bio)
+  - User chat statistics (messages, join date)
+  - Role-based action buttons
+
+- **Permissions**:
+  - All participants can view user profiles
+  - Role-based actions (only shown to users with appropriate permissions)
+
+### MessageOptionsComponent
+
+This modal provides message-specific actions:
+
+- **Functionality**:
+  - Perform actions on specific messages
+  - View message details
+
+- **UI Elements**:
+  - Message information (sent time, edited status)
+  - Action buttons based on user's role
+  - Pinned message indicator (flag emoji above message)
+
+- **Permissions**:
+  - All participants can view message details
+  - Role-based actions (only shown to users with appropriate permissions)
+
+### InviteComponent
+
+This component allows adding new users to an existing chat:
+
+- **Functionality**:
+  - Search for users by username
+  - Add selected users to the chat
+  - Assign roles to new participants
+
+- **UI Elements**:
+  - User search input with dropdown results
+  - Role selector for new participants
+  - Add button
+
+- **Permissions**:
+  - Only shown to users with the 'add_users' permission
+  - Role assignment limited by the user's own role
+
+## Implementation Flow
+
+1. **Create Chat Flow**:
+   - User clicks "New Chat" button on MessagesListPage
+   - CreateChatComponent modal opens
+   - User selects chat type, adds name (if group), and selects participants
+   - On submit, new chat is created and user is redirected to ChatPage
+
+2. **Chat Options Flow**:
+   - User clicks settings icon in ChatPage header
+   - ChatOptionsComponent modal opens
+   - User can view info and perform actions based on their role
+
+3. **User Options Flow**:
+   - User clicks on participant avatar in ChatPage
+   - UserOptionsComponent modal opens
+   - User can view profile and perform actions based on their role
+
+4. **Message Options Flow**:
+   - User clicks on a message
+   - MessageOptionsComponent modal opens
+   - User can perform actions based on their role
+   - Pinned messages show a flag emoji above them
+
+5. **Invite Flow**:
+   - User clicks "Add People" button in ChatPage
+   - InviteComponent opens
+   - User searches for and selects new participants
+   - New users are added to the chat with specified roles

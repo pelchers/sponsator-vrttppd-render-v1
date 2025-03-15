@@ -14,6 +14,8 @@ import articleRoutes from './routes/articleRoutes';
 import postRoutes from './routes/postRoutes';
 import exploreRoutes from './routes/exploreRoutes';
 import routes from './routes';
+import chatRoutes from './routes/chatRoutes';
+import permissionRoutes from './routes/permissionRoutes';
 
 dotenv.config();
 
@@ -52,6 +54,8 @@ app.use('/api/articles', articleRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/explore', exploreRoutes);
 app.use('/api', routes);
+app.use('/api/chats', chatRoutes);
+app.use('/api', permissionRoutes);
 
 // Define routes directly
 app.post('/api/register', async (req, res) => {

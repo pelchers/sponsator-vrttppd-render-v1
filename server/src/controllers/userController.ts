@@ -307,4 +307,35 @@ export async function getUserPortfolio(req: Request, res: Response) {
     console.error('Error in getUserPortfolio controller:', error);
     res.status(500).json({ message: 'Failed to fetch portfolio data' });
   }
-} 
+}
+
+export const searchUsers = async (req: Request, res: Response) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q || typeof q !== 'string') {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    const users = await prisma.users.findMany({
+      where: {
+        OR: [
+          { username: { contains: q, mode: 'insensitive' } },
+          { email: { contains: q, mode: 'insensitive' } }
+        ]
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        profile_image: true
+      },
+      take: 10
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ message: 'Failed to search users' });
+  }
+}; 

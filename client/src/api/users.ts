@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL } from './config';
+import { api } from './api';
+import { User } from '@/types/user';
 
 // Fetch user profile
 export async function fetchUserProfile(userId: string, token?: string) {
@@ -170,4 +172,10 @@ export async function deleteCaseStudy(userId: string, id: string) {
   });
   if (!response.ok) throw new Error('Failed to delete case study');
   return response.json();
-} 
+}
+
+// Search for users by username
+export const searchUsers = async (query: string): Promise<User[]> => {
+  const response = await api.get(`/users/search?q=${encodeURIComponent(query)}`);
+  return response.data;
+}; 

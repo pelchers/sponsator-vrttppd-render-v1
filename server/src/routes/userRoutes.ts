@@ -20,14 +20,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Get user by ID
-router.get('/:id', userController.getUserById);
-
-// Update user (protected route if using auth)
-router.put('/:id', authenticate, userController.updateUser);
-
-// Upload profile image
-router.post('/:id/image', authenticate, upload.single('image'), userController.uploadProfileImage);
+// IMPORTANT: Put specific routes BEFORE parameterized routes
+// Search users route must come before /:id
+router.get('/search', authenticate, userController.searchUsers);
 
 // Register new user
 router.post('/register', userController.registerUser);
@@ -41,11 +36,20 @@ router.get('/likes', authenticate, userController.getUserLikes);
 // Get user interactions (likes, follows, watches)
 router.get('/interactions', authenticate, userController.getUserInteractions);
 
-// Get specific user's portfolio - this must come BEFORE the general route
+// Get specific user's portfolio
 router.get('/portfolio/:userId', userController.getUserPortfolio);
 
 // Get current user's portfolio
 router.get('/portfolio', authenticate, userController.getUserPortfolio);
+
+// Get user by ID (this should come AFTER other specific routes)
+router.get('/:id', userController.getUserById);
+
+// Update user (protected route if using auth)
+router.put('/:id', authenticate, userController.updateUser);
+
+// Upload profile image
+router.post('/:id/image', authenticate, upload.single('image'), userController.uploadProfileImage);
 
 // Add a test endpoint to check database connection
 router.get('/test-db', async (req, res) => {

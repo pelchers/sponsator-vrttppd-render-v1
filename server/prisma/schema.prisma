@@ -90,6 +90,12 @@ model users {
   follows   follows[]
   watches   watches[]
 
+  // Add these relation fields to match the ones in the chat tables
+  created_chats         chats[]                @relation("ChatCreator")
+  chat_participations   chat_participants[]    @relation("ChatParticipant")
+  sent_messages         messages[]             @relation("MessageSender")
+  message_read_receipts message_read_receipts[] @relation("MessageReadUser")
+
   @@map("users")
 }
 
@@ -387,4 +393,140 @@ model watches {
   users       users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("watches")
+}
+
+model chats {
+  id              String    @id @default(uuid())
+  name            String?   // Optional name for group chats
+  type            String    // "direct" or "group"
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now())
+  last_message_at DateTime  @default(now())
+  created_by      String    // User who created the chat
+  
+  // Relationships
+  messages        messages[]
+  participants    chat_participants[]
+  
+  // The user who created the chat - add relation name
+  creator         users     @relation("ChatCreator", fields: [created_by], references: [id], onDelete: Cascade)
+  
+  @@map("chats")
+}
+
+model chat_roles {
+  id              String    @id @default(uuid())
+  name            String    // e.g., "owner", "admin", "moderator", "helper", "chatter", "spectator"
+  description     String?
+  
+  // Relationships
+  permissions     chat_role_permissions[]
+  participants    chat_participants[]
+  
+  @@unique([name])
+  @@map("chat_roles")
+}
+
+model chat_permissions {
+  id              String    @id @default(uuid())
+  name            String    // e.g., "delete_chat", "add_users", "remove_users", "change_roles", "delete_messages", "send_messages", "read_messages"
+  description     String?
+  
+  // Relationships
+  roles           chat_role_permissions[]
+  
+  @@unique([name])
+  @@map("chat_permissions")
+}
+
+model chat_role_permissions {
+  id              String    @id @default(uuid())
+  role_id         String
+  permission_id   String
+  
+  // Relationships
+  role            chat_roles         @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permission      chat_permissions   @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+  
+  @@unique([role_id, permission_id])
+  @@map("chat_role_permissions")
+}
+
+model chat_participants {
+  id              String    @id @default(uuid())
+  chat_id         String
+  user_id         String
+  role_id         String    // Reference to chat_roles
+  joined_at       DateTime  @default(now())
+  left_at         DateTime? // Null if still in the chat
+  last_read_at    DateTime  @default(now()) // When the user last read the chat
+  muted           Boolean   @default(false)
+  
+  // Relationships
+  chat            chats     @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  user            users     @relation("ChatParticipant", fields: [user_id], references: [id], onDelete: Cascade)
+  role            chat_roles @relation(fields: [role_id], references: [id])
+  
+  @@unique([chat_id, user_id]) // A user can only be in a chat once
+  @@map("chat_participants")
+}
+
+model messages {
+  id              String    @id @default(uuid())
+  chat_id         String
+  sender_id       String
+  content         String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now())
+  is_edited       Boolean   @default(false)
+  is_pinned       Boolean   @default(false)
+  parent_id       String?   // For replies/threads
+  
+  // Message type (text, image, file, etc.)
+  type            String    @default("text")
+  
+  // For media messages
+  media_url       String?
+  media_type      String?
+  
+  // Relationships
+  chat            chats     @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  sender          users     @relation("MessageSender", fields: [sender_id], references: [id], onDelete: Cascade)
+  parent          messages? @relation("MessageReplies", fields: [parent_id], references: [id], onDelete: SetNull)
+  replies         messages[] @relation("MessageReplies")
+  read_receipts   message_read_receipts[]
+  media_attachments message_media[]
+  
+  @@map("messages")
+}
+
+model message_read_receipts {
+  id              String    @id @default(uuid())
+  message_id      String
+  user_id         String
+  read_at         DateTime  @default(now())
+  
+  // Relationships
+  message         messages  @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  user            users     @relation("MessageReadUser", fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@unique([message_id, user_id]) // A user can only read a message once
+  @@map("message_read_receipts")
+}
+
+model message_media {
+  id              String    @id @default(uuid())
+  message_id      String
+  url             String
+  type            String    // e.g., "image", "video", "file"
+  filename        String?
+  size            Int?      // Size in bytes
+  width           Int?      // For images/videos
+  height          Int?      // For images/videos
+  duration        Int?      // For videos/audio (in seconds)
+  
+  // Relationships
+  message         messages  @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  
+  @@map("message_media")
 }

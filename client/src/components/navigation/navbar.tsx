@@ -82,6 +82,11 @@ export default function Navbar() {
                     Edit Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Messages</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/messages')}>
+                    My Messages
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuLabel>Projects</DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => navigate('/projects')}>
                     My Projects

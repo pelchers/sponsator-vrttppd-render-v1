@@ -5,6 +5,8 @@ import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/signup'
 import ProfilePage from '../pages/profile/profile'
 import ProfileEditPage from '../pages/profile/editprofile'
+import MessagesListPage from '../pages/messages/MessagesListPage'
+import ChatPage from '../pages/messages/ChatPage'
 
 // Import project pages directly with full path
 import ProjectsListPage from '../pages/project/projectslist'
@@ -43,6 +45,15 @@ export const router = createBrowserRouter([
   {
     path: "/profile/:id/edit",
     element: <Layout><ProfileEditPage /></Layout>,
+  },
+  // Messages routes
+  {
+    path: "/messages",
+    element: <Layout><MessagesListPage /></Layout>,
+  },
+  {
+    path: "/messages/:chatId",
+    element: <Layout><ChatPage /></Layout>,
   },
   // Project routes with leading slash
   {
