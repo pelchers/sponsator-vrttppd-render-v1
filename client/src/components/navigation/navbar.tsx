@@ -19,36 +19,68 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  // Common button styles for nav items
+  const navButtonClass = "transition-all duration-200 hover:scale-105 hover:text-green-500 font-medium";
+  const dropdownItemClass = "transition-all duration-200 hover:bg-green-50 hover:text-green-500 cursor-pointer";
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
+          <div className="flex items-center">
             {/* Logo/Home */}
             <div className="flex-shrink-0 flex items-center">
-              <Button variant="ghost" onClick={() => navigate('/')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/')}
+                className={navButtonClass}
+              >
                 Home
               </Button>
             </div>
             
             {/* Main Navigation */}
-            <div className="hidden md:ml-6 md:flex md:space-x-2">
-              <Button variant="ghost" onClick={() => navigate('/projects')}>
+            <div className="hidden md:ml-6 md:flex md:space-x-1 items-center">
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/projects')}
+                className={navButtonClass}
+              >
                 Projects
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/article')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/article')}
+                className={navButtonClass}
+              >
                 Articles
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/post')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/post')}
+                className={navButtonClass}
+              >
                 Posts
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/explore')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/explore')}
+                className={navButtonClass}
+              >
                 Explore
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/likes')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/likes')}
+                className={navButtonClass}
+              >
                 Likes
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/mystuff')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/mystuff')}
+                className={navButtonClass}
+              >
                 My Stuff
               </Button>
               <Button 
@@ -60,6 +92,7 @@ export default function Navbar() {
                     navigate('/portfolio');
                   }
                 }}
+                className={navButtonClass}
               >
                 Portfolio
               </Button>
@@ -70,62 +103,107 @@ export default function Navbar() {
             {userId ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost">Menu</Button>
+                  <Button 
+                    variant="ghost"
+                    className={navButtonClass}
+                  >
+                    Menu
+                  </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel className="font-semibold">My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate(`/profile/${userId}`)}>
+                  <DropdownMenuItem 
+                    onClick={() => navigate(`/profile/${userId}`)}
+                    className={dropdownItemClass}
+                  >
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate(`/profile/${userId}/edit`)}>
+                  <DropdownMenuItem 
+                    onClick={() => navigate(`/profile/${userId}/edit`)}
+                    className={dropdownItemClass}
+                  >
                     Edit Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Messages</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => navigate('/messages')}>
+                  <DropdownMenuLabel className="font-semibold">Messages</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/messages')}
+                    className={dropdownItemClass}
+                  >
                     My Messages
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Projects</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => navigate('/projects')}>
+                  <DropdownMenuLabel className="font-semibold">Projects</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/projects')}
+                    className={dropdownItemClass}
+                  >
                     My Projects
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/projects/new')}>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/projects/new')}
+                    className={dropdownItemClass}
+                  >
                     Create Project
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Articles</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => navigate('/article')}>
+                  <DropdownMenuLabel className="font-semibold">Articles</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/article')}
+                    className={dropdownItemClass}
+                  >
                     My Articles
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/article/edit/new')}>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/article/edit/new')}
+                    className={dropdownItemClass}
+                  >
                     Create Article
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Posts</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => navigate('/post')}>
+                  <DropdownMenuLabel className="font-semibold">Posts</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/post')}
+                    className={dropdownItemClass}
+                  >
                     My Posts
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/post/edit/new')}>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/post/edit/new')}
+                    className={dropdownItemClass}
+                  >
                     Create Post
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/likes')}>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/likes')}
+                    className={dropdownItemClass}
+                  >
                     My Likes
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 cursor-pointer"
+                  >
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => navigate('/login')}>
+              <div className="flex gap-2 items-center">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate('/login')}
+                  className={navButtonClass}
+                >
                   Login
                 </Button>
-                <Button onClick={() => navigate('/register')}>
+                <Button 
+                  onClick={() => navigate('/register')}
+                  className="bg-blue-500 hover:bg-green-500 text-white transition-all duration-200 hover:scale-105"
+                >
                   Sign Up
                 </Button>
               </div>
