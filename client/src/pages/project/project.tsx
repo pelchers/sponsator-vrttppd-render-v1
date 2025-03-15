@@ -35,6 +35,10 @@ import {
   defaultContractTypeOptions
 } from '@/components/input/forms/config/projectFormConfig';
 import "@/components/input/forms/ProjectEditFormV3.css";
+import { HeartIcon } from '@/components/icons/HeartIcon';
+import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
+import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 
 const DisplayField = ({ label, value }: { label: string; value: string | number | null | undefined }) => (
   <div className="form-group">
@@ -386,6 +390,9 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   
   const currentUser = getCurrentUser();
   const isProjectOwner = currentUser?.id === project?.user_id;
@@ -410,6 +417,24 @@ export default function ProjectPage() {
     
     loadProject();
   }, [id]);
+
+  useEffect(() => {
+    const fetchLikeData = async () => {
+      if (!project) return;
+      
+      try {
+        const count = await getLikeCount('project', project.id);
+        setLikeCount(count);
+        
+        const hasLiked = await checkLikeStatus('project', project.id);
+        setLiked(hasLiked);
+      } catch (error) {
+        console.error('Error fetching like data:', error);
+      }
+    };
+    
+    fetchLikeData();
+  }, [project]);
   
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this project?')) {
@@ -426,6 +451,42 @@ export default function ProjectPage() {
       setError('Failed to delete project');
     } finally {
       setDeleting(false);
+    }
+  };
+  
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isLoading || !project) return;
+    
+    setIsLoading(true);
+    
+    const wasLiked = liked;
+    const previousCount = likeCount;
+    
+    setLiked(!liked);
+    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
+    
+    try {
+      let newCount;
+      if (liked) {
+        await unlikeEntity('project', project.id);
+        newCount = await getLikeCount('project', project.id);
+        setLiked(false);
+      } else {
+        await likeEntity('project', project.id);
+        newCount = await getLikeCount('project', project.id);
+        setLiked(true);
+      }
+      
+      setLikeCount(newCount);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      setLiked(wasLiked);
+      setLikeCount(previousCount);
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -518,6 +579,49 @@ export default function ProjectPage() {
             Edit Project
           </Button>
         )}
+      </div>
+      
+      <div className="flex justify-center items-center space-x-6 mt-4">
+        <div className="flex flex-col items-center">
+          <button 
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 text-sm ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            } transition-colors`}
+            aria-label={liked ? "Unlike" : "Like"}
+          >
+            <HeartIcon filled={liked} className="w-6 h-6" />
+            <span className="font-medium">{likeCount}</span>
+          </button>
+          <span className="text-xs text-gray-500 mt-1">Likes</span>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <WatchButton 
+            entityType="project"
+            entityId={project.id}
+            initialWatching={false}
+            initialCount={project.watches_count || 0}
+            showCount={true}
+            size="lg"
+            variant="ghost"
+          />
+          <span className="text-xs text-gray-500 mt-1">Watching</span>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <FollowButton 
+            entityType="project"
+            entityId={project.id}
+            initialFollowing={false}
+            initialCount={project.followers_count || 0}
+            showCount={true}
+            size="lg"
+            variant="ghost"
+          />
+          <span className="text-xs text-gray-500 mt-1">Followers</span>
+        </div>
       </div>
       
       {/* Wrap all sections in a single parent div */}

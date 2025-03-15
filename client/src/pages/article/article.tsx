@@ -4,6 +4,10 @@ import { fetchArticle } from '@/api/articles';
 import PageSection from "@/components/sections/PageSection";
 import { Button } from "@/components/ui/button";
 import './Article.css';
+import { HeartIcon } from '@/components/icons/HeartIcon';
+import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
+import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 
 export default function ArticleViewPage() {
   const { id } = useParams();
@@ -12,6 +16,9 @@ export default function ArticleViewPage() {
   const [error, setError] = useState(null);
   const [comment, setComment] = useState({ author: '', text: '' });
   const [comments, setComments] = useState([]);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Fetch the actual article data from the API
@@ -49,6 +56,26 @@ export default function ArticleViewPage() {
     }
   }, [id]);
 
+  useEffect(() => {
+    const fetchLikeData = async () => {
+      if (!article) return;
+      
+      try {
+        // Get current like count
+        const count = await getLikeCount('article', article.id);
+        setLikeCount(count);
+        
+        // Check if user has liked this article
+        const hasLiked = await checkLikeStatus('article', article.id);
+        setLiked(hasLiked);
+      } catch (error) {
+        console.error('Error fetching like data:', error);
+      }
+    };
+    
+    fetchLikeData();
+  }, [article]);
+
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (!comment.author || !comment.text) return;
@@ -56,6 +83,39 @@ export default function ArticleViewPage() {
     // In a real app, you'd send this to the server
     setComments([...comments, comment]);
     setComment({ author: '', text: '' });
+  };
+
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isLoading || !article) return;
+    
+    setIsLoading(true);
+    
+    // Optimistic update
+    setLiked(!liked);
+    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
+    
+    try {
+      if (liked) {
+        await unlikeEntity('article', article.id);
+        setLiked(false);
+        setLikeCount(prev => Math.max(0, prev - 1));
+      } else {
+        await likeEntity('article', article.id);
+        setLiked(true);
+        setLikeCount(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      // If we get a 409 error (already liked), just update the UI to show as liked
+      if (error.response && error.response.status === 409) {
+        setLiked(true);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (loading) {
@@ -85,6 +145,49 @@ export default function ArticleViewPage() {
   return (
     <div className="article-container">
       <h1 className="article-title">{article.title}</h1>
+
+      <div className="flex justify-center items-center space-x-6 mt-4">
+        <div className="flex flex-col items-center">
+          <button 
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 text-sm ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            } transition-colors`}
+            aria-label={liked ? "Unlike" : "Like"}
+          >
+            <HeartIcon filled={liked} className="w-6 h-6" />
+            <span className="font-medium">{likeCount}</span>
+          </button>
+          <span className="text-xs text-gray-500 mt-1">Likes</span>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <WatchButton 
+            entityType="article"
+            entityId={article.id}
+            initialWatching={false}
+            initialCount={article.watches_count || 0}
+            showCount={true}
+            size="lg"
+            variant="ghost"
+          />
+          <span className="text-xs text-gray-500 mt-1">Watching</span>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <FollowButton 
+            entityType="article"
+            entityId={article.id}
+            initialFollowing={false}
+            initialCount={article.followers_count || 0}
+            showCount={true}
+            size="lg"
+            variant="ghost"
+          />
+          <span className="text-xs text-gray-500 mt-1">Followers</span>
+        </div>
+      </div>
 
       <div className="article-tags">
         {article.tags && article.tags.map((tag) => (

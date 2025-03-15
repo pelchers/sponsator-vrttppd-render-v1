@@ -7,6 +7,12 @@ import PillTag from "@/components/input/forms/PillTag"
 import { Button } from "@/components/ui/button"
 import Layout from "@/components/layout/Layout"
 import './Profile.css'
+import { createChat } from '@/api/chats';
+import { Loader } from '@/components/ui/loader';
+import { HeartIcon } from '@/components/icons/HeartIcon';
+import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
+import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +20,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function loadUser() {
@@ -77,12 +87,91 @@ export default function Profile() {
     loadUser();
   }, [id, navigate]);
 
+  useEffect(() => {
+    const fetchLikeData = async () => {
+      if (!user) return;
+      
+      try {
+        // Get current like count
+        const count = await getLikeCount('user', user.id);
+        setLikeCount(count);
+        
+        // Check if user has liked this user
+        const hasLiked = await checkLikeStatus('user', user.id);
+        setLiked(hasLiked);
+      } catch (error) {
+        console.error('Error fetching like data:', error);
+      }
+    };
+    
+    fetchLikeData();
+  }, [user]);
+
+  const handleMessageUser = async () => {
+    if (!user) return;
+    
+    try {
+      setIsCreatingChat(true);
+      const newChat = await createChat({
+        type: 'direct',
+        name: `Chat with ${user.username}`,
+        participants: [user.id]
+      });
+      
+      // Redirect to the new chat
+      navigate(`/messages/${newChat.id}`);
+    } catch (error) {
+      console.error('Error creating chat:', error);
+      // Fallback to messages list if chat creation fails
+      navigate('/messages');
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
+
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isLoading || !user) return;
+    
+    setIsLoading(true);
+    
+    // Store the current state before optimistic update
+    const wasLiked = liked;
+    const previousCount = likeCount;
+    
+    // Optimistic update
+    setLiked(!liked);
+    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
+    
+    try {
+      let newCount;
+      if (liked) {
+        await unlikeEntity('user', user.id);
+        newCount = await getLikeCount('user', user.id);
+        setLiked(false);
+      } else {
+        await likeEntity('user', user.id);
+        newCount = await getLikeCount('user', user.id);
+        setLiked(true);
+      }
+      
+      setLikeCount(newCount);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      setLiked(wasLiked);
+      setLikeCount(previousCount);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (loading) return <div className="container mx-auto px-4 py-8">Loading...</div>;
   if (error) return <div className="container mx-auto px-4 py-8">Error: {error}</div>;
   if (!user) return <div className="container mx-auto px-4 py-8">User not found</div>;
 
   return (
-    
       <div className="w-full">
         <div className="profile-container">
           <div className="profile-sections-container">
@@ -96,6 +185,20 @@ export default function Profile() {
                     className="bg-blue-600 text-white hover:bg-blue-700"
                   >
                     View Portfolio
+                  </Button>
+                  <Button 
+                    onClick={handleMessageUser}
+                    disabled={isCreatingChat}
+                    variant="outline"
+                  >
+                    {isCreatingChat ? (
+                      <>
+                        <Loader size="sm" className="mr-2" />
+                        Creating Chat...
+                      </>
+                    ) : (
+                      'Message'
+                    )}
                   </Button>
                   {/* Only show Edit button if it's the user's own profile */}
                   {localStorage.getItem('userId') === id && (
@@ -114,6 +217,48 @@ export default function Profile() {
                   alt="Profile" 
                   className="profile-image"
                 />
+                <div className="flex justify-center items-center space-x-6 mt-4">
+                  <div className="flex flex-col items-center">
+                    <button 
+                      onClick={handleLikeToggle}
+                      disabled={isLoading}
+                      className={`flex items-center gap-1 text-sm ${
+                        liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                      } transition-colors`}
+                      aria-label={liked ? "Unlike" : "Like"}
+                    >
+                      <HeartIcon filled={liked} className="w-6 h-6" />
+                      <span className="font-medium">{likeCount}</span>
+                    </button>
+                    <span className="text-xs text-gray-500 mt-1">Likes</span>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <WatchButton 
+                      entityType="user"
+                      entityId={user.id}
+                      initialWatching={false}
+                      initialCount={user.watches_count || 0}
+                      showCount={true}
+                      size="lg"
+                      variant="ghost"
+                    />
+                    <span className="text-xs text-gray-500 mt-1">Watching</span>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <FollowButton 
+                      entityType="user"
+                      entityId={user.id}
+                      initialFollowing={false}
+                      initialCount={user.followers_count || 0}
+                      showCount={true}
+                      size="lg"
+                      variant="ghost"
+                    />
+                    <span className="text-xs text-gray-500 mt-1">Followers</span>
+                  </div>
+                </div>
               </div>
               <div className="profile-grid">
                 <div className="info-group">
@@ -492,7 +637,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-  
   )
 }
 
