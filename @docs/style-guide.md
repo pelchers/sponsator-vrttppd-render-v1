@@ -57,6 +57,49 @@ All interactive elements should use:
 - Hover scale effect: `hover:scale-105`
 - Color transitions should be included in the transition
 
+### Card Conventions
+1. **Standard Content Card**
+```typescript
+// Base card container
+className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative transition-all duration-250 hover:scale-105 hover:shadow-lg"
+
+// Card link wrapper with group hover
+className="flex-grow p-4 flex flex-col group"
+
+// Card title with hover effect
+className="font-medium text-gray-900 group-hover:text-green-500 transition-colors duration-250"
+
+// Card content with hover effect
+className="text-gray-700 group-hover:text-gray-900 transition-colors duration-250"
+
+// Interactive elements (buttons, links)
+className="transition-all duration-250 hover:scale-105"
+```
+
+2. **Card Interaction Elements**
+- All cards should scale up on hover
+- Content should smoothly transition colors on hover
+- Interactive elements should have their own hover states
+- Consistent timing (250ms) for all transitions
+- Enhanced shadow on card hover
+
+3. **Card Footer**
+```typescript
+// Footer container
+className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center"
+
+// Action buttons
+className="flex items-center gap-2"
+```
+
+### Card Best Practices
+1. Use `group` for coordinated hover effects
+2. Maintain consistent spacing (p-4 for content)
+3. Include hover feedback for all interactive elements
+4. Use semantic HTML structure
+5. Implement proper error handling for images
+6. Follow accessibility guidelines
+
 ## Icons & Images
 [To be defined]
 

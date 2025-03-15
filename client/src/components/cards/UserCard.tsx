@@ -99,10 +99,10 @@ export default function UserCard({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative">
+    <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative transition-all duration-250 hover:scale-105 hover:shadow-lg">
       <Link 
         to={`/profile/${user.id}`}
-        className="flex-grow p-4 flex flex-col"
+        className="flex-grow p-4 flex flex-col group"
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
@@ -112,7 +112,6 @@ export default function UserCard({
                 alt={`${user.username}'s avatar`}
                 className="w-10 h-10 rounded-full object-cover mr-3"
                 onError={(e) => {
-                  // Replace with DefaultAvatar component if image fails to load
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   const parent = target.parentElement;
@@ -128,18 +127,20 @@ export default function UserCard({
               <DefaultAvatar className="w-10 h-10 mr-3" />
             )}
             <div>
-              <h3 className="font-medium text-gray-900">{user.username}</h3>
+              <h3 className="font-medium text-gray-900 group-hover:text-green-500 transition-colors duration-250">
+                {user.username}
+              </h3>
               <p className="text-sm text-gray-500 capitalize">{user.user_type || 'User'}</p>
             </div>
           </div>
         </div>
         
-        <p className="text-gray-700 line-clamp-3 mb-4">
+        <p className="text-gray-700 line-clamp-3 mb-4 group-hover:text-gray-900 transition-colors duration-250">
           {user.bio || 'No bio available'}
         </p>
       </Link>
       
-      {/* Add a footer with interaction buttons */}
+      {/* Footer with interaction buttons */}
       <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
         <div className="text-sm text-gray-500">
           {user.user_type || 'User'}
@@ -166,9 +167,9 @@ export default function UserCard({
           <button 
             onClick={handleLikeToggle}
             disabled={isLoading}
-            className={`flex items-center gap-1 text-sm ${
+            className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
               liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-            } transition-colors`}
+            }`}
             aria-label={liked ? "Unlike" : "Like"}
           >
             <HeartIcon filled={liked} className="w-4 h-4" />

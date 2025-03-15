@@ -33,7 +33,7 @@ export default function Navbar() {
               <Button 
                 variant="ghost" 
                 onClick={() => navigate('/')}
-                className={navButtonClass}
+                className={`${navButtonClass} font-honk text-4xl tracking-wide`}
               >
                 Home
               </Button>

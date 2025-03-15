@@ -135,14 +135,14 @@ export default function ProjectCard({
   };
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden">
-      <Link to={`/projects/${project.id}`} className="flex-grow">
+    <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
+      <Link to={`/projects/${project.id}`} className="flex-grow group">
         {project.mediaUrl && (
           <div className="aspect-video w-full overflow-hidden">
             <img 
               src={project.mediaUrl} 
               alt={title} 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = 'https://via.placeholder.com/300x200?text=Project+Image';
@@ -173,14 +173,23 @@ export default function ProjectCard({
               <DefaultAvatar className="w-10 h-10 mr-3" />
             )}
             <div>
-              <Link to={`/profile/${userId}`} className="font-medium text-gray-900 hover:underline">
+              <Link 
+                to={`/profile/${userId}`} 
+                className="font-medium text-gray-900 hover:text-green-500 transition-colors duration-250"
+              >
                 {username}
               </Link>
               <p className="text-sm text-gray-500">{timeAgo}</p>
             </div>
           </div>
-          <h3 className="text-xl font-semibold mb-2 hover:text-blue-600">{title}</h3>
-          {description && <p className="text-gray-700 mb-3">{truncatedDescription}</p>}
+          <h3 className="text-xl font-semibold mb-2 group-hover:text-green-500 transition-colors duration-250">
+            {title}
+          </h3>
+          {description && (
+            <p className="text-gray-700 mb-3 group-hover:text-gray-900 transition-colors duration-250">
+              {truncatedDescription}
+            </p>
+          )}
           
           {project.budget && (
             <div className="text-sm text-gray-600 mb-2">
@@ -250,9 +259,9 @@ export default function ProjectCard({
           <button 
             onClick={handleLikeToggle}
             disabled={isLoading}
-            className={`flex items-center gap-1 text-sm ${
+            className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
               liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-            } transition-colors`}
+            }`}
             aria-label={liked ? "Unlike" : "Like"}
           >
             <HeartIcon filled={liked} className="w-4 h-4" />

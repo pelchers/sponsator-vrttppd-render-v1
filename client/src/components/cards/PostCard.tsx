@@ -120,14 +120,14 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
   };
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden">
-      <Link to={`/post/${post.id}`} className="flex-grow">
+    <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
+      <Link to={`/post/${post.id}`} className="flex-grow group">
         {post.mediaUrl && (
           <div className="aspect-video w-full overflow-hidden">
             <img 
               src={post.mediaUrl} 
               alt={title} 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
@@ -159,14 +159,21 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
               <DefaultAvatar className="w-10 h-10 mr-3" />
             )}
             <div>
-              <Link to={`/profile/${userId}`} className="font-medium text-gray-900 hover:underline">
+              <Link 
+                to={`/profile/${userId}`} 
+                className="font-medium text-gray-900 hover:text-green-500 transition-colors duration-250"
+              >
                 {username}
               </Link>
               <p className="text-sm text-gray-500">{timeAgo}</p>
             </div>
           </div>
-          <h3 className="text-xl font-semibold mb-2 hover:text-blue-600">{title}</h3>
-          <p className="text-gray-700">{truncatedContent}</p>
+          <h3 className="text-xl font-semibold mb-2 group-hover:text-green-500 transition-colors duration-250">
+            {title}
+          </h3>
+          <p className="text-gray-700 group-hover:text-gray-900 transition-colors duration-250">
+            {truncatedContent}
+          </p>
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {tags.slice(0, 3).map((tag, index) => (
@@ -188,9 +195,9 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
         <button 
           onClick={handleLikeToggle}
           disabled={isLoading}
-          className={`flex items-center gap-1 text-sm ${
+          className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
             liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-          } transition-colors`}
+          }`}
           aria-label={liked ? "Unlike" : "Like"}
         >
           <HeartIcon filled={liked} className="w-4 h-4" />
