@@ -20,19 +20,19 @@ export default function Navbar() {
   };
 
   // Common button styles for nav items
-  const navButtonClass = "transition-all duration-200 hover:scale-105 hover:text-green-500 font-medium";
-  const dropdownItemClass = "transition-all duration-200 hover:bg-green-50 hover:text-green-500 cursor-pointer";
+  const navButtonClass = "transition-all duration-250 hover:scale-105 hover:text-green-500 font-medium";
+  const dropdownItemClass = "transition-all duration-250 hover:bg-green-50 hover:text-green-500 cursor-pointer";
 
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            {/* Logo/Home */}
+            {/* Logo/Home - Updated with conditional navigation */}
             <div className="flex-shrink-0 flex items-center">
               <Button 
                 variant="ghost" 
-                onClick={() => navigate('/')}
+                onClick={() => navigate(userId ? '/home' : '/')}
                 className={`${navButtonClass} font-honk text-4xl tracking-wide`}
               >
                 Home
@@ -111,6 +111,20 @@ export default function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel className="font-semibold">Navigation</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate(userId ? '/home' : '/')}
+                    className={dropdownItemClass}
+                  >
+                    Home
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/')}
+                    className={dropdownItemClass}
+                  >
+                    Landing Page
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuLabel className="font-semibold">My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 

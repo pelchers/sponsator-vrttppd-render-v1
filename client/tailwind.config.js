@@ -38,7 +38,38 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-      }
+      },
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'float-delay-1': 'float 6s ease-in-out infinite 0.2s',
+        'float-delay-2': 'float 6s ease-in-out infinite 0.4s',
+        'fade-in': 'fadeIn 0.6s ease-out forwards',
+        'fade-in-delay-1': 'fadeIn 0.6s ease-out 0.2s forwards',
+        'fade-in-delay-2': 'fadeIn 0.6s ease-out 0.4s forwards',
+        'fade-in-delay-3': 'fadeIn 0.6s ease-out 0.6s forwards',
+        'bounce': 'bounce 2s infinite',
+        'carousel': 'carousel 30s linear infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        carousel: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-300%)' }
+        },
+      },
+      textShadow: {
+        'lg': '4px 4px 0px rgba(37, 99, 235, 0.2)',
+      },
+      transitionProperty: {
+        'scroll': 'opacity, transform',
+      },
     },
   },
   plugins: [

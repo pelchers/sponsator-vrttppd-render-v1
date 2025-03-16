@@ -165,6 +165,58 @@ const interactiveElement = "transition-all duration-200 hover:scale-105 cursor-p
 - Keep transitions under 300ms for responsiveness
 - Avoid animating layout properties when possible
 
+# Landing Page Conventions
+
+## Section Organization
+1. Hero Section
+2. How It Works
+3. Success Stories Testimonials
+4. For Creators/Brands Split Sections
+5. Platform Metrics
+6. Platform Features
+7. Why Choose Us
+8. Success Stories Gallery
+9. About Platform
+10. Our Commitment
+11. Join Waitlist
+12. Footer
+
+## Animation Standards
+- Scroll Fade: `scroll-fade invisible transition-all duration-700 transform translate-y-10 opacity-0`
+- Hover Effects: `transition-all duration-250 hover:scale-105`
+- Float Animation: `animate-float` (variants: `animate-float-delay-1`, `animate-float-delay-2`)
+- Carousel: `animate-carousel` for auto-scrolling galleries
+
+## Section Layout
+- Standard Padding: `py-16 px-4`
+- Content Container: `max-w-6xl mx-auto`
+- Background Pattern: Alternate between:
+  - `bg-white`
+  - `bg-gray-50`
+  - `bg-blue-600` (for highlight sections)
+- Card Shadows: `shadow-lg hover:shadow-xl`
+- Border Radius: `rounded-2xl`
+
+## Interactive Components
+- Primary Button: `bg-blue-600 hover:bg-green-500 text-white`
+- Secondary Button: `border-2 border-blue-600 text-blue-600 hover:bg-green-500`
+- Transitions: `transition-all duration-250 hover:scale-105`
+
+## Typography Hierarchy
+- Section Headers: `text-4xl font-semibold text-center mb-16`
+- Brand Font Usage: `font-honk` for special text elements
+- Text Colors: 
+  - Body: `text-gray-600`
+  - Secondary: `text-gray-500`
+  - Accent: `text-blue-600`
+
+## Responsive Patterns
+- Mobile-First Design
+- Grid Breakpoints:
+  - md: `md:grid-cols-2`
+  - lg: `lg:grid-cols-4`
+- Stack on mobile, grid on desktop
+
 ---
 
 Note: This style guide is a living document and will be updated as we establish more conventions and design patterns. 

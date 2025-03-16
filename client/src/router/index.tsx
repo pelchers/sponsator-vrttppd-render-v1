@@ -24,10 +24,15 @@ import ExplorePage from '../pages/explore/Explore'
 import LikesPage from '@/pages/likes/Likes'
 import MyStuffPage from '@/pages/mystuff/mystuff'
 import PortfolioPage from '@/pages/portfolio/portfolio'
+import Landing from '../pages/landing/Landing'
 
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <Layout><Landing /></Layout>,
+  },
+  {
+    path: "/home",
     element: <Layout><Home /></Layout>,
   },
   {

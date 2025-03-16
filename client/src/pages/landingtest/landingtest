@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Name - Connect Brands & Creators</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Honk&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <button class="menu-toggle">☰</button>
+        <div class="nav-logo">SPONSATOR</div>
+        <div class="nav-links">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#creators" class="nav-link">For Creators</a>
+            <a href="#brands" class="nav-link">For Brands</a>
+            <a href="#about" class="nav-link">About</a>
+        </div>
+        <button class="cta-button nav-cta">Join Waitlist</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <span class="floating-emoji top-right">✨</span>
+        <div class="hero-content">
+            <h1 id="hero-title">Where Brands & Creators Unite</h1>
+            <p class="fade-in-delay-1">Connect authentically. Create meaningfully. Grow together.</p>
+            <div class="cta-group fade-in-delay-2">
+                <button class="cta-button primary">Join as Creator</button>
+                <button class="cta-button secondary">Join as Brand</button>
+            </div>
+        </div>
+        <div class="hero-stats fade-in-delay-3">
+            <div class="stat">
+                <span class="stat-number">2.5K+</span>
+                <span class="stat-label">Creators</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Brands</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">10K+</span>
+                <span class="stat-label">Collaborations</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <span class="floating-emoji bottom-right">💡</span>
+        <h2 class="section-title scroll-fade">Why Choose Us</h2>
+        <div class="features-grid">
+            <div class="feature-card scroll-fade">
+                <div class="feature-icon">🤝</div>
+                <h3>Smart Matching</h3>
+                <p>AI-powered creator-brand matching based on authentic alignment</p>
+            </div>
+            <div class="feature-card scroll-fade">
+                <div class="feature-icon">📈</div>
+                <h3>Real Analytics</h3>
+                <p>Deep insights into campaign performance and audience engagement</p>
+            </div>
+            <div class="feature-card scroll-fade">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Payments</h3>
+                <p>Protected payments and clear contract management</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <h2 class="section-title scroll-fade">Success Stories</h2>
+        <div class="gallery-container scroll-fade">
+            <div class="gallery-track">
+                <div class="gallery-slide">
+                    <img src="https://picsum.photos/800/600?random=1" alt="Success Story 1">
+                    <div class="slide-content">
+                        <h3>Beauty Brand Collab</h3>
+                        <p>500K+ Reach • 25% Engagement</p>
+                    </div>
+                </div>
+                <div class="gallery-slide">
+                    <img src="https://picsum.photos/800/600?random=2" alt="Success Story 2">
+                    <div class="slide-content">
+                        <h3>Tech Launch Campaign</h3>
+                        <p>1M+ Impressions • 40K Conversions</p>
+                    </div>
+                </div>
+                <div class="gallery-slide">
+                    <img src="https://picsum.photos/800/600?random=3" alt="Success Story 3">
+                    <div class="slide-content">
+                        <h3>Fashion Collection</h3>
+                        <p>300K+ Sales • 15% Attribution</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Split Section -->
+    <section id="creators" class="split-section">
+        <span class="floating-emoji top-left">🚀</span>
+        <span class="floating-emoji top-right">🎥</span>
+        <div class="split-content left scroll-fade">
+            <div class="content-square">
+                <h2 id="black-outline">For Creators</h2>
+                <ul class="feature-list">
+                    <li>AI-Powered Brand Matching</li>
+                    <li>Automated Payment System</li>
+                    <li>Performance Analytics</li>
+                    <li>Content Planning Tools</li>
+                </ul>
+                <button class="cta-button primary">Start Creating</button>
+            </div>
+        </div>
+        <div class="split-content right">
+            <div class="profile-card-container">
+                <div class="profile-card-detailed">
+                    <div class="card-header">
+                        <img src="https://picsum.photos/150/150" alt="Creator Profile" class="profile-pic">
+                        <h3>Sarah Johnson</h3>
+                        <p>Lifestyle Creator</p>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">500K+</span>
+                            <span class="stat-label">Followers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">15%</span>
+                            <span class="stat-label">Eng. Rate</span>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        <h4>Recent Campaigns</h4>
+                        <ul>
+                            <li>Beauty Brand Launch</li>
+                            <li>Tech Product Review</li>
+                            <li>Fashion Collection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Split Section for Brands -->
+    <section id="brands" class="split-section">
+        <span class="floating-emoji bottom-left">📊</span>
+        <div class="split-content right">
+            <div class="profile-card-container">
+                <div class="profile-card-detailed">
+                    <div class="card-header">
+                        <img src="https://picsum.photos/150/150?random=2" alt="Brand Profile" class="profile-pic">
+                        <h3>TechVibe</h3>
+                        <p>Tech & Lifestyle Brand</p>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">250+</span>
+                            <span class="stat-label">Campaigns</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">98%</span>
+                            <span class="stat-label">Success Rate</span>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        <h4>Recent Collaborations</h4>
+                        <ul>
+                            <li>Product Launch Series</li>
+                            <li>Influencer Showcase</li>
+                            <li>Brand Ambassador Program</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="split-content left scroll-fade">
+            <div class="content-square">
+                <h2 id="black-outline">For Brands</h2>
+                <ul class="feature-list">
+                    <li>Creator Discovery Engine</li>
+                    <li>Campaign Management</li>
+                    <li>ROI Analytics</li>
+                    <li>Brand Safety Tools</li>
+                </ul>
+                <button class="cta-button primary">Partner With Us</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Section -->
+    <section class="metrics-section scroll-fade">
+        <span class="floating-emoji top-right">📈</span>
+        <h2 class="section-title">Platform Metrics</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon">💰</div>
+                <div class="metric-value" data-value="10">0</div>
+                <div class="metric-label">Million in Revenue</div>
+                <div class="metric-trend">+127% This Year</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🌍</div>
+                <div class="metric-value" data-value="50">0</div>
+                <div class="metric-label">Countries</div>
+                <div class="metric-trend">Global Reach</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🤝</div>
+                <div class="metric-value" data-value="95">0</div>
+                <div class="metric-label">Success Rate</div>
+                <div class="metric-trend">+5% vs Industry</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-value" data-value="24">0</div>
+                <div class="metric-label">Hour Support</div>
+                <div class="metric-trend">Always Online</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Overview Section -->
+    <section class="platform-overview scroll-fade">
+        <span class="floating-emoji bottom-right" id="hidden">⚡</span>
+        <h2 class="section-title">How It Works</h2>
+        <div class="workflow-steps">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">🎯</div>
+                <h3>Create Profile</h3>
+                <p>Set up your verified profile as a creator or brand</p>
+                <div class="step-details">
+                    <ul>
+                        <li>Portfolio showcase</li>
+                        <li>Metrics verification</li>
+                        <li>Audience analytics</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">🤖</div>
+                <h3>Smart Match</h3>
+                <p>Our AI matches you with perfect partners</p>
+                <div class="step-details">
+                    <ul>
+                        <li>Interest alignment</li>
+                        <li>Audience fit</li>
+                        <li>Value matching</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">🤝</div>
+                <h3>Collaborate</h3>
+                <p>Connect, negotiate, and create together</p>
+                <div class="step-details">
+                    <ul>
+                        <li>Secure messaging</li>
+                        <li>Contract tools</li>
+                        <li>Project management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features-expanded scroll-fade">
+        <h2 class="section-title">Platform Features</h2>
+        <div class="features-expanded-grid">
+            <div class="feature-expanded-card messaging">
+                <div class="feature-expanded-icon">💬</div>
+                <h3>Secure Messaging</h3>
+                <p>End-to-end encrypted communication with built-in file sharing and contract tools</p>
+            </div>
+            <div class="feature-expanded-card explore">
+                <div class="feature-expanded-icon">🔍</div>
+                <h3>Smart Explore</h3>
+                <p>AI-powered discovery feed matching your brand values and creative style</p>
+            </div>
+            <div class="feature-expanded-card projects">
+                <div class="feature-expanded-icon">📋</div>
+                <h3>Project Board</h3>
+                <p>Post, find, and manage collaboration opportunities in one place</p>
+            </div>
+            <div class="feature-expanded-card verification">
+                <div class="feature-expanded-icon">✅</div>
+                <h3>Verified Metrics</h3>
+                <p>Real-time analytics verification for transparent partnerships</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Carousel -->
+    <section class="testimonials scroll-fade">
+        <h2 class="section-title">Success Stories</h2>
+        <div class="testimonials-carousel">
+            <button class="carousel-arrow prev">←</button>
+            <button class="carousel-arrow next">→</button>
+            <div class="testimonial-card active">
+                <div class="testimonial-profile">
+                    <img src="https://picsum.photos/100/100?random=1" alt="Testimonial 1">
+                    <div class="testimonial-info">
+                        <h3>Alex Rivera</h3>
+                        <span>Tech Influencer • 1.2M Followers</span>
+                    </div>
+                </div>
+                <p class="testimonial-text">"The AI matching is incredible. I've found brand partnerships that perfectly align with my content and values."</p>
+                <div class="testimonial-metrics">
+                    <span>45+ Deals Closed</span>
+                    <span>98% Success Rate</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-profile">
+                    <img src="https://picsum.photos/100/100?random=2" alt="Testimonial 2">
+                    <div class="testimonial-info">
+                        <h3>Sarah Chen</h3>
+                        <span>Beauty Brand • $2M Revenue</span>
+                    </div>
+                </div>
+                <p class="testimonial-text">"Our ROI has increased by 300% since joining. The creator matching algorithm understands our brand perfectly."</p>
+                <div class="testimonial-metrics">
+                    <span>120+ Creators</span>
+                    <span>35% Growth</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-profile">
+                    <img src="https://picsum.photos/100/100?random=3" alt="Testimonial 3">
+                    <div class="testimonial-info">
+                        <h3>Marcus Johnson</h3>
+                        <span>Fitness Creator • 800K Followers</span>
+                    </div>
+                </div>
+                <p class="testimonial-text">"The platform's analytics tools have transformed how I negotiate with brands. My average deal value has doubled!"</p>
+                <div class="testimonial-metrics">
+                    <span>30+ Partnerships</span>
+                    <span>200% Revenue</span>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </section>
+
+    <!-- Ethics & Trust -->
+    <section class="ethics-section scroll-fade">
+        <span class="floating-emoji top-left">🛡️</span>
+        <h2 class="section-title">Our Commitment</h2>
+        <div class="ethics-grid">
+            <div class="ethics-card">
+                <h3>Creator Code of Ethics</h3>
+                <ul class="ethics-list">
+                    <li>Authentic engagement only</li>
+                    <li>Transparent disclosure</li>
+                    <li>Quality content promise</li>
+                    <li>Audience trust priority</li>
+                </ul>
+            </div>
+            <div class="ethics-card">
+                <h3>Brand Standards</h3>
+                <ul class="ethics-list">
+                    <li>Fair compensation</li>
+                    <li>Clear expectations</li>
+                    <li>Timely communication</li>
+                    <li>Creator respect</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section scroll-fade">
+        <span class="floating-emoji top-right">🌟</span>
+        <div class="about-container">
+            <h2 class="section-title">About Our Platform</h2>
+            <div class="about-grid">
+                <div class="about-content">
+                    <h3>Our Story</h3>
+                    <p>Founded by creators for creators, our platform bridges the gap between authentic content creation and brand partnerships. We're building the future of creator economics.</p>
+                    <div class="about-stats">
+                        <div class="about-stat">
+                            <span>2024</span>
+                            <p>Founded</p>
+                        </div>
+                        <div class="about-stat">
+                            <span>$125M+</span>
+                            <p>Creator Earnings</p>
+                        </div>
+                        <div class="about-stat">
+                            <span>10+</span>
+                            <p>Expert Team Members</p>
+                        </div>
+                        <div class="about-stat">
+                            <span>24/7</span>
+                            <p>AI + Human Support</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="https://picsum.photos/600/400" alt="Team at work">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="waitlist-section scroll-fade">
+        <span class="floating-emoji bottom-right">✉️</span>
+        <div class="waitlist-container">
+            <h2 class="section-title">Join the Waitlist</h2>
+            <p class="waitlist-subtitle">Be among the first to experience the future of creator partnerships</p>
+            <form class="waitlist-form" id="waitlistForm">
+                <div class="form-group">
+                    <input type="text" id="name" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <select id="userType" name="userType" required>
+                        <option value="">I am a...</option>
+                        <option value="creator">Creator</option>
+                        <option value="brand">Brand</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea id="message" name="message" placeholder="Tell us about yourself (Optional)"></textarea>
+                </div>
+                <button type="submit" class="cta-button primary">Join Waitlist</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Creator Modal -->
+    <div class="modal" id="creatorModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close">×</button>
+            <div class="detailed-container">
+                <h2 class="section-title">For Creators</h2>
+                <div class="detailed-grid">
+                    <div class="detailed-content">
+                        <div class="process-step">
+                            <h3>1. Build Your Creator Profile</h3>
+                            <p>Showcase your unique brand with a comprehensive profile:</p>
+                            <ul class="detailed-list">
+                                <li>Upload portfolio and content examples</li>
+                                <li>Connect social media analytics</li>
+                                <li>Set your collaboration preferences</li>
+                                <li>Display audience demographics</li>
+                                <li>Highlight past brand collaborations</li>
+                            </ul>
+                        </div>
+                        <div class="process-step">
+                            <h3>2. Discover Opportunities</h3>
+                            <p>Find the perfect partnerships through multiple channels:</p>
+                            <ul class="detailed-list">
+                                <li>Browse brand collaboration posts</li>
+                                <li>Search projects by category/budget</li>
+                                <li>Receive AI-matched recommendations</li>
+                                <li>Explore brand profiles</li>
+                                <li>Save favorite opportunities</li>
+                            </ul>
+                        </div>
+                        <div class="process-step">
+                            <h3>3. Post Your Services</h3>
+                            <p>Let brands discover you:</p>
+                            <ul class="detailed-list">
+                                <li>Create detailed service packages</li>
+                                <li>Set your rates and terms</li>
+                                <li>Specify content types offered</li>
+                                <li>Define target brand categories</li>
+                                <li>Highlight unique value propositions</li>
+                            </ul>
+                        </div>
+                        <div class="process-step">
+                            <h3>4. Connect & Collaborate</h3>
+                            <p>Manage partnerships efficiently:</p>
+                            <ul class="detailed-list">
+                                <li>Secure in-platform messaging</li>
+                                <li>Built-in contract templates</li>
+                                <li>Project milestone tracking</li>
+                                <li>Content approval workflow</li>
+                                <li>Payment protection system</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="detailed-visual">
+                        <div class="interactive-display">
+                            <div class="display-screen">
+                                <div class="screen-content active">
+                                    <img src="https://picsum.photos/600/800?random=10" alt="Creator Profile">
+                                    <h4>Profile Dashboard</h4>
+                                </div>
+                                <div class="screen-content">
+                                    <img src="https://picsum.photos/600/800?random=11" alt="Project Discovery">
+                                    <h4>Opportunity Explorer</h4>
+                                </div>
+                                <div class="screen-content">
+                                    <img src="https://picsum.photos/600/800?random=12" alt="Service Posting">
+                                    <h4>Service Manager</h4>
+                                </div>
+                                <div class="screen-content">
+                                    <img src="https://picsum.photos/600/800?random=13" alt="Collaboration Tools">
+                                    <h4>Project Workspace</h4>
+                                </div>
+                            </div>
+                            <div class="display-nav">
+                                <button class="nav-dot active"></button>
+                                <button class="nav-dot"></button>
+                                <button class="nav-dot"></button>
+                                <button class="nav-dot"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-cta">
+                    <button class="cta-button primary scroll-to-waitlist">Join Creator Waitlist</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brand Modal -->
+    <div class="modal" id="brandModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close">×</button>
+            <div class="detailed-container">
+                <h2 class="section-title">For Brands</h2>
+                <div class="detailed-grid">
+                    <div class="detailed-visual">
+                        <div class="interactive-display">
+                            <div class="display-screen">
+                                <div class="screen-content active">
+                                    <img src="https://picsum.photos/600/800?random=14" alt="Brand Dashboard">
+                                    <h4>Brand Command Center</h4>
+                                </div>
+                                <div class="screen-content">
+                                    <img src="https://picsum.photos/600/800?random=15" alt="Creator Search">
+                                    <h4>Creator Discovery</h4>
+                                </div>
+                                <div class="screen-content">
+                                    <img src="https://picsum.photos/600/800?random=16" alt="Campaign Management">
+                                    <h4>Campaign Hub</h4>
+                                </div>
+                                <div class="screen-content">
+                                    <img src="https://picsum.photos/600/800?random=17" alt="Analytics Dashboard">
+                                    <h4>Performance Analytics</h4>
+                                </div>
+                            </div>
+                            <div class="display-nav">
+                                <button class="nav-dot active"></button>
+                                <button class="nav-dot"></button>
+                                <button class="nav-dot"></button>
+                                <button class="nav-dot"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detailed-content">
+                        <div class="process-step">
+                            <h3>1. Create Brand Presence</h3>
+                            <p>Establish your brand identity:</p>
+                            <ul class="detailed-list">
+                                <li>Build comprehensive brand profile</li>
+                                <li>Define brand values and mission</li>
+                                <li>Set campaign preferences</li>
+                                <li>Upload brand guidelines</li>
+                                <li>Showcase past collaborations</li>
+                            </ul>
+                        </div>
+                        <div class="process-step">
+                            <h3>2. Find Perfect Creators</h3>
+                            <p>Discover aligned talent:</p>
+                            <ul class="detailed-list">
+                                <li>Advanced creator search filters</li>
+                                <li>AI-powered creator matching</li>
+                                <li>Audience demographic analysis</li>
+                                <li>Performance metrics verification</li>
+                                <li>Authenticity scoring system</li>
+                            </ul>
+                        </div>
+                        <div class="process-step">
+                            <h3>3. Post Opportunities</h3>
+                            <p>Launch your campaign:</p>
+                            <ul class="detailed-list">
+                                <li>Create detailed project briefs</li>
+                                <li>Set budget and requirements</li>
+                                <li>Define deliverable expectations</li>
+                                <li>Specify target creator types</li>
+                                <li>Add campaign timeline</li>
+                            </ul>
+                        </div>
+                        <div class="process-step">
+                            <h3>4. Manage & Track</h3>
+                            <p>Streamline collaboration:</p>
+                            <ul class="detailed-list">
+                                <li>Real-time campaign tracking</li>
+                                <li>Content approval system</li>
+                                <li>ROI analytics dashboard</li>
+                                <li>Automated payments</li>
+                                <li>Performance reporting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-cta">
+                    <button class="cta-button primary scroll-to-waitlist">Join Brand Waitlist</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="script.js"></script>
+</html> 
