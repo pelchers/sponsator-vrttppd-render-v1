@@ -39,6 +39,7 @@ import { HeartIcon } from '@/components/icons/HeartIcon';
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import CommentsSection from '@/components/comments/CommentsSection';
 
 const DisplayField = ({ label, value }: { label: string; value: string | number | null | undefined }) => (
   <div className="form-group">
@@ -1156,6 +1157,14 @@ export default function ProjectPage() {
           </PageSection>
         )}
       </div>
+      
+      {/* Add comments section */}
+      {project && (
+        <CommentsSection 
+          entityType="project"
+          entityId={project.id}
+        />
+      )}
     </div>
   )
 }

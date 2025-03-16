@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
+import LikeButton from "@/components/buttons/LikeButton";
 
 interface PostCardProps {
   post: {

@@ -8,6 +8,7 @@ import { HeartIcon } from '@/components/icons/HeartIcon';
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import CommentsSection from '@/components/comments/CommentsSection';
 
 export default function ArticleViewPage() {
   const { id } = useParams();
@@ -305,45 +306,10 @@ export default function ArticleViewPage() {
         </div>
       )}
 
-      <div className="article-comments-section">
-        <h2 className="article-section-title">Comments</h2>
-        
-        {comments.length > 0 ? (
-          comments.map((comment, index) => (
-            <div key={index} className="article-comment">
-              <p className="article-comment-author">{comment.author}</p>
-              <p className="article-comment-text">{comment.text}</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500 mb-4">No comments yet. Be the first to comment!</p>
-        )}
-        
-        <div className="article-comment-form">
-          <h3 className="article-comment-form-title">Add a comment</h3>
-          <form className="space-y-4" onSubmit={handleCommentSubmit}>
-            <div>
-              <input 
-                type="text"
-                placeholder="Your name" 
-                value={comment.author}
-                onChange={(e) => setComment({...comment, author: e.target.value})}
-                className="article-input"
-              />
-            </div>
-            <div>
-              <textarea 
-                placeholder="Your comment" 
-                value={comment.text}
-                onChange={(e) => setComment({...comment, text: e.target.value})}
-                className="article-textarea"
-                rows={4}
-              />
-            </div>
-            <Button type="submit" className="article-button">Post Comment</Button>
-          </form>
-        </div>
-      </div>
+      <CommentsSection 
+        entityType="article"
+        entityId={article.id}
+      />
     </div>
   );
 }

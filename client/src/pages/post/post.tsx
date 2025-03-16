@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { fetchPost, likePost, commentOnPost, deletePost } from "@/api/posts"
+import CommentsSection from '@/components/comments/CommentsSection'
 
 interface Comment {
   id: string
@@ -241,6 +242,14 @@ export default function PostPage() {
           </form>
         </div>
       </div>
+      
+      {/* Add comments section */}
+      {post && (
+        <CommentsSection 
+          entityType="post"
+          entityId={post.id}
+        />
+      )}
     </div>
   );
 }

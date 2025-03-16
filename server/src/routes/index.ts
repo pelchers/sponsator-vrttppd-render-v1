@@ -7,9 +7,11 @@ import likeRoutes from './likeRoutes';
 import followRoutes from './followRoutes';
 import watchRoutes from './watchRoutes';
 import userRoutes from './userRoutes';
+import commentRoutes from './commentRoutes';
 
 const router = Router();
 
+router.use('/comments', commentRoutes);
 router.use('/auth', authRoutes);
 router.use('/posts', postRoutes);
 router.use('/projects', projectRoutes);

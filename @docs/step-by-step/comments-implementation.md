@@ -498,4 +498,93 @@ export function PostPage() {
    - Show new comments instantly
    - Show typing indicators
 
-This implementation provides a solid foundation for a comments system that can be extended with additional features as needed. 
+This implementation provides a solid foundation for a comments system that can be extended with additional features as needed.
+
+# Comments Implementation Guide
+
+## Key Components
+
+### Backend
+- Routes: `/api/comments`
+- Controller: `commentController.ts`
+- Service: `commentService.ts`
+- Model: Prisma schema `comments` table
+
+### Frontend
+- API: `comments.ts`
+- Components: `CommentsSection.tsx`
+
+## Important Fixes & Best Practices
+
+### 1. Async Route Handling
+Always handle async operations properly in route handlers:
+
+```typescript
+router.get('/:entityType/:entityId', async (req, res) => {
+  try {
+    await commentController.getComments(req, res);
+  } catch (error) {
+    console.error('Error in comments route:', error);
+    res.status(500).json({
+      message: 'Server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+```
+
+### 2. Database Connection Verification
+Verify database connection and table existence on startup:
+
+```typescript
+prisma.$connect()
+  .then(() => {
+    console.log('Successfully connected to database');
+    return prisma.$queryRaw`SELECT EXISTS (
+      SELECT FROM pg_tables 
+      WHERE schemaname = 'public' 
+      AND tablename = 'comments'
+    );`;
+  })
+  .then((result) => {
+    console.log('Comments table exists:', result);
+  });
+```
+
+### 3. Multi-Level Error Handling
+Implement error handling at multiple levels:
+- Route level
+- Controller level
+- Service level
+
+### 4. Route Registration Order
+Ensure routes are registered in the correct order and not being overridden:
+1. Register more specific routes first
+2. Register catch-all routes last
+3. Verify route registration with logging
+
+## Common Issues & Solutions
+
+1. **500 Internal Server Error on Comments Fetch**
+   - Cause: Unhandled promises and missing error handling
+   - Solution: Implement proper async/await handling and error catching
+
+2. **Database Connection Issues**
+   - Cause: Connection not verified or tables not checked
+   - Solution: Add connection verification and table existence checks on startup
+
+3. **Route Conflicts**
+   - Cause: Route order or overriding issues
+   - Solution: Check route registration order and use logging to verify routes
+
+## Testing Routes
+
+Use the test route to verify basic connectivity:
+```typescript
+router.get('/test', (req, res) => {
+  console.log('Test route hit');
+  res.json({ message: 'Comments route is working' });
+});
+```
+
+Access at: `http://localhost:4100/api/comments/test` 

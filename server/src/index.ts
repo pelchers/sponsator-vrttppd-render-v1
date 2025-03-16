@@ -16,6 +16,7 @@ import exploreRoutes from './routes/exploreRoutes';
 import routes from './routes';
 import chatRoutes from './routes/chatRoutes';
 import permissionRoutes from './routes/permissionRoutes';
+import { Request, Response, NextFunction } from 'express';
 
 dotenv.config();
 
@@ -46,6 +47,12 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
+// Add this before your routes
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
@@ -56,6 +63,12 @@ app.use('/api/explore', exploreRoutes);
 app.use('/api', routes);
 app.use('/api/chats', chatRoutes);
 app.use('/api', permissionRoutes);
+
+// Add this after your routes
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] No route found for ${req.method} ${req.url}`);
+  next();
+});
 
 // Define routes directly
 app.post('/api/register', async (req, res) => {
@@ -285,6 +298,32 @@ function printRoutes(router: Router, basePath = '') {
 }
 
 printRoutes(app._router);
+
+// After registering all routes
+console.log('Available routes:');
+app._router.stack.forEach((r: any) => {
+  if (r.route) {
+    console.log(`${Object.keys(r.route.methods).join(',')} ${r.route.path}`);
+  } else if (r.name === 'router') {
+    console.log('Router middleware:', r.regexp);
+  }
+});
+
+// Add error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('Global error handler:', {
+    error: err,
+    message: err.message,
+    stack: err.stack,
+    code: err.code,
+    meta: err.meta
+  });
+  
+  res.status(500).json({
+    message: 'Server error',
+    details: err.message
+  });
+});
 
 // Start the server
 const PORT = process.env.PORT || 4100;
