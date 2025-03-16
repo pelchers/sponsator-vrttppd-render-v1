@@ -399,7 +399,17 @@ router.post('/', authenticate, commentController.createComment);
 router.delete('/:id', authenticate, commentController.deleteComment);
 
 // Public routes
-router.get('/:entityType/:entityId', commentController.getComments);
+router.get('/:entityType/:entityId', async (req, res) => {
+  try {
+    await commentController.getComments(req, res);
+  } catch (error) {
+    console.error('Error in comments route:', error);
+    res.status(500).json({
+      message: 'Server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
 
 export default router;
 ```
@@ -587,4 +597,97 @@ router.get('/test', (req, res) => {
 });
 ```
 
-Access at: `http://localhost:4100/api/comments/test` 
+Access at: `http://localhost:4100/api/comments/test`
+
+## Critical Fixes Deep Dive
+
+### 1. Async/Await Promise Chain Issue
+
+#### The Problem
+```typescript
+// Original problematic code
+router.get('/:entityType/:entityId', (req, res, next) => {
+  return commentController.getComments(req, res);
+});
+```
+
+This caused issues because:
+- The promise chain wasn't being properly managed
+- Errors weren't being caught
+- The response could be sent before database operations completed
+- Unhandled promise rejections could crash the server
+
+#### The Fix
+```typescript
+// Fixed version with proper async handling
+router.get('/:entityType/:entityId', async (req, res) => {
+  try {
+    await commentController.getComments(req, res);
+  } catch (error) {
+    console.error('Error in comments route:', error);
+    res.status(500).json({
+      message: 'Server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+```
+
+This fixed the issue by:
+- Using `async/await` to properly handle the promise chain
+- Ensuring database operations complete before sending response
+- Catching and handling errors appropriately
+- Preventing unhandled promise rejections
+
+### 2. Route Registration Debugging
+
+#### The Problem
+```typescript
+// Original logging
+console.log('Registered routes:', r.route.path);
+```
+This provided incomplete information about route registration, making it difficult to:
+- Identify route conflicts
+- Verify HTTP methods
+- Debug route ordering issues
+
+#### The Fix
+```typescript
+// Enhanced route logging
+if (r.route) {
+  console.log(`${Object.keys(r.route.methods).join(',')} ${r.route.path}`);
+} else if (r.name === 'router') {
+  console.log('Router middleware:', r.regexp);
+}
+```
+
+This improved debugging by showing:
+- All HTTP methods registered for each route
+- Complete path information
+- Middleware router information
+- Route registration order
+
+Example output:
+```
+GET,POST /api/comments/test
+GET /api/comments/:entityType/:entityId
+POST /api/comments
+```
+
+### Combined Impact
+
+These two issues together created a "perfect storm":
+1. The async issue caused server errors that were hard to track
+2. The route registration logging issue made it difficult to verify if routes were properly registered
+
+The combination meant that when errors occurred, we:
+- Couldn't see if the route was properly registered
+- Couldn't track where in the promise chain the error occurred
+- Had no way to verify if methods were correctly mapped
+
+The fixes work together to:
+1. Properly handle async operations and errors
+2. Provide clear logging of route registration
+3. Make debugging significantly easier by showing both the route structure and any errors that occur
+
+This is why implementing both fixes was crucial for stable comment functionality. 
