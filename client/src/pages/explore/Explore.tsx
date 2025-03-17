@@ -24,6 +24,44 @@ const userTypes = [
   { id: 'contractor', label: 'Contractor' }
 ];
 
+/*
+TODO: Future Enhancement - Advanced Content Filtering/Sorting
+
+This filtering logic can be used to implement advanced sorting/filtering based on user interactions:
+
+const filteredResults = {
+  users: (results.users || []).filter(user => 
+    (selectedFilters.includes('follows') && user.userIsFollowing) ||
+    (selectedFilters.includes('likes') && user.userHasLiked) ||
+    (selectedFilters.includes('watches') && user.userIsWatching)
+  ),
+  posts: (results.posts || []).filter(post => 
+    (selectedFilters.includes('likes') && post.userHasLiked) ||
+    (selectedFilters.includes('watches') && post.userIsWatching)
+  ),
+  articles: (results.articles || []).filter(article => 
+    (selectedFilters.includes('likes') && article.userHasLiked) ||
+    (selectedFilters.includes('follows') && article.userIsFollowing) ||
+    (selectedFilters.includes('watches') && article.userIsWatching)
+  ),
+  projects: (results.projects || []).filter(project => 
+    (selectedFilters.includes('likes') && project.userHasLiked) ||
+    (selectedFilters.includes('follows') && project.userIsFollowing) ||
+    (selectedFilters.includes('watches') && project.userIsWatching)
+  )
+};
+
+How it works:
+1. Takes the full results set and filters each content type
+2. For each item, checks if the user has performed specific interactions
+3. Only keeps items where the user has performed the selected interactions
+4. Can be used for:
+   - Sorting content by interaction status
+   - Filtering to show only interacted content
+   - Creating "My Favorites" or similar filtered views
+   - Building engagement-based content recommendations
+*/
+
 export default function ExplorePage() {
   // State for search query
   const [searchQuery, setSearchQuery] = useState('');

@@ -1,11 +1,21 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchUserStats } from '@/api/userstats';
+import { isAuthenticated } from '@/api/auth';
 
 export default function Landing() {
   const navigate = useNavigate();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const userId = localStorage.getItem('userId');
+  const [userStats, setUserStats] = useState<any>(null);
+
+  useEffect(() => {
+    if (userId && isAuthenticated()) {
+      fetchUserStats(userId).then(stats => setUserStats(stats));
+    }
+  }, [userId]);
 
   const testimonials = [
     {
@@ -49,6 +59,143 @@ export default function Landing() {
   };
 
   useScrollAnimation(); // Initialize scroll animations
+
+  if (userId && isAuthenticated() && userStats) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <section className="bg-white shadow-sm py-8">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold">Welcome Back!</h1>
+              <Button 
+                onClick={() => navigate('/explore')}
+                className="bg-blue-600 hover:bg-green-500 text-white"
+              >
+                Explore Content
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold">{userStats.projects}</div>
+                <div className="text-gray-600">Projects</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold">{userStats.articles}</div>
+                <div className="text-gray-600">Articles</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold">{userStats.posts}</div>
+                <div className="text-gray-600">Posts</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="text-2xl font-bold">{userStats.likes}</div>
+                <div className="text-gray-600">Likes</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-8">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-2xl font-semibold mb-6">Quick Access</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link 
+                to="/projects"
+                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="text-3xl mb-2">🚀</div>
+                <h3 className="font-semibold group-hover:text-blue-600">Projects</h3>
+                <p className="text-sm text-gray-600">Manage your projects</p>
+              </Link>
+              
+              <Link 
+                to="/article"
+                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="text-3xl mb-2">📝</div>
+                <h3 className="font-semibold group-hover:text-blue-600">Articles</h3>
+                <p className="text-sm text-gray-600">Write and manage articles</p>
+              </Link>
+              
+              <Link 
+                to="/post"
+                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="text-3xl mb-2">📱</div>
+                <h3 className="font-semibold group-hover:text-blue-600">Posts</h3>
+                <p className="text-sm text-gray-600">Share updates</p>
+              </Link>
+              
+              <Link 
+                to="/likes"
+                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="text-3xl mb-2">❤️</div>
+                <h3 className="font-semibold group-hover:text-blue-600">Likes</h3>
+                <p className="text-sm text-gray-600">View liked content</p>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-2xl font-semibold mb-6">Featured Content</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gray-50 p-6 rounded-xl">
+                <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
+                <div className="space-y-4">
+                  {userStats.recentProjects?.map((project: any) => (
+                    <Link 
+                      key={project.id}
+                      to={`/projects/${project.id}`}
+                      className="block bg-white p-4 rounded-lg hover:shadow-md transition-all duration-200"
+                    >
+                      <h4 className="font-medium">{project.title}</h4>
+                      <p className="text-sm text-gray-600">{project.description}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-xl">
+                <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
+                <div className="space-y-4">
+                  {userStats.recentArticles?.map((article: any) => (
+                    <Link 
+                      key={article.id}
+                      to={`/article/${article.id}`}
+                      className="block bg-white p-4 rounded-lg hover:shadow-md transition-all duration-200"
+                    >
+                      <h4 className="font-medium">{article.title}</h4>
+                      <p className="text-sm text-gray-600">{article.description}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-xl">
+                <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
+                <div className="space-y-4">
+                  {userStats.recentPosts?.map((post: any) => (
+                    <Link 
+                      key={post.id}
+                      to={`/post/${post.id}`}
+                      className="block bg-white p-4 rounded-lg hover:shadow-md transition-all duration-200"
+                    >
+                      <h4 className="font-medium">{post.title}</h4>
+                      <p className="text-sm text-gray-600">{post.description}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

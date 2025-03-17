@@ -25,6 +25,7 @@ const interactionTypes = [
 
 export default function MyStuffPage() {
   const navigate = useNavigate();
+  const userId = localStorage.getItem('userId'); // Get the logged-in user's ID
   
   // State for selected content filters - all selected by default
   const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(['users', 'posts', 'articles', 'projects']);
@@ -61,14 +62,20 @@ export default function MyStuffPage() {
   
   // Fetch results based on filters
   const fetchResults = async () => {
+    if (!userId) {
+      console.error('No user ID found');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Call API
+      // Call API with userId to ensure we only get the user's interactions
       const data = await fetchUserInteractions({
         contentTypes: selectedContentTypes,
         interactionTypes: selectedInteractionTypes,
         page,
-        limit: 12
+        limit: 12,
+        userId // Pass the userId to filter interactions by this user
       });
       
       // Ensure all arrays exist even if API doesn't return them
