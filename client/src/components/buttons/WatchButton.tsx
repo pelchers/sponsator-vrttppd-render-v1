@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { watchEntity, unwatchEntity, checkWatchStatus, getWatchCount } from '@/api/watches';
 
 interface WatchButtonProps {
-  entityType: 'project' | 'article';
+  entityType: 'project' | 'article' | 'post' | 'user';
   entityId: string;
   initialWatching?: boolean;
   initialCount?: number;

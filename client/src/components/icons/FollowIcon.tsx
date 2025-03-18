@@ -3,7 +3,7 @@ interface FollowIconProps {
   className?: string;
 }
 
-export function FollowIcon({ filled = false, className = "w-5 h-5" }: FollowIconProps) {
+export function FollowIcon({ filled = false, className = "" }: FollowIconProps) {
   // Using a bookmark icon for follows
   return filled ? (
     // Filled bookmark icon

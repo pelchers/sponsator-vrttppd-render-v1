@@ -7,6 +7,8 @@ import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/l
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
+import { checkFollowStatus, getFollowCount } from '@/api/follows';
+import { checkWatchStatus, getWatchCount } from '@/api/watches';
 
 interface ProjectCardProps {
   project: {
@@ -44,6 +46,13 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
+  
+  const [following, setFollowing] = useState(userIsFollowing);
+  const [followCount, setFollowCount] = useState(project.follows_count || 0);
+  
+  const [watching, setWatching] = useState(userIsWatching);
+  const [watchCount, setWatchCount] = useState(project.watches_count || 0);
+  
   const [isLoading, setIsLoading] = useState(false);
 
   // Add safe fallbacks for all properties
@@ -82,24 +91,38 @@ export default function ProjectCard({
   const timeAgo = formatDate(createdAt);
 
   useEffect(() => {
-    const fetchLikeData = async () => {
+    const fetchInteractionData = async () => {
       try {
-        // Get current like count
-        const count = await getLikeCount('project', project.id);
-        setLikeCount(count);
+        // Get current counts
+        const [likes, follows, watches] = await Promise.all([
+          getLikeCount('project', project.id),
+          getFollowCount('project', project.id),
+          getWatchCount('project', project.id)
+        ]);
         
-        // Check if user has liked this project
-        if (!userHasLiked) {
-          const hasLiked = await checkLikeStatus('project', project.id);
+        setLikeCount(likes);
+        setFollowCount(follows);
+        setWatchCount(watches);
+        
+        // Check user's interaction status if not provided
+        if (!userHasLiked || !userIsFollowing || !userIsWatching) {
+          const [hasLiked, isFollowing, isWatching] = await Promise.all([
+            !userHasLiked && checkLikeStatus('project', project.id),
+            !userIsFollowing && checkFollowStatus('project', project.id),
+            !userIsWatching && checkWatchStatus('project', project.id)
+          ]);
+          
           setLiked(hasLiked);
+          setFollowing(isFollowing);
+          setWatching(isWatching);
         }
       } catch (error) {
-        console.error('Error fetching like data:', error);
+        console.error('Error fetching interaction data:', error);
       }
     };
     
-    fetchLikeData();
-  }, [project.id, userHasLiked]);
+    fetchInteractionData();
+  }, [project.id, userHasLiked, userIsFollowing, userIsWatching]);
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation when clicking the like button
@@ -123,11 +146,18 @@ export default function ProjectCard({
         setLiked(true);
         setLikeCount(prev => prev + 1);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error toggling like:', error);
-      // If we get a 409 error (already liked), just update the UI to show as liked
-      if (error.response && error.response.status === 409) {
-        setLiked(true);
+      // Type guard for axios error
+      if (error && 
+          typeof error === 'object' && 
+          'response' in error && 
+          error.response && 
+          typeof error.response === 'object' && 
+          'status' in error.response) {
+        if (error.response.status === 409) {
+          setLiked(true);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -234,25 +264,22 @@ export default function ProjectCard({
         </CardContent>
       </Link>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="text-sm text-gray-500">
-          By {username}
-        </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <WatchButton 
             entityType="project"
             entityId={project.id}
-            initialWatching={userIsWatching}
-            initialCount={project.watches_count || 0}
-            showCount={false}
+            initialWatching={watching}
+            initialCount={watchCount}
+            showCount={true}
             size="sm"
             variant="ghost"
           />
           <FollowButton 
             entityType="project"
             entityId={project.id}
-            initialFollowing={userIsFollowing}
-            initialCount={project.follows_count || 0}
-            showCount={false}
+            initialFollowing={following}
+            initialCount={followCount}
+            showCount={true}
             size="sm"
             variant="ghost"
           />

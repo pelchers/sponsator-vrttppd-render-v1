@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { SortOptions, validSortFields, contentTypeFieldMap } from '../types/sorting';
 
 const prisma = new PrismaClient();
 
@@ -239,53 +240,168 @@ export const searchPosts = async (query: string, userTypes: string[], page: numb
 };
 
 // Combined search across all content types
-export const searchAll = async (
-  query: string, 
-  contentTypes: string[], 
-  userTypes: string[], 
-  page: number, 
-  limit: number
-) => {
-  const results: any = {
-    users: [],
-    projects: [],
-    articles: [],
-    posts: []
+export async function searchAll(
+  query: string,
+  options: {
+    contentTypes?: string[];
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }
+) {
+  const { 
+    contentTypes = ['all'], 
+    page = 1, 
+    limit = 12,
+    sortBy = 'created_at',
+    sortOrder = 'desc'
+  } = options;
+
+  // Build sort object for Prisma
+  const orderBy = sortBy === 'title' 
+    ? { // Handle title field mapping per content type
+      users: { username: sortOrder },
+      projects: { project_name: sortOrder },
+      articles: { title: sortOrder },
+      posts: { title: sortOrder }
+    }
+    : { // Use same field name for all content types
+      [sortBy]: sortOrder
+    };
+
+  // Use existing content type filtering logic
+  const showAll = contentTypes.includes('all');
+  const results = {
+    users: showAll || contentTypes.includes('users') 
+      ? await prisma.users.findMany({
+          where: {
+            OR: [
+              { username: { contains: query, mode: 'insensitive' } },
+              { bio: { contains: query, mode: 'insensitive' } }
+            ]
+          },
+          orderBy: {
+            [sortBy === 'title' ? 'username' : sortBy]: sortOrder
+          },
+          select: {
+            id: true,
+            username: true,
+            bio: true,
+            profile_image: true,
+            user_type: true,
+            created_at: true
+          },
+          skip: (page - 1) * limit,
+          take: limit
+        })
+      : [],
+    projects: showAll || contentTypes.includes('projects')
+      ? await prisma.projects.findMany({
+          where: {
+            OR: [
+              { project_name: { contains: query, mode: 'insensitive' } },
+              { project_description: { contains: query, mode: 'insensitive' } }
+            ],
+            users: {
+              user_type: { in: contentTypes.filter(type => type !== 'users') }
+            }
+          },
+          orderBy: {
+            [sortBy === 'title' ? 'project_name' : sortBy]: sortOrder
+          },
+          select: {
+            id: true,
+            project_name: true,
+            project_description: true,
+            project_image: true,
+            project_type: true,
+            project_tags: true,
+            created_at: true,
+            user_id: true,
+            users: {
+              select: {
+                username: true,
+                user_type: true
+              }
+            }
+          },
+          skip: (page - 1) * limit,
+          take: limit
+        })
+      : [],
+    articles: showAll || contentTypes.includes('articles')
+      ? await prisma.articles.findMany({
+          where: {
+            OR: [
+              { title: { contains: query, mode: 'insensitive' } }
+            ],
+            users: {
+              user_type: { in: contentTypes.filter(type => type !== 'articles') }
+            }
+          },
+          orderBy: {
+            [sortBy === 'title' ? 'title' : sortBy]: sortOrder
+          },
+          select: {
+            id: true,
+            title: true,
+            tags: true,
+            created_at: true,
+            user_id: true,
+            users: {
+              select: {
+                username: true,
+                user_type: true
+              }
+            },
+            article_sections: true
+          },
+          skip: (page - 1) * limit,
+          take: limit
+        })
+      : [],
+    posts: showAll || contentTypes.includes('posts')
+      ? await prisma.posts.findMany({
+          where: {
+            OR: [
+              { title: { contains: query, mode: 'insensitive' } },
+              { description: { contains: query, mode: 'insensitive' } }
+            ],
+            users: {
+              user_type: { in: contentTypes.filter(type => type !== 'posts') }
+            }
+          },
+          orderBy: {
+            [sortBy === 'title' ? 'title' : sortBy]: sortOrder
+          },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            mediaUrl: true,
+            tags: true,
+            likes: true,
+            comments: true,
+            created_at: true,
+            user_id: true,
+            users: {
+              select: {
+                username: true,
+                user_type: true
+              }
+            }
+          },
+          skip: (page - 1) * limit,
+          take: limit
+        })
+      : []
   };
-  
-  const searchPromises = [];
-  
-  // Only search for content types that are explicitly selected
-  if (contentTypes.includes('users')) {
-    searchPromises.push(
-      searchUsers(query, userTypes, page, limit)
-        .then(data => { results.users = data.users; })
-    );
-  }
-  
-  if (contentTypes.includes('projects')) {
-    searchPromises.push(
-      searchProjects(query, userTypes, page, limit)
-        .then(data => { results.projects = data.projects; })
-    );
-  }
-  
-  if (contentTypes.includes('articles')) {
-    searchPromises.push(
-      searchArticles(query, userTypes, page, limit)
-        .then(data => { results.articles = data.articles; })
-    );
-  }
-  
-  if (contentTypes.includes('posts')) {
-    searchPromises.push(
-      searchPosts(query, userTypes, page, limit)
-        .then(data => { results.posts = data.posts; })
-    );
-  }
-  
-  // Wait for all searches to complete
-  await Promise.all(searchPromises);
-  
-  return results;
-}; 
+
+  return {
+    results,
+    page,
+    limit,
+    // ... rest of return object
+  };
+} 

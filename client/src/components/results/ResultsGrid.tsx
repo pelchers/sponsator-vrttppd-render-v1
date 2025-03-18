@@ -2,6 +2,9 @@ import UserCard from '@/components/cards/UserCard';
 import ProjectCard from '@/components/cards/ProjectCard';
 import ArticleCard from '@/components/cards/ArticleCard';
 import PostCard from '@/components/cards/PostCard';
+import { SortSelect } from '@/components/sort/SortSelect';
+import { SortOrder } from '@/components/sort/SortOrder';
+import { sortResults } from '@/utils/sorting';
 
 interface ResultsGridProps {
   results: {
@@ -17,13 +20,29 @@ interface ResultsGridProps {
     articles: Record<string, boolean>;
     projects: Record<string, boolean>;
   };
+  followStatuses?: {
+    articles: Record<string, boolean>;
+  };
+  watchStatuses?: {
+    articles: Record<string, boolean>;
+  };
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  onSortChange?: (sortBy: string) => void;
+  onSortOrderChange?: (order: 'asc' | 'desc') => void;
 }
 
 export default function ResultsGrid({ 
   results, 
   loading, 
   contentTypes, 
-  likeStatuses
+  likeStatuses,
+  followStatuses,
+  watchStatuses,
+  sortBy = '',
+  sortOrder = 'desc',
+  onSortChange,
+  onSortOrderChange
 }: ResultsGridProps) {
   // Ensure all arrays exist
   const safeResults = {
@@ -48,6 +67,14 @@ export default function ResultsGrid({
     ...(showPosts ? safeResults.posts.map(item => ({ ...item, type: 'post' })) : [])
   ];
   
+  // Sort results if sort options are provided
+  const sortedResults = {
+    users: showUsers ? sortResults(safeResults.users, sortBy, sortOrder, 'users') : [],
+    projects: showProjects ? sortResults(safeResults.projects, sortBy, sortOrder, 'projects') : [],
+    articles: showArticles ? sortResults(safeResults.articles, sortBy, sortOrder, 'articles') : [],
+    posts: showPosts ? sortResults(safeResults.posts, sortBy, sortOrder, 'posts') : []
+  };
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -68,36 +95,54 @@ export default function ResultsGrid({
   }
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {showUsers && safeResults.users.map((user, index) => (
-        <div key={`user-${user.id || index}`} className="col-span-1">
-          <UserCard user={user} />
-        </div>
-      ))}
-      {showProjects && safeResults.projects.map((project, index) => (
-        <div key={`project-${project.id || index}`} className="col-span-1">
-          <ProjectCard 
-            project={project} 
-            userHasLiked={likeStatuses?.projects[project.id] || false}
-          />
-        </div>
-      ))}
-      {showArticles && safeResults.articles.map((article, index) => (
-        <div key={`article-${article.id || index}`} className="col-span-1">
-          <ArticleCard 
-            article={article} 
-            userHasLiked={likeStatuses?.articles[article.id] || false}
-          />
-        </div>
-      ))}
-      {showPosts && safeResults.posts.map((post, index) => (
-        <div key={`post-${post.id || index}`} className="col-span-1">
-          <PostCard 
-            post={post} 
-            userHasLiked={likeStatuses?.posts[post.id] || false}
-          />
-        </div>
-      ))}
+    <div>
+      {/* Add sorting controls */}
+      <div className="flex justify-end items-center gap-2 mb-4">
+        <SortSelect 
+          value={sortBy}
+          onValueChange={onSortChange || (() => {})}
+          className="w-[180px]"
+        />
+        <SortOrder 
+          order={sortOrder}
+          onChange={onSortOrderChange || (() => {})}
+        />
+      </div>
+
+      {/* Results grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {showUsers && sortedResults.users.map((user, index) => (
+          <div key={`user-${user.id || index}`} className="col-span-1">
+            <UserCard user={user} />
+          </div>
+        ))}
+        {showProjects && sortedResults.projects.map((project, index) => (
+          <div key={`project-${project.id || index}`} className="col-span-1">
+            <ProjectCard 
+              project={project} 
+              userHasLiked={likeStatuses?.projects[project.id] || false}
+            />
+          </div>
+        ))}
+        {showArticles && sortedResults.articles.map((article, index) => (
+          <div key={`article-${article.id || index}`} className="col-span-1">
+            <ArticleCard 
+              article={article} 
+              userHasLiked={likeStatuses?.articles[article.id] || false}
+              userIsFollowing={followStatuses?.articles[article.id] || false}
+              userIsWatching={watchStatuses?.articles[article.id] || false}
+            />
+          </div>
+        ))}
+        {showPosts && sortedResults.posts.map((post, index) => (
+          <div key={`post-${post.id || index}`} className="col-span-1">
+            <PostCard 
+              post={post} 
+              userHasLiked={likeStatuses?.posts[post.id] || false}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 } 

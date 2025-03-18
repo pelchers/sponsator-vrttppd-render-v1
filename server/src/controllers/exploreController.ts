@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as exploreService from '../services/exploreService';
+import { SortOptions, validSortFields, contentTypeFieldMap } from '../types/sorting';
 
 // Search across all content types
 export const searchAll = async (req: Request, res: Response) => {
@@ -73,4 +74,33 @@ export const searchAll = async (req: Request, res: Response) => {
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
-}; 
+};
+
+// Add to existing search handler
+export async function handleSearch(req: Request, res: Response) {
+  try {
+    const { 
+      q = '', 
+      contentTypes, 
+      page, 
+      limit,
+      sortBy,
+      sortOrder
+    } = req.query;
+
+    // Validate sort params
+    if (sortBy && !validSortFields.includes(sortBy as string)) {
+      return res.status(400).json({ error: 'Invalid sort field' });
+    }
+    if (sortOrder && !['asc', 'desc'].includes(sortOrder as string)) {
+      return res.status(400).json({ error: 'Invalid sort order' });
+    }
+
+    const results = await searchAll(req, res);
+
+    res.json(results);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ error: 'Failed to perform search' });
+  }
+} 

@@ -84,18 +84,36 @@ export const incrementLikeCount = async (entityType: string, entityId: string) =
       console.log(`[LIKE SERVICE] Post like count updated: ${result.likes_count}`);
       break;
     case 'article':
-      result = await prisma.articles.update({
+      // First get current count
+      const currentCount = await prisma.articles.findUnique({
         where: { id: entityId },
-        data: { likes: { increment: 1 } }
+        select: { likes_count: true }
       });
-      console.log(`[LIKE SERVICE] Article like count updated: ${result.likes}`);
+      
+      result = await prisma.articles.update({
+        where: {
+          id: entityId
+        },
+        data: {
+          likes_count: {
+            increment: 1
+          }
+        }
+      });
+      console.log(`[LIKE SERVICE] Article liked - count updated from ${currentCount?.likes_count || 0} to ${result.likes_count}`);
       break;
     case 'project':
       result = await prisma.projects.update({
-        where: { id: entityId },
-        data: { project_followers: { increment: 1 } }
+        where: {
+          id: entityId
+        },
+        data: {
+          likes_count: {
+            increment: 1
+          }
+        }
       });
-      console.log(`[LIKE SERVICE] Project followers count updated: ${result.project_followers}`);
+      console.log(`[LIKE SERVICE] Project likes count updated: ${result.likes_count}`);
       break;
     case 'comment':
       result = await prisma.comments.update({
@@ -129,11 +147,23 @@ export const decrementLikeCount = async (entityType: string, entityId: string) =
       console.log(`[LIKE SERVICE] Post like count updated: ${result.likes_count}`);
       break;
     case 'article':
-      result = await prisma.articles.update({
+      // First get current count
+      const prevCount = await prisma.articles.findUnique({
         where: { id: entityId },
-        data: { likes: { decrement: 1 } }
+        select: { likes_count: true }
       });
-      console.log(`[LIKE SERVICE] Article like count updated: ${result.likes}`);
+      
+      result = await prisma.articles.update({
+        where: {
+          id: entityId
+        },
+        data: {
+          likes_count: {
+            decrement: 1
+          }
+        }
+      });
+      console.log(`[LIKE SERVICE] Article unliked - count updated from ${prevCount?.likes_count || 0} to ${result.likes_count}`);
       break;
     case 'project':
       result = await prisma.projects.update({

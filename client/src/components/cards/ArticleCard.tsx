@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import { checkFollowStatus, getFollowCount } from '@/api/follows';
+import { checkWatchStatus, getWatchCount } from '@/api/watches';
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
@@ -42,8 +44,16 @@ export default function ArticleCard({
   userIsWatching = false,
   interactionType
 }: ArticleCardProps) {
+  // Interaction states
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(article.likes_count || 0);
+  
+  const [following, setFollowing] = useState(userIsFollowing);
+  const [followCount, setFollowCount] = useState(article.follows_count || 0);
+  
+  const [watching, setWatching] = useState(userIsWatching);
+  const [watchCount, setWatchCount] = useState(article.watches_count || 0);
+  
   const [isLoading, setIsLoading] = useState(false);
 
   // Add safe fallbacks for all properties
@@ -89,52 +99,66 @@ export default function ArticleCard({
   const timeAgo = formatDate(createdAt);
 
   useEffect(() => {
-    const fetchLikeData = async () => {
+    const fetchInteractionData = async () => {
       try {
-        // Get current like count
-        const count = await getLikeCount('article', article.id);
-        setLikeCount(count);
+        const [likes, follows, watches] = await Promise.all([
+          getLikeCount('article', article.id),
+          getFollowCount('article', article.id),
+          getWatchCount('article', article.id)
+        ]);
         
-        // Check if user has liked this article
-        if (!userHasLiked) {
-          const hasLiked = await checkLikeStatus('article', article.id);
-          setLiked(hasLiked);
-        }
+        setLikeCount(likes);
+        setFollowCount(follows);
+        setWatchCount(watches);
       } catch (error) {
-        console.error('Error fetching like data:', error);
+        console.error('Error fetching interaction data:', error);
       }
     };
     
-    fetchLikeData();
-  }, [article.id, userHasLiked]);
+    fetchInteractionData();
+  }, [article.id]);
+
+  useEffect(() => {
+    setLiked(userHasLiked);
+  }, [userHasLiked]);
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent navigation when clicking the like button
-    e.stopPropagation(); // Prevent event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     
     if (isLoading) return;
     
     setIsLoading(true);
+    
+    // Store previous values in case we need to revert
+    const wasLiked = liked;
+    const previousCount = likeCount;
     
     // Optimistic update
     setLiked(!liked);
     setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
     
     try {
-      if (liked) {
+      if (wasLiked) {
         await unlikeEntity('article', article.id);
-        setLiked(false);
-        setLikeCount(prev => Math.max(0, prev - 1));
       } else {
         await likeEntity('article', article.id);
-        setLiked(true);
-        setLikeCount(prev => prev + 1);
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      // Revert optimistic update on error
+      setLiked(wasLiked);
+      setLikeCount(previousCount);
+      
       console.error('Error toggling like:', error);
-      // If we get a 409 error (already liked), just update the UI to show as liked
-      if (error.response && error.response.status === 409) {
-        setLiked(true);
+      if (error && 
+          typeof error === 'object' && 
+          'response' in error && 
+          error.response && 
+          typeof error.response === 'object' && 
+          'status' in error.response) {
+        if (error.response.status === 409) {
+          setLiked(true);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -213,25 +237,22 @@ export default function ArticleCard({
         </CardContent>
       </Link>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="text-sm text-gray-500">
-          By {username}
-        </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <WatchButton 
             entityType="article"
             entityId={article.id}
-            initialWatching={userIsWatching}
-            initialCount={article.watches_count || 0}
-            showCount={false}
+            initialWatching={watching}
+            initialCount={watchCount}
+            showCount={true}
             size="sm"
             variant="ghost"
           />
           <FollowButton 
             entityType="article"
             entityId={article.id}
-            initialFollowing={userIsFollowing}
-            initialCount={article.follows_count || 0}
-            showCount={false}
+            initialFollowing={following}
+            initialCount={followCount}
+            showCount={true}
             size="sm"
             variant="ghost"
           />

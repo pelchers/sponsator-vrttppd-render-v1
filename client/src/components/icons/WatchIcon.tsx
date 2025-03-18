@@ -3,7 +3,7 @@ interface WatchIconProps {
   className?: string;
 }
 
-export function WatchIcon({ filled = false, className = "w-5 h-5" }: WatchIconProps) {
+export function WatchIcon({ filled = false, className = "" }: WatchIconProps) {
   // Using an eye icon for watches
   return filled ? (
     // Filled eye icon

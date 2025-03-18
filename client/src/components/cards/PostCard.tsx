@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import { checkFollowStatus, getFollowCount } from '@/api/follows';
+import { checkWatchStatus, getWatchCount } from '@/api/watches';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
 import LikeButton from "@/components/buttons/LikeButton";
+import FollowButton from '@/components/buttons/FollowButton';
+import WatchButton from '@/components/buttons/WatchButton';
 
 interface PostCardProps {
   post: {
@@ -22,15 +26,31 @@ interface PostCardProps {
     mediaUrl?: string;
     tags?: string[];
     likes_count?: number;
+    follows_count?: number;
+    watches_count?: number;
     user_id?: string;
     username?: string;
   };
   userHasLiked?: boolean;
+  userIsFollowing?: boolean;
+  userIsWatching?: boolean;
 }
 
-export default function PostCard({ post, userHasLiked = false }: PostCardProps) {
+export default function PostCard({
+  post,
+  userHasLiked = false,
+  userIsFollowing = false,
+  userIsWatching = false
+}: PostCardProps) {
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(post.likes_count || 0);
+  
+  const [following, setFollowing] = useState(userIsFollowing);
+  const [followCount, setFollowCount] = useState(post.follows_count || 0);
+  
+  const [watching, setWatching] = useState(userIsWatching);
+  const [watchCount, setWatchCount] = useState(post.watches_count || 0);
+  
   const [isLoading, setIsLoading] = useState(false);
 
   // Add safe fallbacks for all properties
@@ -68,24 +88,38 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
   const timeAgo = formatDate(createdAt);
 
   useEffect(() => {
-    const fetchLikeData = async () => {
+    const fetchInteractionData = async () => {
       try {
-        // Get current like count
-        const count = await getLikeCount('post', post.id);
-        setLikeCount(count);
+        // Get current counts
+        const [likes, follows, watches] = await Promise.all([
+          getLikeCount('post', post.id),
+          getFollowCount('post', post.id),
+          getWatchCount('post', post.id)
+        ]);
         
-        // Check if user has liked this post
-        if (!userHasLiked) {
-          const hasLiked = await checkLikeStatus('post', post.id);
+        setLikeCount(likes);
+        setFollowCount(follows);
+        setWatchCount(watches);
+        
+        // Check user's interaction status if not provided
+        if (!userHasLiked || !userIsFollowing || !userIsWatching) {
+          const [hasLiked, isFollowing, isWatching] = await Promise.all([
+            !userHasLiked && checkLikeStatus('post', post.id),
+            !userIsFollowing && checkFollowStatus('post', post.id),
+            !userIsWatching && checkWatchStatus('post', post.id)
+          ]);
+          
           setLiked(hasLiked);
+          setFollowing(isFollowing);
+          setWatching(isWatching);
         }
       } catch (error) {
-        console.error('Error fetching like data:', error);
+        console.error('Error fetching interaction data:', error);
       }
     };
     
-    fetchLikeData();
-  }, [post.id, userHasLiked]);
+    fetchInteractionData();
+  }, [post.id, userHasLiked, userIsFollowing, userIsWatching]);
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation when clicking the like button
@@ -190,20 +224,19 @@ export default function PostCard({ post, userHasLiked = false }: PostCardProps) 
         </CardContent>
       </Link>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="text-sm text-gray-500">
-          By {username}
+        <div className="flex items-center gap-2 ml-auto">
+          <button 
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            }`}
+            aria-label={liked ? "Unlike" : "Like"}
+          >
+            <HeartIcon filled={liked} className="w-4 h-4" />
+            <span>{likeCount}</span>
+          </button>
         </div>
-        <button 
-          onClick={handleLikeToggle}
-          disabled={isLoading}
-          className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
-            liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-          }`}
-          aria-label={liked ? "Unlike" : "Like"}
-        >
-          <HeartIcon filled={liked} className="w-4 h-4" />
-          <span>{likeCount}</span>
-        </button>
       </CardFooter>
     </Card>
   );

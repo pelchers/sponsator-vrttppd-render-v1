@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { followEntity, unfollowEntity, checkFollowStatus, getFollowCount } from '@/api/follows';
 
 interface FollowButtonProps {
-  entityType: 'user' | 'project' | 'article';
+  entityType: 'project' | 'article' | 'post' | 'user';
   entityId: string;
   initialFollowing?: boolean;
   initialCount?: number;

@@ -11,9 +11,391 @@ The sort feature needs to:
 4. Support ascending/descending order
 5. Work with all content types (users, projects, articles, posts)
 
+## Frontend Implementation
+
+### 1. Create Sort Components
+
+First, create the sorting UI components:
+
+**File: `client/src/components/sort/SortSelect.tsx`**
+```typescript
+// SortSelect component code...
+```
+
+**File: `client/src/components/sort/SortOrder.tsx`**
+```typescript
+// SortOrder component code...
+```
+
+### 2. Create Sorting Utility
+
+**File: `client/src/utils/sorting.ts`**
+```typescript
+// Sorting utility code...
+```
+
+### 3. Update ResultsGrid Component
+
+**File: `client/src/components/results/ResultsGrid.tsx`**
+```typescript
+// ResultsGrid component code...
+```
+
+## Backend Implementation
+
+### 1. Update Database Schema
+
+**File: `server/prisma/schema.prisma`**
+```prisma
+// Ensure all content tables have the necessary count fields
+model BaseContentFields {
+  likes_count    Int      @default(0)
+  follows_count  Int      @default(0)
+  watches_count  Int      @default(0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
+```
+
+### 2. Create Sort Types
+
+**File: `server/src/types/sorting.ts`**
+```typescript
+export type SortOrder = 'asc' | 'desc';
+
+export interface SortOptions {
+  field: string;
+  order: SortOrder;
+}
+
+export const validSortFields = [
+  'title',
+  'likes_count',
+  'follows_count',
+  'watches_count',
+  'created_at',
+  'updated_at'
+];
+```
+
+### 3. Update Service Layer
+
+**File: `server/src/services/contentService.ts`**
+```typescript
+import { SortOptions, validSortFields } from '../types/sorting';
+import { prisma } from '../lib/prisma';
+
+export async function getContentWithSort(
+  contentType: string,
+  sortOptions: SortOptions,
+  page: number,
+  limit: number
+) {
+  // Validate sort field
+  if (!validSortFields.includes(sortOptions.field)) {
+    throw new Error('Invalid sort field');
+  }
+
+  // Build sort object for Prisma
+  const orderBy = {
+    [sortOptions.field]: sortOptions.order
+  };
+
+  // Query with sorting
+  const results = await prisma[contentType].findMany({
+    orderBy,
+    skip: (page - 1) * limit,
+    take: limit,
+    include: {
+      // Include necessary relations
+      users: true
+    }
+  });
+
+  return results;
+}
+```
+
+### 4. Update Controller Layer
+
+**File: `server/src/controllers/contentController.ts`**
+```typescript
+import { Request, Response } from 'express';
+import { getContentWithSort } from '../services/contentService';
+
+export async function getContent(req: Request, res: Response) {
+  try {
+    const { 
+      contentType,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 12
+    } = req.query;
+
+    const results = await getContentWithSort(
+      contentType as string,
+      { field: sortBy as string, order: sortOrder as 'asc' | 'desc' },
+      Number(page),
+      Number(limit)
+    );
+
+    res.json({
+      results,
+      page: Number(page),
+      limit: Number(limit)
+    });
+  } catch (error) {
+    console.error('Error fetching content:', error);
+    res.status(500).json({ error: 'Failed to fetch content' });
+  }
+}
+```
+
+### 5. Update Routes
+
+**File: `server/src/routes/contentRoutes.ts`**
+```typescript
+import { Router } from 'express';
+import { getContent } from '../controllers/contentController';
+
+const router = Router();
+
+router.get('/', getContent);
+
+export default router;
+```
+
+### 6. Add Database Migrations
+
+**File: `server/prisma/migrations/[timestamp]_add_interaction_counts.ts`**
+```typescript
+// Add count fields to all content tables
+export const up = async (prisma: PrismaClient) => {
+  await prisma.$executeRaw`
+    ALTER TABLE posts 
+    ADD COLUMN likes_count INT DEFAULT 0,
+    ADD COLUMN follows_count INT DEFAULT 0,
+    ADD COLUMN watches_count INT DEFAULT 0;
+  `;
+  // Repeat for other tables...
+};
+```
+
+### 7. Update Service Layer
+
+**File: `server/src/services/contentService.ts`**
+```typescript
+import { SortOptions, validSortFields } from '../types/sorting';
+import { prisma } from '../lib/prisma';
+
+export async function getContentWithSort(
+  contentType: string,
+  sortOptions: SortOptions,
+  page: number,
+  limit: number
+) {
+  // Validate sort field
+  if (!validSortFields.includes(sortOptions.field)) {
+    throw new Error('Invalid sort field');
+  }
+
+  // Build sort object for Prisma
+  const orderBy = {
+    [sortOptions.field]: sortOptions.order
+  };
+
+  // Query with sorting
+  const results = await prisma[contentType].findMany({
+    orderBy,
+    skip: (page - 1) * limit,
+    take: limit,
+    include: {
+      // Include necessary relations
+      users: true
+    }
+  });
+
+  return results;
+}
+```
+
+### 8. Add API Endpoints
+
+**File: `server/src/controllers/contentController.ts`**
+```typescript
+import { Request, Response } from 'express';
+import { getContentWithSort } from '../services/contentService';
+
+export async function getContent(req: Request, res: Response) {
+  try {
+    const { 
+      contentType,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 12
+    } = req.query;
+
+    const results = await getContentWithSort(
+      contentType as string,
+      { field: sortBy as string, order: sortOrder as 'asc' | 'desc' },
+      Number(page),
+      Number(limit)
+    );
+
+    res.json({
+      results,
+      page: Number(page),
+      limit: Number(limit)
+    });
+  } catch (error) {
+    console.error('Error fetching content:', error);
+    res.status(500).json({ error: 'Failed to fetch content' });
+  }
+}
+```
+
+## Testing
+
+1. **Frontend Testing**
+   - Test sorting UI components
+   - Verify sort order changes
+   - Check interaction counts display correctly
+
+2. **Backend Testing**
+   - Test sort parameter validation
+   - Verify correct sorting in database queries
+   - Check error handling
+
+3. **Integration Testing**
+   - Test end-to-end sorting functionality
+   - Verify data consistency
+   - Check performance with large datasets
+
 ## Implementation Steps
 
-### 1. Add Sort Options Interface
+### 1. Update Card Components
+
+First, update the card components to handle interaction counts and buttons correctly:
+
+**File: `client/src/components/cards/PostCard.tsx`**
+```typescript
+// PostCard footer - only like button
+<CardFooter className="p-4 pt-0 flex justify-between items-center">
+  <div className="flex items-center gap-2 ml-auto">
+    <button 
+      onClick={handleLikeToggle}
+      disabled={isLoading}
+      className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
+        liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+      }`}
+      aria-label={liked ? "Unlike" : "Like"}
+    >
+      <HeartIcon filled={liked} className="w-4 h-4" />
+      <span>{likeCount}</span>
+    </button>
+  </div>
+</CardFooter>
+```
+
+**File: `client/src/components/cards/UserCard.tsx`**
+```typescript
+// UserCard footer - follow and watch buttons
+<CardFooter className="p-4 pt-0 flex justify-between items-center">
+  <div className="text-sm text-gray-500">
+    {user.career_title || 'Member'}
+  </div>
+  <div className="flex items-center gap-2 ml-auto">
+    <WatchButton 
+      entityType="user"
+      entityId={user.id}
+      initialWatching={watching}
+      initialCount={watchCount}
+      showCount={true}
+      size="sm"
+      variant="ghost"
+    />
+    <FollowButton 
+      entityType="user"
+      entityId={user.id}
+      initialFollowing={following}
+      initialCount={followCount}
+      showCount={true}
+      size="sm"
+      variant="ghost"
+    />
+  </div>
+</CardFooter>
+```
+
+**File: `client/src/components/cards/ProjectCard.tsx` and `client/src/components/cards/ArticleCard.tsx`**
+```typescript
+// Project and Article footer - all interaction buttons
+<CardFooter className="p-4 pt-0 flex justify-between items-center">
+  <div className="flex items-center gap-2 ml-auto">
+    <WatchButton 
+      entityType={entityType}
+      entityId={item.id}
+      initialWatching={watching}
+      initialCount={watchCount}
+      showCount={true}
+      size="sm"
+      variant="ghost"
+    />
+    <FollowButton 
+      entityType={entityType}
+      entityId={item.id}
+      initialFollowing={following}
+      initialCount={followCount}
+      showCount={true}
+      size="sm"
+      variant="ghost"
+    />
+    <button 
+      onClick={handleLikeToggle}
+      disabled={isLoading}
+      className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
+        liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+      }`}
+      aria-label={liked ? "Unlike" : "Like"}
+    >
+      <HeartIcon filled={liked} className="w-4 h-4" />
+      <span>{likeCount}</span>
+    </button>
+  </div>
+</CardFooter>
+```
+
+### 2. Create Interaction Components
+
+**File: `client/src/components/buttons/WatchButton.tsx`**
+```typescript
+interface WatchButtonProps {
+  entityType: 'project' | 'article' | 'post' | 'user';
+  entityId: string;
+  initialWatching?: boolean;
+  initialCount?: number;
+  showCount?: boolean;
+  variant?: 'default' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+}
+```
+
+**File: `client/src/components/buttons/FollowButton.tsx`**
+```typescript
+interface FollowButtonProps {
+  entityType: 'project' | 'article' | 'post' | 'user';
+  entityId: string;
+  initialFollowing?: boolean;
+  initialCount?: number;
+  showCount?: boolean;
+  variant?: 'default' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+}
+```
+
+### 3. Add Sort Options Interface
 
 ```typescript
 // New types for sorting
@@ -36,7 +418,7 @@ const sortOptions: SortOption[] = [
 ];
 ```
 
-### 2. Update ResultsGrid Props
+### 4. Update ResultsGrid Props
 
 ```typescript
 interface ResultsGridProps {
@@ -86,7 +468,7 @@ interface ResultsGridProps {
 }
 ```
 
-### 3. Add Sort Function
+### 5. Add Sort Function
 
 ```typescript
 function sortResults(
@@ -139,7 +521,7 @@ function sortResults(
 }
 ```
 
-### 4. Update ResultsGrid Component
+### 6. Update ResultsGrid Component
 
 ```typescript
 export default function ResultsGrid({ 
@@ -190,7 +572,7 @@ export default function ResultsGrid({
 }
 ```
 
-### 5. Count Fields in Card Components
+### 7. Count Fields in Card Components
 
 ```typescript
 interface CardInteractionProps {
@@ -233,7 +615,7 @@ interface ArticleCardProps extends CardInteractionProps {
 // Similar for PostCard and UserCard
 ```
 
-### 6. Display Interaction Counts
+### 8. Display Interaction Counts
 
 Add count displays next to each interaction icon:
 

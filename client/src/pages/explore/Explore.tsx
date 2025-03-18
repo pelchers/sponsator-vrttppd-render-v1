@@ -85,6 +85,10 @@ export default function ExplorePage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
+  // State for sorting
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
   // Handle search query change
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
@@ -120,7 +124,9 @@ export default function ExplorePage() {
         contentTypes: selectedContentTypes,
         userTypes: selectedUserTypes,
         page,
-        limit: 12
+        limit: 12,
+        sortBy,
+        sortOrder
       });
       
       setResults(data.results);
@@ -135,12 +141,12 @@ export default function ExplorePage() {
   // Fetch results when search query, filters, or page changes
   useEffect(() => {
     fetchResults();
-  }, [searchQuery, selectedContentTypes, selectedUserTypes, page]);
+  }, [searchQuery, selectedContentTypes, selectedUserTypes, page, sortBy, sortOrder]);
 
   // Inside the component, add this hook
-  const { likeStatuses: postLikeStatuses } = useBatchLikeStatus(results.posts, 'post');
   const { likeStatuses: articleLikeStatuses } = useBatchLikeStatus(results.articles, 'article');
   const { likeStatuses: projectLikeStatuses } = useBatchLikeStatus(results.projects, 'project');
+  const { likeStatuses: postLikeStatuses } = useBatchLikeStatus(results.posts, 'post');
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -188,10 +194,14 @@ export default function ExplorePage() {
           loading={loading} 
           contentTypes={selectedContentTypes}
           likeStatuses={{
-            posts: postLikeStatuses,
             articles: articleLikeStatuses,
-            projects: projectLikeStatuses
+            projects: projectLikeStatuses,
+            posts: postLikeStatuses
           }}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={setSortBy}
+          onSortOrderChange={setSortOrder}
         />
       )}
       
