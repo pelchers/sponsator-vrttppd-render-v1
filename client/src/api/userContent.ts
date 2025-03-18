@@ -118,10 +118,14 @@ export const fetchUserPortfolio = async (options: {
     
     console.log('Fetching from endpoint:', endpoint);
     
-    const headers = {
-      'Content-Type': 'application/json',
-      ...getAuthHeaders()
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
     };
+
+    const token = getAuthHeaders().Authorization;
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
     
     console.log('Using headers:', headers);
     
