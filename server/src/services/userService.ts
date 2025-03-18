@@ -1118,9 +1118,15 @@ export async function getUserPortfolio(userId: string, options: {
   contentTypes: string[];
   page: number;
   limit: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }) {
-  const { contentTypes, page, limit } = options;
+  const { contentTypes, page, limit, sortBy = 'created_at', sortOrder = 'desc' } = options;
   const skip = (page - 1) * limit;
+  
+  console.log(`[USER SERVICE] Getting portfolio for user ${userId}`);
+  console.log(`[USER SERVICE] Content types: ${contentTypes.join(', ')}`);
+  console.log(`[USER SERVICE] Sort: ${sortBy} ${sortOrder}`);
   
   // Initialize results object
   const results: any = {
@@ -1144,44 +1150,55 @@ export async function getUserPortfolio(userId: string, options: {
   if (contentTypes.includes('posts')) {
     promises.push(
       (async () => {
-        // Get posts count
-        counts.posts = await prisma.posts.count({
-          where: { user_id: userId }
-        });
-        
-        // Add to total count
-        totalCount += counts.posts;
-        
-        // Get posts data with pagination
-        if (contentTypes.length === 1 || page === 1) {
-          const posts = await prisma.posts.findMany({
-            where: { user_id: userId },
-            skip: contentTypes.length === 1 ? skip : 0,
-            take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
-            orderBy: { created_at: 'desc' },
-            include: {
-              users: {
-                select: {
-                  id: true,
-                  username: true,
-                  profile_image: true
-                }
-              }
-            }
+        try {
+          // Get posts count
+          counts.posts = await prisma.posts.count({
+            where: { user_id: userId }
           });
           
-          // Transform posts for API response
-          results.posts = posts.map(post => ({
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            created_at: post.created_at,
-            user: {
-              id: post.users.id,
-              username: post.users.username,
-              profile_image: post.users.profile_image
-            }
-          }));
+          // Add to total count
+          totalCount += counts.posts;
+          
+          console.log(`[USER SERVICE] Found ${counts.posts} posts for user ${userId}`);
+          
+          // Get posts data with pagination
+          if (contentTypes.length === 1 || page === 1) {
+            const posts = await prisma.posts.findMany({
+              where: { user_id: userId },
+              skip: contentTypes.length === 1 ? skip : 0,
+              take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
+              orderBy: { [sortBy]: sortOrder },
+              include: {
+                users: {
+                  select: {
+                    id: true,
+                    username: true,
+                    profile_image: true
+                  }
+                }
+              }
+            });
+            
+            console.log(`[USER SERVICE] Retrieved ${posts.length} posts`);
+            
+            // Transform posts for API response
+            results.posts = posts.map(post => ({
+              id: post.id,
+              title: post.title,
+              content: post.content,
+              created_at: post.created_at,
+              likes_count: post.likes_count || 0,
+              follows_count: post.follows_count || 0,
+              watches_count: post.watches_count || 0,
+              user: {
+                id: post.users.id,
+                username: post.users.username,
+                profile_image: post.users.profile_image
+              }
+            }));
+          }
+        } catch (error) {
+          console.error(`[USER SERVICE] Error getting posts: ${error}`);
         }
       })()
     );
@@ -1205,7 +1222,7 @@ export async function getUserPortfolio(userId: string, options: {
             where: { user_id: userId },
             skip: contentTypes.length === 1 ? skip : 0,
             take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
-            orderBy: { created_at: 'desc' },
+            orderBy: { [sortBy]: sortOrder },
             include: {
               users: {
                 select: {
@@ -1224,6 +1241,9 @@ export async function getUserPortfolio(userId: string, options: {
             title: article.title,
             sections: article.article_sections,
             created_at: article.created_at,
+            likes_count: article.likes_count || 0,
+            follows_count: article.follows_count || 0,
+            watches_count: article.watches_count || 0,
             user: {
               id: article.users.id,
               username: article.users.username,
@@ -1253,7 +1273,7 @@ export async function getUserPortfolio(userId: string, options: {
             where: { user_id: userId },
             skip: contentTypes.length === 1 ? skip : 0,
             take: contentTypes.length === 1 ? limit : Math.min(limit, 10),
-            orderBy: { created_at: 'desc' },
+            orderBy: { [sortBy]: sortOrder },
             include: {
               users: {
                 select: {
@@ -1271,6 +1291,9 @@ export async function getUserPortfolio(userId: string, options: {
             title: project.title,
             description: project.description,
             created_at: project.created_at,
+            likes_count: project.likes_count || 0,
+            follows_count: project.follows_count || 0,
+            watches_count: project.watches_count || 0,
             user: {
               id: project.users.id,
               username: project.users.username,
@@ -1286,7 +1309,10 @@ export async function getUserPortfolio(userId: string, options: {
   await Promise.all(promises);
   
   // Calculate total pages
-  const totalPages = Math.ceil(totalCount / limit);
+  const totalPages = Math.ceil(totalCount / limit) || 1;
+  
+  console.log(`[USER SERVICE] Portfolio results: posts=${results.posts.length}, articles=${results.articles.length}, projects=${results.projects.length}`);
+  console.log(`[USER SERVICE] Total items: ${totalCount}, Total pages: ${totalPages}`);
   
   return {
     results,

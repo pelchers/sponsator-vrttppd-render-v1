@@ -172,4 +172,122 @@ export const fetchUserPortfolio = async (options: {
       totalPages: 0
     };
   }
-}; 
+};
+
+// Update the getUserInteractions function to include sort parameters
+export async function getUserInteractions(
+  userId: string,
+  options: {
+    contentTypes?: string[];
+    interactionTypes?: string[];
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  } = {}
+) {
+  const params = new URLSearchParams();
+  
+  if (options.contentTypes) {
+    params.append('contentTypes', options.contentTypes.join(','));
+  }
+  
+  if (options.interactionTypes) {
+    params.append('interactionTypes', options.interactionTypes.join(','));
+  }
+  
+  if (options.page) {
+    params.append('page', options.page.toString());
+  }
+  
+  if (options.limit) {
+    params.append('limit', options.limit.toString());
+  }
+  
+  if (options.sortBy) {
+    params.append('sortBy', options.sortBy);
+  }
+  
+  if (options.sortOrder) {
+    params.append('sortOrder', options.sortOrder);
+  }
+
+  const response = await fetch(`${API_URL}/users/${userId}/interactions?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch user interactions');
+  }
+
+  return response.json();
+}
+
+// Update the getUserPortfolio function to include sort parameters
+export async function getUserPortfolio(
+  userId: string,
+  options: {
+    contentTypes?: string[];
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  } = {}
+) {
+  console.log(`Fetching from endpoint: ${API_URL}/users/portfolio/${userId}?${new URLSearchParams({
+    ...(options.contentTypes && { contentTypes: options.contentTypes.join(',') }),
+    ...(options.page && { page: options.page.toString() }),
+    ...(options.limit && { limit: options.limit.toString() }),
+    ...(options.sortBy && { sortBy: options.sortBy }),
+    ...(options.sortOrder && { sortOrder: options.sortOrder })
+  })}`);
+
+  try {
+    // Prepare headers with auth token
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getAuthToken()}`
+    };
+    
+    console.log('Using headers:', headers);
+    
+    // Make the API call
+    const response = await fetch(`${API_URL}/users/portfolio/${userId}?${new URLSearchParams({
+      ...(options.contentTypes && { contentTypes: options.contentTypes.join(',') }),
+      ...(options.page && { page: options.page.toString() }),
+      ...(options.limit && { limit: options.limit.toString() }),
+      ...(options.sortBy && { sortBy: options.sortBy }),
+      ...(options.sortOrder && { sortOrder: options.sortOrder })
+    })}`, {
+      method: 'GET',
+      headers
+    });
+    
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+    
+    // Parse the response
+    const text = await response.text();
+    console.log('Response text:', text);
+    
+    // If empty response, return empty data
+    if (!text) {
+      return {
+        results: { posts: [], articles: [], projects: [] },
+        counts: { posts: 0, articles: 0, projects: 0 },
+        page: options.page || 1,
+        limit: options.limit || 12,
+        totalPages: 0
+      };
+    }
+    
+    return JSON.parse(text);
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    // Return empty data on error
+    return {
+      results: { posts: [], articles: [], projects: [] },
+      counts: { posts: 0, articles: 0, projects: 0 },
+      page: options.page || 1,
+      limit: options.limit || 12,
+      totalPages: 0
+    };
+  }
+} 

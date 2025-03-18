@@ -6,6 +6,8 @@ import FilterGroup from '@/components/filters/FilterGroup';
 import ResultsGrid from '@/components/results/ResultsGrid';
 import { fetchUserPortfolio } from '@/api/userContent';
 import { useNavigate, useParams } from 'react-router-dom';
+import { SortSelect } from '@/components/sort/SortSelect';
+import { SortOrder } from '@/components/sort/SortOrder';
 
 // Define content types for "Show" filter
 const contentTypes = [
@@ -54,6 +56,10 @@ export default function PortfolioPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
+  // Add state for sorting
+  const [sortBy, setSortBy] = useState('created');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
   // Fetch user info if viewing someone else's portfolio
   useEffect(() => {
     if (portfolioUserId) {
@@ -67,6 +73,19 @@ export default function PortfolioPage() {
   const handleContentTypeChange = (selected: string[]) => {
     setSelectedContentTypes(selected);
     setPage(1); // Reset to first page when filters change
+  };
+  
+  // Add handlers for sort changes
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    // Reset to page 1 when sort changes
+    setPage(1);
+  };
+  
+  const handleSortOrderChange = (value: 'asc' | 'desc') => {
+    setSortOrder(value);
+    // Reset to page 1 when sort order changes
+    setPage(1);
   };
   
   // Fetch results based on filters
@@ -83,7 +102,9 @@ export default function PortfolioPage() {
         contentTypes: selectedContentTypes,
         userId: targetUserId,
         page,
-        limit: 12
+        limit: 12,
+        sortBy,
+        sortOrder
       });
       
       console.log('Portfolio data received:', data);
@@ -127,7 +148,7 @@ export default function PortfolioPage() {
       });
       setLoading(false);
     }
-  }, [selectedContentTypes, page, portfolioUserId, currentUserId]);
+  }, [selectedContentTypes, page, portfolioUserId, currentUserId, sortBy, sortOrder]);
   
   // Check if there are any results
   const hasResults = results.posts.length > 0 || 
@@ -224,12 +245,32 @@ export default function PortfolioPage() {
         </div>
       )}
       
+      {/* Add sort controls */}
+      {selectedContentTypes.length > 0 && (
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm text-gray-500">Sort by:</span>
+          <SortSelect 
+            value={sortBy} 
+            onValueChange={handleSortChange} 
+            className="w-40"
+          />
+          <SortOrder 
+            order={sortOrder} 
+            onChange={handleSortOrderChange}
+          />
+        </div>
+      )}
+      
       {/* Results */}
       {selectedContentTypes.length > 0 && (
         <ResultsGrid 
           results={results} 
           loading={loading} 
           contentTypes={selectedContentTypes}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
+          onSortOrderChange={handleSortOrderChange}
         />
       )}
       

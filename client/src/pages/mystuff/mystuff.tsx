@@ -7,6 +7,8 @@ import ResultsGrid from '@/components/results/ResultsGrid';
 import { fetchUserInteractions } from '@/api/userContent';
 import { useNavigate } from 'react-router-dom';
 import { HeartIcon } from '@/components/icons/HeartIcon';
+import { SortSelect } from '@/components/sort/SortSelect';
+import { SortOrder } from '@/components/sort/SortOrder';
 
 // Define content types for "Show" filter
 const contentTypes = [
@@ -48,6 +50,10 @@ export default function MyStuffPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
+  // Add state for sorting
+  const [sortBy, setSortBy] = useState('created');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
   // Handle content type filter change
   const handleContentTypeChange = (selected: string[]) => {
     setSelectedContentTypes(selected);
@@ -60,13 +66,32 @@ export default function MyStuffPage() {
     setPage(1); // Reset to first page when filters change
   };
   
+  // Add handlers for sort changes
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    // Reset to page 1 when sort changes
+    setPage(1);
+  };
+  
+  const handleSortOrderChange = (value: 'asc' | 'desc') => {
+    setSortOrder(value);
+    // Reset to page 1 when sort order changes
+    setPage(1);
+  };
+  
   // Fetch results based on filters
   const fetchResults = async () => {
-    if (!userId) {
-      console.error('No user ID found');
+    // Only fetch if at least one content type is selected
+    if (selectedContentTypes.length === 0) {
+      setResults({
+        users: [],
+        projects: [],
+        articles: [],
+        posts: []
+      });
       return;
     }
-
+    
     setLoading(true);
     try {
       // Call API with userId to ensure we only get the user's interactions
@@ -75,7 +100,9 @@ export default function MyStuffPage() {
         interactionTypes: selectedInteractionTypes,
         page,
         limit: 12,
-        userId // Pass the userId to filter interactions by this user
+        userId, // Pass the userId to filter interactions by this user
+        sortBy,
+        sortOrder
       });
       
       // Ensure all arrays exist even if API doesn't return them
@@ -88,13 +115,6 @@ export default function MyStuffPage() {
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching user interactions:', error);
-      // Reset to empty arrays on error
-      setResults({
-        users: [],
-        posts: [],
-        articles: [],
-        projects: []
-      });
     } finally {
       setLoading(false);
     }
@@ -103,7 +123,7 @@ export default function MyStuffPage() {
   // Fetch results when filters or page changes
   useEffect(() => {
     fetchResults();
-  }, [selectedContentTypes, selectedInteractionTypes, page]);
+  }, [selectedContentTypes, selectedInteractionTypes, page, sortBy, sortOrder]);
   
   // Check if there are any results
   const hasResults = results.users.length > 0 || 
@@ -184,12 +204,32 @@ export default function MyStuffPage() {
         </div>
       )}
       
+      {/* Add sort controls */}
+      {selectedContentTypes.length > 0 && (
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm text-gray-500">Sort by:</span>
+          <SortSelect 
+            value={sortBy} 
+            onValueChange={handleSortChange} 
+            className="w-40"
+          />
+          <SortOrder 
+            order={sortOrder} 
+            onChange={handleSortOrderChange}
+          />
+        </div>
+      )}
+      
       {/* Results */}
       {selectedContentTypes.length > 0 && selectedInteractionTypes.length > 0 && (
         <ResultsGrid 
           results={results} 
           loading={loading} 
           contentTypes={selectedContentTypes}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
+          onSortOrderChange={handleSortOrderChange}
         />
       )}
       

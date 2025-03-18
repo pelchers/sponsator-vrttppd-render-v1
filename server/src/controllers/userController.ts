@@ -287,6 +287,8 @@ export async function getUserPortfolio(req: Request, res: Response) {
     const contentTypes = req.query.contentTypes 
       ? (req.query.contentTypes as string).split(',') 
       : ['posts', 'articles', 'projects'];
+    const sortBy = req.query.sortBy as string || 'created_at';
+    const sortOrder = (req.query.sortOrder as string || 'desc') === 'asc' ? 'asc' : 'desc';
     
     // Get user ID (from params or from authenticated user)
     const userId = req.params.userId || req.user?.id;
@@ -295,11 +297,26 @@ export async function getUserPortfolio(req: Request, res: Response) {
       return res.status(401).json({ message: 'Authentication required' });
     }
     
+    console.log(`[USER CONTROLLER] Getting portfolio for user ${userId}`);
+    console.log(`[USER CONTROLLER] Content types: ${contentTypes.join(', ')}`);
+    console.log(`[USER CONTROLLER] Sort: ${sortBy} ${sortOrder}`);
+    
+    // Check if user exists
+    const user = await prisma.users.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
     // Get portfolio data from service
     const portfolioData = await userService.getUserPortfolio(userId, {
       contentTypes,
       page,
-      limit
+      limit,
+      sortBy,
+      sortOrder
     });
     
     res.status(200).json(portfolioData);
