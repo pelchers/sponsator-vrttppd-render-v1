@@ -26,8 +26,8 @@ export const searchUsers = async (
       ];
     }
     
-    // Add user type filter if provided
-    if (userTypes.length > 0) {
+    // Add user type filter if provided and not "all"
+    if (userTypes.length > 0 && !userTypes.includes('all')) {
       where.user_type = { in: userTypes };
     }
     
@@ -77,6 +77,8 @@ export const searchProjects = async (
   sortOrder: 'asc' | 'desc' = 'desc'
 ) => {
   try {
+    console.log(`[PROJECTS] Sorting by ${sortField} ${sortOrder}, filtering by user types:`, userTypes);
+    
     // Build where clause
     const where: any = {};
     
@@ -88,8 +90,8 @@ export const searchProjects = async (
       ];
     }
     
-    // Add user type filter if provided
-    if (userTypes.length > 0) {
+    // Add user type filter if provided and not "all"
+    if (userTypes.length > 0 && !userTypes.includes('all')) {
       where.users = {
         user_type: { in: userTypes }
       };
@@ -107,6 +109,9 @@ export const searchProjects = async (
         project_tags: true,
         created_at: true,
         user_id: true,
+        likes_count: true,
+        follows_count: true,
+        watches_count: true,
         users: {
           select: {
             username: true,
@@ -132,9 +137,13 @@ export const searchProjects = async (
       created_at: project.created_at,
       user_id: project.user_id,
       username: project.users?.username,
-      user_type: project.users?.user_type
+      user_type: project.users?.user_type,
+      likes_count: project.likes_count || 0,
+      follows_count: project.follows_count || 0,
+      watches_count: project.watches_count || 0
     }));
     
+    console.log(`[PROJECTS] Found ${transformedProjects.length} projects`);
     return { projects: transformedProjects };
   } catch (error) {
     console.error('Error searching projects:', error);
@@ -152,7 +161,7 @@ export const searchArticles = async (
   sortOrder: 'asc' | 'desc' = 'desc'
 ) => {
   try {
-    console.log(`[ARTICLES] Sorting by ${sortField} ${sortOrder}`);
+    console.log(`[ARTICLES] Sorting by ${sortField} ${sortOrder}, filtering by user types:`, userTypes);
     
     // Build where clause
     const where: any = {};
@@ -164,8 +173,8 @@ export const searchArticles = async (
       ];
     }
     
-    // Add user type filter if provided
-    if (userTypes.length > 0) {
+    // Add user type filter if provided and not "all"
+    if (userTypes.length > 0 && !userTypes.includes('all')) {
       where.users = {
         user_type: { in: userTypes }
       };
@@ -239,7 +248,7 @@ export const searchPosts = async (
   sortOrder: 'asc' | 'desc' = 'desc'
 ) => {
   try {
-    console.log(`[POSTS] Sorting by ${sortField} ${sortOrder}`);
+    console.log(`[POSTS] Sorting by ${sortField} ${sortOrder}, filtering by user types:`, userTypes);
     
     // Build where clause
     const where: any = {};
@@ -252,8 +261,8 @@ export const searchPosts = async (
       ];
     }
     
-    // Add user type filter if provided
-    if (userTypes.length > 0) {
+    // Add user type filter if provided and not "all"
+    if (userTypes.length > 0 && !userTypes.includes('all')) {
       where.users = {
         user_type: { in: userTypes }
       };
@@ -317,7 +326,13 @@ export const searchAll = async (
 ) => {
   try {
     console.log(`[EXPLORE] Searching with params:`, { 
-      query, contentTypes, userTypes, page, limit, sortBy, sortOrder 
+      query, 
+      contentTypes, 
+      userTypes, 
+      page, 
+      limit, 
+      sortBy, 
+      sortOrder 
     });
     
     // Prepare results object

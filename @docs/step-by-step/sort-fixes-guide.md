@@ -112,7 +112,7 @@ export function SortOrder({ order, onChange, className = "" }: SortOrderProps) {
       variant="outline"
       size="sm"
       onClick={() => onChange(order === 'asc' ? 'desc' : 'asc')}
-      className={`${className} ${order ? 'border-blue-600 text-blue-600' : ''}`}
+      className={`${className} ${order === 'asc' ? 'border-blue-600 text-blue-600' : ''}`}
       aria-label={order === 'asc' ? 'Sort ascending' : 'Sort descending'}
     >
       {order === 'asc' ? (
@@ -129,94 +129,67 @@ export function SortOrder({ order, onChange, className = "" }: SortOrderProps) {
 }
 ```
 
-### Step 3: Update the Field Mapping in Sorting Utility
+### Step 3: Update the Sorting Utility
 
-Fix the field mapping in the sorting utility to ensure consistent field names:
+Fix the sorting utility to handle different field names across content types:
 
 ```typescript
 // client/src/utils/sorting.ts
-import { sortOptions } from '@/components/sort/SortSelect';
-
-type EntityType = 'users' | 'projects' | 'articles' | 'posts';
-
-// Updated field mappings with consistent naming
-const fieldMappings: Record<EntityType, Record<string, string>> = {
-  users: {
-    title: 'username',
-    likes_count: 'likes_count',
-    follows_count: 'follows_count',
-    watches_count: 'watches_count',
-    created_at: 'created_at',
-    updated_at: 'updated_at'
-  },
-  projects: {
-    title: 'project_name',
-    likes_count: 'likes_count',
-    follows_count: 'follows_count',
-    watches_count: 'watches_count',
-    created_at: 'created_at',
-    updated_at: 'updated_at'
-  },
-  articles: {
-    title: 'title',
-    likes_count: 'likes_count',
-    follows_count: 'follows_count',
-    watches_count: 'watches_count',
-    created_at: 'created_at',
-    updated_at: 'updated_at'
-  },
-  posts: {
-    title: 'title',
-    likes_count: 'likes_count',
-    follows_count: 'follows_count',
-    watches_count: 'watches_count',
-    created_at: 'created_at',
-    updated_at: 'updated_at'
-  }
-};
-
 export function sortResults<T extends { id: string }>(
   results: T[],
   sortBy: string,
   sortOrder: 'asc' | 'desc',
   entityType: EntityType
 ): T[] {
-  if (!sortBy || !results.length) return results;
+  if (!sortBy) return results;
 
   const sortOption = sortOptions.find(opt => opt.id === sortBy);
   if (!sortOption) return results;
 
-  const mapping = fieldMappings[entityType];
-  if (!mapping) return results;
-
-  // Create a new sorted array (don't modify the original)
+  // Create a copy of the array to avoid mutating the original
   return [...results].sort((a, b) => {
-    // Get the correct field name for this entity type
-    const fieldName = sortBy === 'alpha' ? mapping.title : mapping[sortOption.field];
+    // Determine which field to sort by based on entity type and sort option
+    let aValue, bValue;
     
-    // Safely access the values (with fallbacks)
-    const aValue = a[fieldName as keyof T];
-    const bValue = b[fieldName as keyof T];
-    
+    // Handle special case for alphabetical sorting
+    if (sortBy === 'alpha') {
+      // Map the title field based on entity type
+      switch(entityType) {
+        case 'users':
+          aValue = a.username;
+          bValue = b.username;
+          break;
+        case 'projects':
+          aValue = a.title || a.project_name;
+          bValue = b.title || b.project_name;
+          break;
+        default:
+          aValue = a.title;
+          bValue = b.title;
+      }
+    } else {
+      // For other sort options, use the field directly
+      const field = sortOption.field as keyof T;
+      aValue = a[field];
+      bValue = b[field];
+    }
+
     // Handle different data types
     switch (sortOption.type) {
       case 'string':
-        return sortOrder === 'asc'
+        return sortOrder === 'asc' 
           ? String(aValue || '').localeCompare(String(bValue || ''))
           : String(bValue || '').localeCompare(String(aValue || ''));
-      
       case 'number':
         return sortOrder === 'asc'
           ? Number(aValue || 0) - Number(bValue || 0)
           : Number(bValue || 0) - Number(aValue || 0);
-      
       case 'date':
         const dateA = aValue ? new Date(aValue).getTime() : 0;
         const dateB = bValue ? new Date(bValue).getTime() : 0;
         return sortOrder === 'asc'
           ? dateA - dateB
           : dateB - dateA;
-      
       default:
         return 0;
     }
@@ -224,210 +197,20 @@ export function sortResults<T extends { id: string }>(
 }
 ```
 
-### Step 4: Update the ResultsGrid Component
+### Step 4: Update the Backend Controller
 
-Now, update the ResultsGrid component to properly apply sorting to all content types:
-
-```typescript
-// client/src/components/results/ResultsGrid.tsx
-import { useState, useEffect } from 'react';
-import { SortSelect } from '@/components/sort/SortSelect';
-import { SortOrder } from '@/components/sort/SortOrder';
-import { sortResults } from '@/utils/sorting';
-import UserCard from '@/components/cards/UserCard';
-import ProjectCard from '@/components/cards/ProjectCard';
-import ArticleCard from '@/components/cards/ArticleCard';
-import PostCard from '@/components/cards/PostCard';
-
-interface ResultsGridProps {
-  results: {
-    users: any[];
-    projects: any[];
-    articles: any[];
-    posts: any[];
-  };
-  loading: boolean;
-  contentTypes: string[];
-  likeStatuses?: {
-    articles: Record<string, boolean>;
-    projects: Record<string, boolean>;
-    posts: Record<string, boolean>;
-  };
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
-  onSortChange: (sortBy: string) => void;
-  onSortOrderChange: (sortOrder: 'asc' | 'desc') => void;
-}
-
-export default function ResultsGrid({
-  results,
-  loading,
-  contentTypes,
-  likeStatuses = { articles: {}, projects: {}, posts: {} },
-  sortBy,
-  sortOrder,
-  onSortChange,
-  onSortOrderChange
-}: ResultsGridProps) {
-  // Determine which content types to show
-  const showUsers = contentTypes.includes('users');
-  const showProjects = contentTypes.includes('projects');
-  const showArticles = contentTypes.includes('articles');
-  const showPosts = contentTypes.includes('posts');
-  
-  // Apply sorting to each content type
-  const sortedResults = {
-    users: showUsers ? sortResults(results.users, sortBy, sortOrder, 'users') : [],
-    projects: showProjects ? sortResults(results.projects, sortBy, sortOrder, 'projects') : [],
-    articles: showArticles ? sortResults(results.articles, sortBy, sortOrder, 'articles') : [],
-    posts: showPosts ? sortResults(results.posts, sortBy, sortOrder, 'posts') : []
-  };
-  
-  // Count total results
-  const totalResults = 
-    sortedResults.users.length + 
-    sortedResults.projects.length + 
-    sortedResults.articles.length + 
-    sortedResults.posts.length;
-  
-  // Loading state
-  if (loading) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-gray-500">Loading results...</p>
-      </div>
-    );
-  }
-  
-  // Empty state
-  if (totalResults === 0) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-gray-500">No results found</p>
-      </div>
-    );
-  }
-  
-  return (
-    <div>
-      {/* Sort controls */}
-      <div className="flex justify-end mb-4 items-center gap-2">
-        <span className="text-sm text-gray-500">Sort by:</span>
-        <SortSelect 
-          value={sortBy} 
-          onValueChange={onSortChange} 
-          className="w-40"
-        />
-        <SortOrder 
-          order={sortOrder} 
-          onChange={onSortOrderChange} 
-        />
-      </div>
-      
-      {/* Results grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Users */}
-        {showUsers && sortedResults.users.map(user => (
-          <UserCard 
-            key={user.id} 
-            user={user} 
-          />
-        ))}
-        
-        {/* Projects */}
-        {showProjects && sortedResults.projects.map(project => (
-          <ProjectCard 
-            key={project.id} 
-            project={project} 
-            userHasLiked={likeStatuses.projects[project.id] || false}
-          />
-        ))}
-        
-        {/* Articles */}
-        {showArticles && sortedResults.articles.map(article => (
-          <ArticleCard 
-            key={article.id} 
-            article={article} 
-            userHasLiked={likeStatuses.articles[article.id] || false}
-          />
-        ))}
-        
-        {/* Posts */}
-        {showPosts && sortedResults.posts.map(post => (
-          <PostCard 
-            key={post.id} 
-            post={post} 
-            userHasLiked={likeStatuses.posts[post.id] || false}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-```
-
-### Step 5: Update the Explore Page Component
-
-Finally, update the Explore page to properly handle sort state:
+Ensure the backend controller properly maps frontend sort fields to database fields:
 
 ```typescript
-// client/src/pages/explore/Explore.tsx
-// In the ExplorePage component
-
-// State for sorting
-const [sortBy, setSortBy] = useState('created');  // Default to 'created'
-const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');  // Default to 'desc'
-
-// Handle sort change
-const handleSortChange = (value: string) => {
-  setSortBy(value);
-  // Reset to page 1 when sort changes
-  setPage(1);
-};
-
-// Handle sort order change
-const handleSortOrderChange = (value: 'asc' | 'desc') => {
-  setSortOrder(value);
-  // Reset to page 1 when sort order changes
-  setPage(1);
-};
-
-// In the JSX
-<ResultsGrid 
-  results={results} 
-  loading={loading} 
-  contentTypes={selectedContentTypes}
-  likeStatuses={{
-    articles: articleLikeStatuses,
-    projects: projectLikeStatuses,
-    posts: postLikeStatuses
-  }}
-  sortBy={sortBy}
-  sortOrder={sortOrder}
-  onSortChange={handleSortChange}
-  onSortOrderChange={handleSortOrderChange}
-/>
-```
-
-### Step 6: Update the Backend Sorting
-
-Ensure the backend properly handles the sort parameters:
-
-```typescript
-// server/src/services/exploreService.ts
-// In the searchAll function
-
-// Get sort parameters
-const sortField = req.query.sortBy || 'created_at';
-const sortOrder = req.query.sortOrder === 'asc' ? 'asc' : 'desc';
-
+// server/src/controllers/exploreController.ts
 // Map frontend sort field to database field
 const getSortField = (contentType: string, field: string) => {
+  // Map of frontend sort options to database fields
   const fieldMappings: Record<string, Record<string, string>> = {
     users: {
       alpha: 'username',
       likes: 'likes_count',
-      follows: 'follows_count',
+      follows: 'followers_count', // Note: users table uses followers_count, not follows_count
       watches: 'watches_count',
       created: 'created_at',
       updated: 'updated_at'
@@ -460,20 +243,81 @@ const getSortField = (contentType: string, field: string) => {
   
   return fieldMappings[contentType]?.[field] || 'created_at';
 };
+```
 
-// Apply sorting to each query
-if (contentTypes.includes('users')) {
-  const userSortField = getSortField('users', sortField);
-  const userQuery = {
-    // ... other query parameters
-    orderBy: {
-      [userSortField]: sortOrder
-    }
-  };
-  // Execute query with sorting
-}
+### Step 5: Fix the Explore Page Component
+
+Update the Explore page to handle sort state and reset pagination when sort changes:
+
+```typescript
+// client/src/pages/explore/Explore.tsx
+// State for sorting
+const [sortBy, setSortBy] = useState('created');  // Default to 'created'
+const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');  // Default to 'desc'
+
+// Handle sort change
+const handleSortChange = (value: string) => {
+  setSortBy(value);
+  // Reset to page 1 when sort changes
+  setPage(1);
+};
+
+// Handle sort order change
+const handleSortOrderChange = (value: 'asc' | 'desc') => {
+  setSortOrder(value);
+  // Reset to page 1 when sort order changes
+  setPage(1);
+};
+```
+
+### Step 6: Add Default Values for Count Fields
+
+Ensure all count fields have default values to prevent sorting issues:
+
+```typescript
+// server/src/services/exploreService.ts
+// Ensure all users have likes_count and followers_count (default to 0 if null)
+const processedUsers = users.map(user => ({
+  ...user,
+  likes_count: user.likes_count || 0,
+  followers_count: user.followers_count || 0,
+  watches_count: user.watches_count || 0
+}));
 
 // Similar for other content types
+```
+
+### Step 7: Add "All Types" Filter Option
+
+Add an "All Types" option to the user type filter to show content from all user types:
+
+```typescript
+// client/src/pages/explore/explore.tsx
+// Define user types for "Type" filter
+const userTypes = [
+  { id: 'all', label: 'All Types' },
+  { id: 'creator', label: 'Creator' },
+  { id: 'brand', label: 'Brand' },
+  { id: 'freelancer', label: 'Freelancer' },
+  { id: 'contractor', label: 'Contractor' }
+];
+```
+
+And update the backend to handle this "all" option:
+
+```typescript
+// server/src/services/exploreService.ts
+// Add user type filter if provided and not "all"
+if (userTypes.length > 0 && !userTypes.includes('all')) {
+  where.user_type = { in: userTypes };
+}
+
+// For other content types
+if (userTypes.length > 0 && !userTypes.includes('all')) {
+  where.users = {
+    user_type: { in: userTypes }
+  };
+}
 ```
 
 ## 4. Testing the Fix
@@ -485,6 +329,7 @@ After implementing these changes, test the sorting functionality:
 3. Test sorting with different content types selected
 4. Verify that sort order (asc/desc) works correctly
 5. Check that pagination works with sorting
+6. Test the "All Types" filter option
 
 ## 5. Common Issues and Solutions
 
@@ -504,6 +349,14 @@ After implementing these changes, test the sorting functionality:
 
 **Solution**: Pass the current sort state to the SortSelect and SortOrder components and use it to apply active styling.
 
+### Issue: User type filter not working for all content types
+
+**Solution**: Ensure the user type filter is applied to the associated user for projects, articles, and posts, not directly to the content.
+
+### Issue: Count fields are null causing sort issues
+
+**Solution**: Provide default values (0) for all count fields to ensure sorting works properly.
+
 ## 6. Best Practices
 
 1. **Consistent Field Naming**: Use consistent field names across your application or create explicit mappings
@@ -513,5 +366,6 @@ After implementing these changes, test the sorting functionality:
 5. **Default Sorting**: Always have a default sort option (e.g., 'created_at' desc)
 6. **Error Handling**: Add fallbacks for missing or invalid sort fields
 7. **Performance**: Consider pagination and limiting the number of items sorted at once
+8. **Logging**: Add detailed logging to help diagnose sorting and filtering issues
 
 By following this guide, you should be able to fix the sorting functionality in your application and ensure it works consistently across all content types. 

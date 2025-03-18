@@ -18,6 +18,7 @@ const contentTypes = [
 
 // Define user types for "Type" filter
 const userTypes = [
+  { id: 'all', label: 'All Types' },
   { id: 'creator', label: 'Creator' },
   { id: 'brand', label: 'Brand' },
   { id: 'freelancer', label: 'Freelancer' },
