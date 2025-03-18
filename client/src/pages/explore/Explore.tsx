@@ -86,7 +86,7 @@ export default function ExplorePage() {
   const [totalPages, setTotalPages] = useState(1);
   
   // State for sorting
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('created');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   
   // Handle search query change
@@ -102,6 +102,20 @@ export default function ExplorePage() {
   // Handle user type filter change
   const handleUserTypeChange = (selected: string[]) => {
     setSelectedUserTypes(selected);
+  };
+  
+  // Handle sort change
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    // Reset to page 1 when sort changes
+    setPage(1);
+  };
+  
+  // Handle sort order change
+  const handleSortOrderChange = (value: 'asc' | 'desc') => {
+    setSortOrder(value);
+    // Reset to page 1 when sort order changes
+    setPage(1);
   };
   
   // Fetch results based on search query and filters
@@ -200,8 +214,8 @@ export default function ExplorePage() {
           }}
           sortBy={sortBy}
           sortOrder={sortOrder}
-          onSortChange={setSortBy}
-          onSortOrderChange={setSortOrder}
+          onSortChange={handleSortChange}
+          onSortOrderChange={handleSortOrderChange}
         />
       )}
       

@@ -4,8 +4,17 @@ import { SortOptions, validSortFields, contentTypeFieldMap } from '../types/sort
 const prisma = new PrismaClient();
 
 // Search users with filters
-export const searchUsers = async (query: string, userTypes: string[], page: number, limit: number) => {
+export const searchUsers = async (
+  query: string, 
+  userTypes: string[], 
+  page: number, 
+  limit: number,
+  sortField: string = 'created_at',
+  sortOrder: 'asc' | 'desc' = 'desc'
+) => {
   try {
+    console.log(`[USERS] Sorting by ${sortField} ${sortOrder}`);
+    
     // Build where clause
     const where: any = {};
     
@@ -22,7 +31,7 @@ export const searchUsers = async (query: string, userTypes: string[], page: numb
       where.user_type = { in: userTypes };
     }
     
-    // Execute query using Prisma directly
+    // Make sure likes_count and followers_count have default values if null
     const users = await prisma.users.findMany({
       where,
       select: {
@@ -31,13 +40,27 @@ export const searchUsers = async (query: string, userTypes: string[], page: numb
         bio: true,
         profile_image: true,
         user_type: true,
-        created_at: true
+        created_at: true,
+        likes_count: true,
+        followers_count: true,
+        watches_count: true
+      },
+      orderBy: {
+        [sortField]: sortOrder
       },
       skip: (page - 1) * limit,
       take: limit
     });
     
-    return { users };
+    // Ensure all users have likes_count and followers_count (default to 0 if null)
+    const processedUsers = users.map(user => ({
+      ...user,
+      likes_count: user.likes_count || 0,
+      followers_count: user.followers_count || 0,
+      watches_count: user.watches_count || 0
+    }));
+    
+    return { users: processedUsers };
   } catch (error) {
     console.error('Error searching users:', error);
     return { users: [] };
@@ -45,7 +68,14 @@ export const searchUsers = async (query: string, userTypes: string[], page: numb
 };
 
 // Search projects with filters
-export const searchProjects = async (query: string, userTypes: string[], page: number, limit: number) => {
+export const searchProjects = async (
+  query: string, 
+  userTypes: string[], 
+  page: number, 
+  limit: number,
+  sortField: string = 'created_at',
+  sortOrder: 'asc' | 'desc' = 'desc'
+) => {
   try {
     // Build where clause
     const where: any = {};
@@ -84,6 +114,9 @@ export const searchProjects = async (query: string, userTypes: string[], page: n
           }
         }
       },
+      orderBy: {
+        [sortField]: sortOrder
+      },
       skip: (page - 1) * limit,
       take: limit
     });
@@ -110,8 +143,17 @@ export const searchProjects = async (query: string, userTypes: string[], page: n
 };
 
 // Search articles with filters
-export const searchArticles = async (query: string, userTypes: string[], page: number, limit: number) => {
+export const searchArticles = async (
+  query: string, 
+  userTypes: string[], 
+  page: number, 
+  limit: number,
+  sortField: string = 'created_at',
+  sortOrder: 'asc' | 'desc' = 'desc'
+) => {
   try {
+    console.log(`[ARTICLES] Sorting by ${sortField} ${sortOrder}`);
+    
     // Build where clause
     const where: any = {};
     
@@ -119,7 +161,6 @@ export const searchArticles = async (query: string, userTypes: string[], page: n
     if (query) {
       where.OR = [
         { title: { contains: query, mode: 'insensitive' } }
-        // Note: searching in sections would require more complex logic
       ];
     }
     
@@ -130,7 +171,7 @@ export const searchArticles = async (query: string, userTypes: string[], page: n
       };
     }
     
-    // Execute query
+    // Execute query with likes_count and follows_count
     const articles = await prisma.articles.findMany({
       where,
       select: {
@@ -139,6 +180,9 @@ export const searchArticles = async (query: string, userTypes: string[], page: n
         tags: true,
         created_at: true,
         user_id: true,
+        likes_count: true,
+        follows_count: true,
+        watches_count: true,
         users: {
           select: {
             username: true,
@@ -147,11 +191,14 @@ export const searchArticles = async (query: string, userTypes: string[], page: n
         },
         article_sections: true
       },
+      orderBy: {
+        [sortField]: sortOrder
+      },
       skip: (page - 1) * limit,
       take: limit
     });
     
-    // Transform results to include username and excerpt
+    // Transform results and ensure likes_count and follows_count exist
     const transformedArticles = articles.map(article => {
       // Create excerpt from first text section
       let excerpt = 'No content available';
@@ -168,7 +215,10 @@ export const searchArticles = async (query: string, userTypes: string[], page: n
         ...article,
         username: article.users?.username,
         user_type: article.users?.user_type,
-        excerpt
+        excerpt,
+        likes_count: article.likes_count || 0,
+        follows_count: article.follows_count || 0,
+        watches_count: article.watches_count || 0
       };
     });
     
@@ -180,8 +230,17 @@ export const searchArticles = async (query: string, userTypes: string[], page: n
 };
 
 // Search posts with filters
-export const searchPosts = async (query: string, userTypes: string[], page: number, limit: number) => {
+export const searchPosts = async (
+  query: string, 
+  userTypes: string[], 
+  page: number, 
+  limit: number,
+  sortField: string = 'created_at',
+  sortOrder: 'asc' | 'desc' = 'desc'
+) => {
   try {
+    console.log(`[POSTS] Sorting by ${sortField} ${sortOrder}`);
+    
     // Build where clause
     const where: any = {};
     
@@ -200,7 +259,7 @@ export const searchPosts = async (query: string, userTypes: string[], page: numb
       };
     }
     
-    // Execute query
+    // Execute query with likes_count and follows_count
     const posts = await prisma.posts.findMany({
       where,
       select: {
@@ -209,8 +268,9 @@ export const searchPosts = async (query: string, userTypes: string[], page: numb
         description: true,
         mediaUrl: true,
         tags: true,
-        likes: true,
-        comments: true,
+        likes_count: true,
+        follows_count: true,
+        watches_count: true,
         created_at: true,
         user_id: true,
         users: {
@@ -220,16 +280,21 @@ export const searchPosts = async (query: string, userTypes: string[], page: numb
           }
         }
       },
+      orderBy: {
+        [sortField]: sortOrder
+      },
       skip: (page - 1) * limit,
       take: limit
     });
     
-    // Transform results to include username
+    // Transform results and ensure likes_count and follows_count exist
     const transformedPosts = posts.map(post => ({
       ...post,
       username: post.users?.username,
       user_type: post.users?.user_type,
-      comments: typeof post.comments === 'number' ? post.comments : 0
+      likes_count: post.likes_count || 0,
+      follows_count: post.follows_count || 0,
+      watches_count: post.watches_count || 0
     }));
     
     return { posts: transformedPosts };
@@ -240,168 +305,91 @@ export const searchPosts = async (query: string, userTypes: string[], page: numb
 };
 
 // Combined search across all content types
-export async function searchAll(
+export const searchAll = async (
   query: string,
-  options: {
-    contentTypes?: string[];
-    page?: number;
-    limit?: number;
-    sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
-  }
-) {
-  const { 
-    contentTypes = ['all'], 
-    page = 1, 
-    limit = 12,
-    sortBy = 'created_at',
-    sortOrder = 'desc'
-  } = options;
-
-  // Build sort object for Prisma
-  const orderBy = sortBy === 'title' 
-    ? { // Handle title field mapping per content type
-      users: { username: sortOrder },
-      projects: { project_name: sortOrder },
-      articles: { title: sortOrder },
-      posts: { title: sortOrder }
-    }
-    : { // Use same field name for all content types
-      [sortBy]: sortOrder
+  contentTypes: string[],
+  userTypes: string[],
+  page: number,
+  limit: number,
+  sortBy: string,
+  sortOrder: 'asc' | 'desc',
+  getSortField: (contentType: string, field: string) => string
+) => {
+  try {
+    console.log(`[EXPLORE] Searching with params:`, { 
+      query, contentTypes, userTypes, page, limit, sortBy, sortOrder 
+    });
+    
+    // Prepare results object
+    const results: any = {
+      users: [],
+      projects: [],
+      articles: [],
+      posts: []
     };
-
-  // Use existing content type filtering logic
-  const showAll = contentTypes.includes('all');
-  const results = {
-    users: showAll || contentTypes.includes('users') 
-      ? await prisma.users.findMany({
-          where: {
-            OR: [
-              { username: { contains: query, mode: 'insensitive' } },
-              { bio: { contains: query, mode: 'insensitive' } }
-            ]
-          },
-          orderBy: {
-            [sortBy === 'title' ? 'username' : sortBy]: sortOrder
-          },
-          select: {
-            id: true,
-            username: true,
-            bio: true,
-            profile_image: true,
-            user_type: true,
-            created_at: true
-          },
-          skip: (page - 1) * limit,
-          take: limit
-        })
-      : [],
-    projects: showAll || contentTypes.includes('projects')
-      ? await prisma.projects.findMany({
-          where: {
-            OR: [
-              { project_name: { contains: query, mode: 'insensitive' } },
-              { project_description: { contains: query, mode: 'insensitive' } }
-            ],
-            users: {
-              user_type: { in: contentTypes.filter(type => type !== 'users') }
-            }
-          },
-          orderBy: {
-            [sortBy === 'title' ? 'project_name' : sortBy]: sortOrder
-          },
-          select: {
-            id: true,
-            project_name: true,
-            project_description: true,
-            project_image: true,
-            project_type: true,
-            project_tags: true,
-            created_at: true,
-            user_id: true,
-            users: {
-              select: {
-                username: true,
-                user_type: true
-              }
-            }
-          },
-          skip: (page - 1) * limit,
-          take: limit
-        })
-      : [],
-    articles: showAll || contentTypes.includes('articles')
-      ? await prisma.articles.findMany({
-          where: {
-            OR: [
-              { title: { contains: query, mode: 'insensitive' } }
-            ],
-            users: {
-              user_type: { in: contentTypes.filter(type => type !== 'articles') }
-            }
-          },
-          orderBy: {
-            [sortBy === 'title' ? 'title' : sortBy]: sortOrder
-          },
-          select: {
-            id: true,
-            title: true,
-            tags: true,
-            created_at: true,
-            user_id: true,
-            users: {
-              select: {
-                username: true,
-                user_type: true
-              }
-            },
-            article_sections: true
-          },
-          skip: (page - 1) * limit,
-          take: limit
-        })
-      : [],
-    posts: showAll || contentTypes.includes('posts')
-      ? await prisma.posts.findMany({
-          where: {
-            OR: [
-              { title: { contains: query, mode: 'insensitive' } },
-              { description: { contains: query, mode: 'insensitive' } }
-            ],
-            users: {
-              user_type: { in: contentTypes.filter(type => type !== 'posts') }
-            }
-          },
-          orderBy: {
-            [sortBy === 'title' ? 'title' : sortBy]: sortOrder
-          },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            mediaUrl: true,
-            tags: true,
-            likes: true,
-            comments: true,
-            created_at: true,
-            user_id: true,
-            users: {
-              select: {
-                username: true,
-                user_type: true
-              }
-            }
-          },
-          skip: (page - 1) * limit,
-          take: limit
-        })
-      : []
-  };
-
-  return {
-    results,
-    page,
-    limit,
-    // ... rest of return object
-  };
-} 
+    
+    // Execute searches in parallel based on selected content types
+    const searchPromises = [];
+    
+    // Only search for content types that are explicitly selected
+    if (contentTypes.includes('users')) {
+      searchPromises.push(
+        (async () => {
+          const userSortField = getSortField('users', sortBy);
+          const users = await searchUsers(query, userTypes, page, limit, userSortField, sortOrder);
+          results.users = users.users;
+        })()
+      );
+    }
+    
+    if (contentTypes.includes('projects')) {
+      searchPromises.push(
+        (async () => {
+          const projectSortField = getSortField('projects', sortBy);
+          const projects = await searchProjects(query, userTypes, page, limit, projectSortField, sortOrder);
+          results.projects = projects.projects;
+        })()
+      );
+    }
+    
+    if (contentTypes.includes('articles')) {
+      searchPromises.push(
+        (async () => {
+          const articleSortField = getSortField('articles', sortBy);
+          const articles = await searchArticles(query, userTypes, page, limit, articleSortField, sortOrder);
+          results.articles = articles.articles;
+        })()
+      );
+    }
+    
+    if (contentTypes.includes('posts')) {
+      searchPromises.push(
+        (async () => {
+          const postSortField = getSortField('posts', sortBy);
+          const posts = await searchPosts(query, userTypes, page, limit, postSortField, sortOrder);
+          results.posts = posts.posts;
+        })()
+      );
+    }
+    
+    // Wait for all searches to complete
+    await Promise.all(searchPromises);
+    
+    console.log(`[EXPLORE] Search results:`, {
+      userCount: results.users.length,
+      projectCount: results.projects.length,
+      articleCount: results.articles.length,
+      postCount: results.posts.length
+    });
+    
+    // Return results
+    return {
+      results,
+      totalPages: 1, // Simplified for now
+      page
+    };
+  } catch (error) {
+    console.error('Error in searchAll service:', error);
+    throw error;
+  }
+}; 

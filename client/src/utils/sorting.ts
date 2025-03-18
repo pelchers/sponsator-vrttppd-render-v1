@@ -48,17 +48,38 @@ export function sortResults<T extends { id: string }>(
   const sortOption = sortOptions.find(opt => opt.id === sortBy);
   if (!sortOption) return results;
 
-  const mapping = fieldMappings[entityType];
-  if (!mapping) return results;
-
+  // Create a copy of the array to avoid mutating the original
   return [...results].sort((a, b) => {
-    const field = sortBy === 'alpha' ? mapping.title : mapping[sortOption.field];
-    const aValue = a[field as keyof T];
-    const bValue = b[field as keyof T];
+    // Determine which field to sort by based on entity type and sort option
+    let aValue, bValue;
+    
+    // Handle special case for alphabetical sorting
+    if (sortBy === 'alpha') {
+      // Map the title field based on entity type
+      switch(entityType) {
+        case 'users':
+          aValue = a.username;
+          bValue = b.username;
+          break;
+        case 'projects':
+          aValue = a.title || a.project_name;
+          bValue = b.title || b.project_name;
+          break;
+        default:
+          aValue = a.title;
+          bValue = b.title;
+      }
+    } else {
+      // For other sort options, use the field directly
+      const field = sortOption.field as keyof T;
+      aValue = a[field];
+      bValue = b[field];
+    }
 
+    // Handle different data types
     switch (sortOption.type) {
       case 'string':
-        return sortOrder === 'asc'
+        return sortOrder === 'asc' 
           ? String(aValue || '').localeCompare(String(bValue || ''))
           : String(bValue || '').localeCompare(String(aValue || ''));
       case 'number':

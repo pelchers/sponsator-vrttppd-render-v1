@@ -5,68 +5,79 @@ import { SortOptions, validSortFields, contentTypeFieldMap } from '../types/sort
 // Search across all content types
 export const searchAll = async (req: Request, res: Response) => {
   try {
-    const { q = '', page = '1', limit = '12' } = req.query;
+    const { 
+      q = '', 
+      contentTypes = '', 
+      userTypes = '', 
+      page = '1', 
+      limit = '12',
+      sortBy = 'created_at',
+      sortOrder = 'desc'
+    } = req.query;
+
+    // Convert to appropriate types
     const searchQuery = String(q);
     const pageNum = parseInt(String(page), 10);
     const limitNum = parseInt(String(limit), 10);
-    
-    // Parse content types filter (comma-separated string to array)
-    const contentTypesParam = req.query.contentTypes ? String(req.query.contentTypes) : '';
-    const contentTypes = contentTypesParam ? contentTypesParam.split(',') : [];
-    
-    // Parse user types filter (comma-separated string to array)
-    const userTypesParam = req.query.userTypes ? String(req.query.userTypes) : '';
-    const userTypes = userTypesParam ? userTypesParam.split(',') : [];
-    
-    // Prepare results object
-    const results: any = {
-      users: [],
-      projects: [],
-      articles: [],
-      posts: []
+    const contentTypesArray = contentTypes ? String(contentTypes).split(',') : [];
+    const userTypesArray = userTypes ? String(userTypes).split(',') : [];
+    const sort = String(sortBy);
+    const order = (String(sortOrder) === 'asc') ? 'asc' : 'desc';
+
+    // Map frontend sort field to database field
+    const getSortField = (contentType: string, field: string) => {
+      // Map of frontend sort options to database fields
+      const fieldMappings: Record<string, Record<string, string>> = {
+        users: {
+          alpha: 'username',
+          likes: 'likes_count',
+          follows: 'followers_count',
+          watches: 'watches_count',
+          created: 'created_at',
+          updated: 'updated_at'
+        },
+        projects: {
+          alpha: 'project_name',
+          likes: 'likes_count',
+          follows: 'follows_count',
+          watches: 'watches_count',
+          created: 'created_at',
+          updated: 'updated_at'
+        },
+        articles: {
+          alpha: 'title',
+          likes: 'likes_count',
+          follows: 'follows_count',
+          watches: 'watches_count',
+          created: 'created_at',
+          updated: 'updated_at'
+        },
+        posts: {
+          alpha: 'title',
+          likes: 'likes_count',
+          follows: 'follows_count',
+          watches: 'watches_count',
+          created: 'created_at',
+          updated: 'updated_at'
+        }
+      };
+      
+      return fieldMappings[contentType]?.[field] || 'created_at';
     };
-    
-    // Execute searches in parallel based on selected content types
-    const searchPromises = [];
-    
-    // Only search for content types that are explicitly selected
-    if (contentTypes.includes('users')) {
-      searchPromises.push(
-        exploreService.searchUsers(searchQuery, userTypes, pageNum, limitNum)
-          .then(data => { results.users = data.users; })
-      );
-    }
-    
-    if (contentTypes.includes('projects')) {
-      searchPromises.push(
-        exploreService.searchProjects(searchQuery, userTypes, pageNum, limitNum)
-          .then(data => { results.projects = data.projects; })
-      );
-    }
-    
-    if (contentTypes.includes('articles')) {
-      searchPromises.push(
-        exploreService.searchArticles(searchQuery, userTypes, pageNum, limitNum)
-          .then(data => { results.articles = data.articles; })
-      );
-    }
-    
-    if (contentTypes.includes('posts')) {
-      searchPromises.push(
-        exploreService.searchPosts(searchQuery, userTypes, pageNum, limitNum)
-          .then(data => { results.posts = data.posts; })
-      );
-    }
-    
-    // Wait for all searches to complete
-    await Promise.all(searchPromises);
-    
-    // Return results
-    return res.status(200).json({
-      results,
-      totalPages: 1, // Simplified for now
-      page: pageNum
-    });
+
+    // Pass the sort parameters to the service
+    const results = await exploreService.searchAll(
+      searchQuery, 
+      contentTypesArray, 
+      userTypesArray, 
+      pageNum, 
+      limitNum,
+      sort,
+      order,
+      getSortField
+    );
+
+    return res.status(200).json(results);
   } catch (error) {
     console.error('Error in searchAll:', error);
     return res.status(500).json({ 

@@ -47,9 +47,18 @@ export function SortOrder({ order, onChange, className = "" }: SortOrderProps) {
       variant="outline"
       size="sm"
       onClick={() => onChange(order === 'asc' ? 'desc' : 'asc')}
-      className={className}
+      className={`${className} ${order === 'asc' ? 'border-blue-600 text-blue-600' : ''}`}
+      aria-label={order === 'asc' ? 'Sort ascending' : 'Sort descending'}
     >
-      {order === 'asc' ? <ArrowUpIcon /> : <ArrowDownIcon />}
+      {order === 'asc' ? (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      )}
     </Button>
   );
 } 

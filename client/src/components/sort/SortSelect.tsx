@@ -16,10 +16,15 @@ interface SortSelectProps {
 }
 
 export function SortSelect({ value, onValueChange, className = "" }: SortSelectProps) {
+  // Find the current option to display its label
+  const currentOption = sortOptions.find(opt => opt.id === value);
+  
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className={className}>
-        <SelectValue placeholder="Sort by..." />
+      <SelectTrigger className={`${className} ${value ? 'text-blue-600 font-medium' : ''}`}>
+        <SelectValue placeholder="Sort by...">
+          {currentOption ? currentOption.label : 'Sort by...'}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {sortOptions.map(option => (

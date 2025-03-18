@@ -7,6 +7,7 @@ export async function searchAll(
   query: string = '',
   options: {
     contentTypes?: string[];
+    userTypes?: string[];
     page?: number;
     limit?: number;
     sortBy?: string;
@@ -16,6 +17,7 @@ export async function searchAll(
   const params = new URLSearchParams({
     q: query,
     ...(options.contentTypes && { contentTypes: options.contentTypes.join(',') }),
+    ...(options.userTypes && { userTypes: options.userTypes.join(',') }),
     ...(options.page && { page: options.page.toString() }),
     ...(options.limit && { limit: options.limit.toString() }),
     ...(options.sortBy && { sortBy: options.sortBy }),
