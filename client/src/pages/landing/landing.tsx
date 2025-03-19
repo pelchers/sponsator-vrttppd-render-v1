@@ -6,6 +6,13 @@ import { fetchUserStats } from '@/api/userstats';
 import { isAuthenticated } from '@/api/auth';
 import { fetchSiteStats } from '@/api/stats';
 import { SiteStats, UserStats } from '@/types/stats';
+import { fetchFeaturedContent } from '@/api/featured';
+import type { FeaturedContent } from '@/types/featured';
+import { FeaturedContentSkeleton } from '@/components/skeletons/FeaturedContentSkeleton';
+import UserCard from '@/components/cards/UserCard';
+import ProjectCard from '@/components/cards/ProjectCard';
+import ArticleCard from '@/components/cards/ArticleCard';
+import PostCard from '@/components/cards/PostCard';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -13,6 +20,13 @@ export default function Landing() {
   const userId = localStorage.getItem('userId');
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [siteStats, setSiteStats] = useState<SiteStats | null>(null);
+  const [featuredContent, setFeaturedContent] = useState<FeaturedContent>({
+    users: [],
+    projects: [],
+    articles: [],
+    posts: []
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (userId && isAuthenticated()) {
@@ -21,6 +35,13 @@ export default function Landing() {
     
     fetchSiteStats().then(stats => setSiteStats(stats));
   }, [userId]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchFeaturedContent()
+      .then(content => setFeaturedContent(content))
+      .finally(() => setLoading(false));
+  }, []);
 
   const testimonials = [
     {
@@ -148,55 +169,63 @@ export default function Landing() {
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-2xl font-semibold mb-6">Featured Content</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
-                <div className="space-y-4">
-                  {userStats.recentProjects?.map((project: any) => (
-                    <Link 
-                      key={project.id}
-                      to={`/projects/${project.id}`}
-                      className="block bg-white p-4 rounded-lg hover:shadow-md transition-all duration-200"
-                    >
-                      <h4 className="font-medium">{project.title}</h4>
-                      <p className="text-sm text-gray-600">{project.description}</p>
-                    </Link>
-                  ))}
+            {loading ? (
+              <FeaturedContentSkeleton />
+            ) : (
+              <div className="space-y-6">
+                {/* Users */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Featured Users</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {featuredContent.users.map((user) => (
+                      <UserCard 
+                        key={user.id}
+                        user={user}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
-                <div className="space-y-4">
-                  {userStats.recentArticles?.map((article: any) => (
-                    <Link 
-                      key={article.id}
-                      to={`/article/${article.id}`}
-                      className="block bg-white p-4 rounded-lg hover:shadow-md transition-all duration-200"
-                    >
-                      <h4 className="font-medium">{article.title}</h4>
-                      <p className="text-sm text-gray-600">{article.description}</p>
-                    </Link>
-                  ))}
+                {/* Projects */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {featuredContent.projects.map((project) => (
+                      <ProjectCard 
+                        key={project.id}
+                        project={project}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
-                <div className="space-y-4">
-                  {userStats.recentPosts?.map((post: any) => (
-                    <Link 
-                      key={post.id}
-                      to={`/post/${post.id}`}
-                      className="block bg-white p-4 rounded-lg hover:shadow-md transition-all duration-200"
-                    >
-                      <h4 className="font-medium">{post.title}</h4>
-                      <p className="text-sm text-gray-600">{post.description}</p>
-                    </Link>
-                  ))}
+                {/* Articles */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {featuredContent.articles.map((article) => (
+                      <ArticleCard 
+                        key={article.id}
+                        article={article}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Posts */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {featuredContent.posts.map((post) => (
+                      <PostCard 
+                        key={post.id}
+                        post={post}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       </div>

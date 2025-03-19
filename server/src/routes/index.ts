@@ -9,6 +9,7 @@ import watchRoutes from './watchRoutes';
 import userRoutes from './userRoutes';
 import commentRoutes from './commentRoutes';
 import statsRoutes from './statsRoutes';
+import featuredRoutes from './featuredRoutes';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/follows', followRoutes);
 router.use('/watches', watchRoutes);
 router.use('/user', userRoutes);
 router.use('/stats', statsRoutes);
+router.use('/featured', featuredRoutes);
 
 export default router; 

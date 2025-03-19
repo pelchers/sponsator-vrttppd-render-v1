@@ -32,6 +32,9 @@ export const API_ROUTES = {
     UPLOAD_ADVISOR_MEDIA: '/projects/:id/advisors/:index/media',
     UPLOAD_PARTNER_MEDIA: '/projects/:id/partners/:index/media',
     UPLOAD_TESTIMONIAL_MEDIA: '/projects/:id/testimonials/:index/media',
+  },
+  FEATURED: {
+    GET: '/featured'
   }
 };
 
