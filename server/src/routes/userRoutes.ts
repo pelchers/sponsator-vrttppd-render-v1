@@ -62,4 +62,7 @@ router.get('/test-db', async (req, res) => {
   }
 });
 
+// Add this route
+router.get('/:userId/stats', authenticate, userController.getUserStats);
+
 export default router; 

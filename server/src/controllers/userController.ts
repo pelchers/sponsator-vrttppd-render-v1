@@ -355,4 +355,42 @@ export const searchUsers = async (req: Request, res: Response) => {
     console.error('Error searching users:', error);
     res.status(500).json({ message: 'Failed to search users' });
   }
+};
+
+// Add this function to get user's content stats
+export const getUserStats = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    
+    // Get counts from all relevant tables
+    const [
+      projectsCount,
+      articlesCount,
+      postsCount,
+      likesCount
+    ] = await Promise.all([
+      prisma.projects.count({
+        where: { user_id: userId }
+      }),
+      prisma.articles.count({
+        where: { user_id: userId }
+      }),
+      prisma.posts.count({
+        where: { user_id: userId }
+      }),
+      prisma.likes.count({
+        where: { user_id: userId }
+      })
+    ]);
+    
+    return res.status(200).json({
+      projects: projectsCount,
+      articles: articlesCount,
+      posts: postsCount,
+      likes: likesCount
+    });
+  } catch (error) {
+    console.error('Error getting user stats:', error);
+    return res.status(500).json({ message: 'Failed to get user stats' });
+  }
 }; 

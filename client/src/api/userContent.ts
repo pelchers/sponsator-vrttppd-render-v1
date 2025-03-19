@@ -290,4 +290,29 @@ export async function getUserPortfolio(
       totalPages: 0
     };
   }
+}
+
+// Add this function to get user's content stats
+export async function getUserStats(userId: string) {
+  try {
+    const response = await fetch(`${API_URL}/user/${userId}/stats`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch user stats');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    return {
+      projects: 0,
+      articles: 0,
+      posts: 0,
+      likes: 0
+    };
+  }
 } 

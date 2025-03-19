@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import FilterGroup from '@/components/filters/FilterGroup';
 import ResultsGrid from '@/components/results/ResultsGrid';
-import { fetchUserInteractions } from '@/api/userContent';
+import { fetchUserInteractions, getUserStats } from '@/api/userContent';
 import { useNavigate } from 'react-router-dom';
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { SortSelect } from '@/components/sort/SortSelect';
@@ -53,6 +53,14 @@ export default function MyStuffPage() {
   // Add state for sorting
   const [sortBy, setSortBy] = useState('created');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Add state for user stats
+  const [stats, setStats] = useState({
+    projects: 0,
+    articles: 0,
+    posts: 0,
+    likes: 0
+  });
   
   // Handle content type filter change
   const handleContentTypeChange = (selected: string[]) => {
@@ -124,6 +132,18 @@ export default function MyStuffPage() {
   useEffect(() => {
     fetchResults();
   }, [selectedContentTypes, selectedInteractionTypes, page, sortBy, sortOrder]);
+  
+  // Add useEffect to fetch stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (userId) {
+        const data = await getUserStats(userId);
+        setStats(data);
+      }
+    };
+    
+    fetchStats();
+  }, [userId]);
   
   // Check if there are any results
   const hasResults = results.users.length > 0 || 
@@ -255,6 +275,26 @@ export default function MyStuffPage() {
           </Button>
         </div>
       )}
+      
+      {/* Stats display */}
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm text-gray-500">Projects</h3>
+          <p className="text-2xl font-bold">{stats.projects}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm text-gray-500">Articles</h3>
+          <p className="text-2xl font-bold">{stats.articles}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm text-gray-500">Posts</h3>
+          <p className="text-2xl font-bold">{stats.posts}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm text-gray-500">Likes</h3>
+          <p className="text-2xl font-bold">{stats.likes}</p>
+        </div>
+      </div>
     </div>
   );
 } 

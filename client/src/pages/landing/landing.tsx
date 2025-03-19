@@ -4,17 +4,22 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useState, useEffect } from 'react';
 import { fetchUserStats } from '@/api/userstats';
 import { isAuthenticated } from '@/api/auth';
+import { fetchSiteStats } from '@/api/stats';
+import { SiteStats, UserStats } from '@/types/stats';
 
 export default function Landing() {
   const navigate = useNavigate();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const userId = localStorage.getItem('userId');
-  const [userStats, setUserStats] = useState<any>(null);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [siteStats, setSiteStats] = useState<SiteStats | null>(null);
 
   useEffect(() => {
     if (userId && isAuthenticated()) {
       fetchUserStats(userId).then(stats => setUserStats(stats));
     }
+    
+    fetchSiteStats().then(stats => setSiteStats(stats));
   }, [userId]);
 
   const testimonials = [
@@ -75,22 +80,23 @@ export default function Landing() {
               </Button>
             </div>
             
+            {/* Platform Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold">{userStats.projects}</div>
-                <div className="text-gray-600">Projects</div>
+                <div className="text-2xl font-bold">{siteStats?.totalUsers || '...'}</div>
+                <div className="text-gray-600">Community Members</div>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold">{userStats.articles}</div>
-                <div className="text-gray-600">Articles</div>
+                <div className="text-2xl font-bold">{siteStats?.totalProjects || '...'}</div>
+                <div className="text-gray-600">Total Projects</div>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold">{userStats.posts}</div>
-                <div className="text-gray-600">Posts</div>
+                <div className="text-2xl font-bold">{siteStats?.totalArticles || '...'}</div>
+                <div className="text-gray-600">Total Articles</div>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="text-2xl font-bold">{userStats.likes}</div>
-                <div className="text-gray-600">Likes</div>
+                <div className="text-2xl font-bold">{siteStats?.totalPosts || '...'}</div>
+                <div className="text-gray-600">Total Posts</div>
               </div>
             </div>
           </div>
@@ -658,6 +664,31 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Platform Statistics */}
+      <section className="bg-white shadow-sm py-12 scroll-fade invisible">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-8">Platform Statistics</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold">{siteStats?.totalUsers || '...'}</div>
+              <div className="text-gray-600">Community Members</div>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold">{siteStats?.totalProjects || '...'}</div>
+              <div className="text-gray-600">Total Projects</div>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold">{siteStats?.totalArticles || '...'}</div>
+              <div className="text-gray-600">Total Articles</div>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold">{siteStats?.totalPosts || '...'}</div>
+              <div className="text-gray-600">Total Posts</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 10. Our Commitment */}
       <section className="relative py-16 bg-white scroll-fade invisible">
         <span className="absolute top-[10%] left-[10%] text-4xl animate-float">🛡️</span>
@@ -730,6 +761,7 @@ export default function Landing() {
                 focus:outline-none focus:ring-2 focus:ring-white/50"
             />
             <select
+              aria-label="Select your role"
               className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white
                 focus:outline-none focus:ring-2 focus:ring-white/50"
             >

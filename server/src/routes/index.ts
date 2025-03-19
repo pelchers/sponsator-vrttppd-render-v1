@@ -8,6 +8,7 @@ import followRoutes from './followRoutes';
 import watchRoutes from './watchRoutes';
 import userRoutes from './userRoutes';
 import commentRoutes from './commentRoutes';
+import statsRoutes from './statsRoutes';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/likes', likeRoutes);
 router.use('/follows', followRoutes);
 router.use('/watches', watchRoutes);
 router.use('/user', userRoutes);
+router.use('/stats', statsRoutes);
 
 export default router; 

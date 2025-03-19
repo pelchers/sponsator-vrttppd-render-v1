@@ -1,9 +1,68 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import { fetchSiteStats } from '@/api/stats';
+import { StatCard } from '@/components/stats/StatCard';
 
 export default function Home() {
+  // State for statistics
+  const [stats, setStats] = useState({
+    users: 0,
+    projects: 0,
+    articles: 0,
+    posts: 0,
+    likes: 0,
+    follows: 0,
+    watches: 0,
+    totalContent: 0
+  });
+  
+  const [loading, setLoading] = useState(true);
+  
+  // Fetch statistics on component mount
+  useEffect(() => {
+    const getStats = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchSiteStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Error fetching site statistics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    getStats();
+  }, []);
+  
   return (
     <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Welcome to File Flow</h1>
+      
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Site Statistics</h2>
+        
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-gray-100 animate-pulse h-24 rounded-lg"></div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StatCard title="Users" value={stats.users} />
+            <StatCard title="Projects" value={stats.projects} />
+            <StatCard title="Articles" value={stats.articles} />
+            <StatCard title="Posts" value={stats.posts} />
+            <StatCard title="Likes" value={stats.likes} />
+            <StatCard title="Follows" value={stats.follows} />
+            <StatCard title="Watches" value={stats.watches} />
+            <StatCard title="Total Content" value={stats.totalContent} />
+          </div>
+        )}
+      </section>
+      
       <h1 className="text-3xl font-bold mb-6">Welcome to Our Platform</h1>
       <p className="mb-6">This is a demo of the profile management system.</p>
       
