@@ -1,10 +1,18 @@
 import { prisma } from '../lib/prisma';
 
-export const getFeaturedContent = async () => {
+interface FeaturedOptions {
+  featuredOnly?: boolean;
+}
+
+export const getFeaturedContent = async (options: FeaturedOptions = {}) => {
   try {
-    const [latestUsers, latestProjects, latestArticles, latestPosts] = await Promise.all([
+    const { featuredOnly = false } = options;
+    const baseWhere = featuredOnly ? { featured: true } : {};
+
+    const [latestUsers, latestProjects, latestArticles, latestPosts, latestComments] = await Promise.all([
       // Get latest users
       prisma.users.findMany({
+        where: baseWhere,
         take: 3,
         orderBy: { created_at: 'desc' },
         select: {
@@ -17,12 +25,14 @@ export const getFeaturedContent = async () => {
           created_at: true,
           likes_count: true,
           follows_count: true,
-          watches_count: true
+          watches_count: true,
+          featured: true
         }
       }).catch(() => []),
 
       // Get latest projects
       prisma.projects.findMany({
+        where: baseWhere,
         take: 3,
         orderBy: { created_at: 'desc' },
         select: {
@@ -46,12 +56,14 @@ export const getFeaturedContent = async () => {
               username: true,
               profile_image: true
             }
-          }
+          },
+          featured: true
         }
       }).catch(() => []),
 
       // Get latest articles
       prisma.articles.findMany({
+        where: baseWhere,
         take: 3,
         orderBy: { created_at: 'desc' },
         select: {
@@ -75,12 +87,14 @@ export const getFeaturedContent = async () => {
               username: true,
               profile_image: true
             }
-          }
+          },
+          featured: true
         }
       }).catch(() => []),
 
       // Get latest posts
       prisma.posts.findMany({
+        where: baseWhere,
         take: 3,
         orderBy: { created_at: 'desc' },
         select: {
@@ -93,6 +107,32 @@ export const getFeaturedContent = async () => {
           watches_count: true,
           mediaUrl: true,
           tags: true,
+          users: {
+            select: {
+              id: true,
+              username: true,
+              profile_image: true
+            }
+          },
+          featured: true
+        }
+      }).catch(() => []),
+
+      // Get latest comments
+      prisma.comments.findMany({
+        where: baseWhere,
+        take: 3,
+        orderBy: { created_at: 'desc' },
+        select: {
+          id: true,
+          text: true,
+          created_at: true,
+          entity_type: true,
+          entity_id: true,
+          likes_count: true,
+          follows_count: true,
+          watches_count: true,
+          featured: true,
           users: {
             select: {
               id: true,
@@ -119,7 +159,8 @@ export const getFeaturedContent = async () => {
         mediaUrl: article.related_media?.[0] || null,
         description: article.article_sections?.[0]?.text || '',
       })),
-      posts: latestPosts
+      posts: latestPosts,
+      comments: latestComments
     };
   } catch (error) {
     console.error('Error in getFeaturedContent service:', error);
@@ -127,7 +168,8 @@ export const getFeaturedContent = async () => {
       users: [],
       projects: [],
       articles: [],
-      posts: []
+      posts: [],
+      comments: []
     };
   }
 }; 

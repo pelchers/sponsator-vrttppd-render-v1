@@ -71,6 +71,7 @@ model users {
   follows_count                 Int       @default(0)
   watches_count                 Int       @default(0)
   followers_count               Int       @default(0)
+  featured                      Boolean   @default(false)
 
   // Child relations:
   user_work_experience   user_work_experience[]
@@ -202,6 +203,7 @@ model posts {
   likes_count Int      @default(0)
   follows_count Int      @default(0)
   watches_count Int      @default(0)
+  featured    Boolean    @default(false)
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -284,6 +286,7 @@ model projects {
   likes_count                    Int       @default(0)
   follows_count                  Int       @default(0)
   watches_count                  Int       @default(0)
+  featured                       Boolean   @default(false)
 
   created_at                         DateTime? @default(now())
   updated_at                         DateTime? @default(now())
@@ -309,6 +312,7 @@ model articles {
   likes_count   Int       @default(0)
   follows_count Int       @default(0)
   watches_count Int       @default(0)
+  featured      Boolean   @default(false)
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
   article_sections article_sections[]
@@ -338,6 +342,7 @@ model comments {
   entity_type String   // e.g., "post", "project", "article", "comment", "user"
   entity_id   String   // The ID of the item being commented on
   text        String?
+  featured    Boolean   @default(false)
 
   // If you want a quick count of how many likes a comment has
   likes_count Int      @default(0)

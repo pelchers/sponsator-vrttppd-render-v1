@@ -24,7 +24,15 @@ export default function Landing() {
     users: [],
     projects: [],
     articles: [],
-    posts: []
+    posts: [],
+    comments: []
+  });
+  const [allContent, setAllContent] = useState<FeaturedContent>({
+    users: [],
+    projects: [],
+    articles: [],
+    posts: [],
+    comments: []
   });
   const [loading, setLoading] = useState(true);
 
@@ -38,8 +46,14 @@ export default function Landing() {
 
   useEffect(() => {
     setLoading(true);
-    fetchFeaturedContent()
-      .then(content => setFeaturedContent(content))
+    Promise.all([
+      fetchFeaturedContent({ featuredOnly: true }),
+      fetchFeaturedContent({ featuredOnly: false })
+    ])
+      .then(([featured, all]) => {
+        setFeaturedContent(featured);
+        setAllContent(all);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -173,7 +187,7 @@ export default function Landing() {
               <FeaturedContentSkeleton />
             ) : (
               <div className="space-y-6">
-                {/* Users */}
+                {/* Featured Users */}
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -186,9 +200,9 @@ export default function Landing() {
                   </div>
                 </div>
 
-                {/* Projects */}
+                {/* Featured Projects */}
                 <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
+                  <h3 className="text-xl font-semibold mb-4">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.projects.map((project) => (
                       <ProjectCard 
@@ -199,9 +213,9 @@ export default function Landing() {
                   </div>
                 </div>
 
-                {/* Articles */}
+                {/* Featured Articles */}
                 <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
+                  <h3 className="text-xl font-semibold mb-4">Featured Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.articles.map((article) => (
                       <ArticleCard 
@@ -212,15 +226,161 @@ export default function Landing() {
                   </div>
                 </div>
 
-                {/* Posts */}
+                {/* Featured Posts */}
                 <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
+                  <h3 className="text-xl font-semibold mb-4">Featured Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.posts.map((post) => (
                       <PostCard 
                         key={post.id}
                         post={post}
                       />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Comments */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Featured Comments</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {featuredContent.comments.map((comment) => (
+                      <div 
+                        key={comment.id}
+                        className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                      >
+                        <div className="flex items-center mb-3">
+                          <img 
+                            src={comment.users.profile_image || '/default-avatar.png'} 
+                            alt={comment.users.username}
+                            className="w-8 h-8 rounded-full mr-2"
+                          />
+                          <div>
+                            <Link 
+                              to={`/profile/${comment.users.id}`}
+                              className="font-medium text-gray-900 hover:text-blue-600"
+                            >
+                              {comment.users.username}
+                            </Link>
+                            <p className="text-xs text-gray-500">
+                              on {comment.entity_type} • {new Date(comment.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 line-clamp-3">{comment.text}</p>
+                        <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                          <span>❤️ {comment.likes_count}</span>
+                          <span>👁️ {comment.watches_count}</span>
+                          <Link 
+                            to={`/${comment.entity_type}/${comment.entity_id}`}
+                            className="ml-auto text-blue-600 hover:text-blue-800"
+                          >
+                            View {comment.entity_type}
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Recent Content Section */}
+            <h2 className="text-2xl font-semibold mb-6 mt-12">Recent Content</h2>
+            {loading ? (
+              <FeaturedContentSkeleton />
+            ) : (
+              <div className="space-y-6">
+                {/* Recent Users */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Users</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {allContent.users.map((user) => (
+                      <UserCard 
+                        key={user.id}
+                        user={user}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Recent Projects */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {allContent.projects.map((project) => (
+                      <ProjectCard 
+                        key={project.id}
+                        project={project}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Recent Articles */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {allContent.articles.map((article) => (
+                      <ArticleCard 
+                        key={article.id}
+                        article={article}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Recent Posts */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {allContent.posts.map((post) => (
+                      <PostCard 
+                        key={post.id}
+                        post={post}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Comments */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold mb-4">Recent Comments</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {allContent.comments.map((comment) => (
+                      <div 
+                        key={comment.id}
+                        className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                      >
+                        <div className="flex items-center mb-3">
+                          <img 
+                            src={comment.users.profile_image || '/default-avatar.png'} 
+                            alt={comment.users.username}
+                            className="w-8 h-8 rounded-full mr-2"
+                          />
+                          <div>
+                            <Link 
+                              to={`/profile/${comment.users.id}`}
+                              className="font-medium text-gray-900 hover:text-blue-600"
+                            >
+                              {comment.users.username}
+                            </Link>
+                            <p className="text-xs text-gray-500">
+                              on {comment.entity_type} • {new Date(comment.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 line-clamp-3">{comment.text}</p>
+                        <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                          <span>❤️ {comment.likes_count}</span>
+                          <span>👁️ {comment.watches_count}</span>
+                          <Link 
+                            to={`/${comment.entity_type}/${comment.entity_id}`}
+                            className="ml-auto text-blue-600 hover:text-blue-800"
+                          >
+                            View {comment.entity_type}
+                          </Link>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

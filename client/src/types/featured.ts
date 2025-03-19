@@ -23,6 +23,9 @@ interface FeaturedItem {
   bio?: string;
   user_type?: string;
   career_title?: string;
+  text?: string;  // For comments
+  entity_type?: string;  // For comments
+  entity_id?: string;  // For comments
 }
 
 export interface FeaturedContent {
@@ -30,4 +33,5 @@ export interface FeaturedContent {
   projects: FeaturedItem[];
   articles: FeaturedItem[];
   posts: FeaturedItem[];
+  comments: FeaturedItem[];
 } 

@@ -3,7 +3,8 @@ import * as featuredService from '../services/featuredService';
 
 export const getFeaturedContent = async (req: Request, res: Response) => {
   try {
-    const featuredContent = await featuredService.getFeaturedContent();
+    const featuredOnly = req.query.featured === 'true';
+    const featuredContent = await featuredService.getFeaturedContent({ featuredOnly });
     return res.json(featuredContent);
   } catch (error) {
     console.error('Error getting featured content:', error);
