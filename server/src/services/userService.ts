@@ -342,8 +342,23 @@ export async function getUserByEmail(email: string) {
   try {
     const user = await prisma.users.findUnique({
       where: { email },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        password_hash: true,
+        profile_image: true,
+        bio: true,
+        user_type: true,
+        career_title: true,
+        created_at: true,
+        updated_at: true,
+        likes_count: true,
+        follows_count: true,
+        watches_count: true
+        // Remove featured field for now
+      }
     });
-    
     return user;
   } catch (error) {
     console.error('Error in getUserByEmail:', error);

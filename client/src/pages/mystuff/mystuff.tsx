@@ -108,18 +108,28 @@ export default function MyStuffPage() {
         interactionTypes: selectedInteractionTypes,
         page,
         limit: 12,
-        userId, // Pass the userId to filter interactions by this user
+        userId,
         sortBy,
         sortOrder
       });
       
-      // Ensure all arrays exist even if API doesn't return them
-      setResults({
-        users: data.results.users || [],
-        posts: data.results.posts || [],
-        articles: data.results.articles || [],
-        projects: data.results.projects || []
-      });
+      // Deduplicate results by ID for each content type
+      const deduplicatedResults = {
+        users: Array.from(
+          new Map(data.results.users?.map(item => [item.id, item])).values()
+        ) || [],
+        posts: Array.from(
+          new Map(data.results.posts?.map(item => [item.id, item])).values()
+        ) || [],
+        articles: Array.from(
+          new Map(data.results.articles?.map(item => [item.id, item])).values()
+        ) || [],
+        projects: Array.from(
+          new Map(data.results.projects?.map(item => [item.id, item])).values()
+        ) || []
+      };
+
+      setResults(deduplicatedResults);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching user interactions:', error);
