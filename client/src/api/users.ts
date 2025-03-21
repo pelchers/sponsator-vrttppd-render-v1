@@ -31,6 +31,9 @@ export async function fetchUserProfile(userId: string, token?: string) {
     const userData = response.data;
     return {
       ...userData,
+      // Don't set default values for these fields - let them be null if not present
+      profile_image_url: userData.profile_image_url || null,
+      profile_image_upload: userData.profile_image_upload || null,
       // Transform flattened social links into object
       social_links: {
         youtube: userData.social_links_youtube || '',
@@ -55,38 +58,51 @@ export async function fetchUserProfile(userId: string, token?: string) {
 }
 
 // Update user profile
-export async function updateUserProfile(userId: string, userData: any, token: string) {
+export const updateUserProfile = async (userId: string, data: any, token: string) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/users/${userId}`, userData, {
+    console.log('API: Updating user profile:', { userId, data });
+    
+    const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+      method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
     });
-    return response.data;
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update profile');
+    }
+
+    const result = await response.json();
+    console.log('API: Update successful:', result);
+    return result;
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    console.error('API: Error updating user profile:', error);
     throw error;
   }
-}
+};
 
 // Upload profile image
 export async function uploadProfileImage(userId: string, file: File, token: string) {
-  try {
-    const formData = new FormData();
-    formData.append('image', file);
-    
-    const response = await axios.post(`${API_BASE_URL}/users/${userId}/image`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    return response.data;
-  } catch (error) {
-    console.error('Error uploading profile image:', error);
-    throw error;
+  const formData = new FormData();
+  formData.append('profile_image', file);
+  
+  const response = await fetch(`${API_BASE_URL}/users/${userId}/profile-image`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to upload profile image');
   }
+  
+  return await response.json();
 }
 
 // Add these new endpoints
@@ -131,8 +147,7 @@ export async function deleteAccolade(userId: string, id: string) {
   const response = await fetch(`/api/users/${userId}/accolades/${id}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      'Authorization': `Bearer ${token}`    }
   });
   if (!response.ok) throw new Error('Failed to delete accolade');
   return response.json();

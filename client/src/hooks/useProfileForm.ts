@@ -64,6 +64,8 @@ export function useProfileForm(userId: string | undefined) {
   const [formData, setFormData] = useState({
     // Basic Information
     profile_image: null as File | null,
+    profile_image_url: '',
+    profile_image_upload: '',
     username: "",
     email: "",
     bio: "",
@@ -145,6 +147,9 @@ export function useProfileForm(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Add token state
+  const [token] = useState(localStorage.getItem('token'));
+
   // Load user data
   useEffect(() => {
     async function loadUserData() {
@@ -177,6 +182,8 @@ export function useProfileForm(userId: string | undefined) {
             ...prev,
             // Basic Information
             profile_image: userData.profile_image || null,
+            profile_image_url: userData.profile_image_url || '',
+            profile_image_upload: userData.profile_image_upload || '',
             username: userData.username || '',
             email: userData.email || '',
             bio: userData.bio || '',
@@ -324,10 +331,44 @@ export function useProfileForm(userId: string | undefined) {
   };
 
   // Handle image upload
-  const handleImageSelect = (file: File) => {
+  const handleImageSelect = async (file: File | null) => {
+    try {
+      if (!token) {
+        console.error('No authentication token found');
+        return;
+      }
+
+      if (file && userId) {
+        // Upload the file
+        const result = await uploadProfileImage(userId, file, token);
+        
+        // Update form data with new upload path and clear URL
+        setFormData(prev => ({
+          ...prev,
+          profile_image: file,
+          profile_image_upload: result.path,
+          profile_image_url: null // Clear URL when using upload
+        }));
+      } else {
+        // Clear both when removing image
+        setFormData(prev => ({
+          ...prev,
+          profile_image: null,
+          profile_image_upload: null,
+          profile_image_url: null
+        }));
+      }
+    } catch (error) {
+      console.error('Error handling image select:', error);
+    }
+  };
+
+  const handleImageUrlChange = (url: string) => {
     setFormData(prev => ({
       ...prev,
-      profile_image: file
+      profile_image_url: url || null,
+      profile_image_upload: null, // Clear upload path when using URL
+      profile_image: null // Clear file when using URL
     }));
   };
 
@@ -358,28 +399,34 @@ export function useProfileForm(userId: string | undefined) {
       setError(null);
       setSuccess(false);
       
-      // Get token
       const token = localStorage.getItem('token');
       if (!token) {
         setError('Authentication required');
         return;
       }
-      
-      // Upload profile image if it's a File object
+
+      let uploadedImagePath = null;
+
+      // Handle profile image upload or URL
       if (formData.profile_image instanceof File) {
-        await uploadProfileImage(userId, formData.profile_image, token);
+        // Upload the file and get back the path
+        const uploadResponse = await uploadProfileImage(userId, formData.profile_image, token);
+        uploadedImagePath = uploadResponse.path; // Assuming the API returns { path: string }
       }
       
       // Prepare data for API
       const dataToSend = {
         ...formData,
+        // Handle profile image fields
+        profile_image_url: formData.profile_image_url || null,
+        profile_image_upload: uploadedImagePath || formData.profile_image_upload || null,
+        
         // Convert numeric fields to numbers
         career_experience: typeof formData.career_experience === 'string' ? 
           parseInt(formData.career_experience, 10) || 0 : formData.career_experience,
         social_media_followers: typeof formData.social_media_followers === 'string' ? 
           parseInt(formData.social_media_followers, 10) || 0 : formData.social_media_followers,
-        // Convert File objects to null to avoid circular JSON error
-        profile_image: typeof formData.profile_image === 'string' ? formData.profile_image : null,
+
         // Process arrays of objects with File properties
         work_experience: formData.work_experience.map((exp: any) => ({
           ...exp,
@@ -393,13 +440,13 @@ export function useProfileForm(userId: string | undefined) {
           ...cert,
           media: typeof cert.media === 'string' ? cert.media : null
         })),
-        accolades: formData.accolades.map((accolade: any) => ({
-          ...accolade,
-          media: typeof accolade.media === 'string' ? accolade.media : null
+        accolades: formData.accolades.map((acc: any) => ({
+          ...acc,
+          media: typeof acc.media === 'string' ? acc.media : null
         })),
-        endorsements: formData.endorsements.map((endorsement: any) => ({
-          ...endorsement,
-          media: typeof endorsement.media === 'string' ? endorsement.media : null
+        endorsements: formData.endorsements.map((end: any) => ({
+          ...end,
+          media: typeof end.media === 'string' ? end.media : null
         })),
         featured_projects: formData.featured_projects.map((project: any) => ({
           ...project,
@@ -611,6 +658,7 @@ export function useProfileForm(userId: string | undefined) {
     success,
     handleInputChange,
     handleImageSelect,
+    handleImageUrlChange,
     handleAddTag,
     handleRemoveTag,
     handleSubmit,

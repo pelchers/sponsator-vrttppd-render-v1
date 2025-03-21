@@ -13,6 +13,8 @@ import { HeartIcon } from '@/components/icons/HeartIcon';
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import { API_BASE_URL } from '@/api/config';
+import { DEFAULT_AVATAR } from '@/constants/defaults';
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
@@ -213,8 +215,11 @@ export default function Profile() {
               </div>
               <div className="image-container">
                 <img 
-                  src={user.profile_image || '/placeholder.svg'} 
-                  alt="Profile" 
+                  src={
+                    user.profile_image_url || 
+                    (user.profile_image_upload ? `${API_BASE_URL}${user.profile_image_upload}` : DEFAULT_AVATAR)
+                  }
+                  alt={`${user.username}'s profile`}
                   className="profile-image"
                 />
                 <div className="flex justify-center items-center space-x-6 mt-4">

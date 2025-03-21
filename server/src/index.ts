@@ -17,6 +17,7 @@ import routes from './routes';
 import chatRoutes from './routes/chatRoutes';
 import permissionRoutes from './routes/permissionRoutes';
 import { Request, Response, NextFunction } from 'express';
+import { ensureUploadDirs } from './utils/ensureUploadDirs';
 
 dotenv.config();
 
@@ -378,4 +379,7 @@ app.get('/api/db-test', async (req, res) => {
     console.error('Database connection error:', error);
     res.status(500).json({ message: 'Database connection failed', error: error.message });
   }
-}); 
+});
+
+// Ensure upload directories exist
+ensureUploadDirs(); 

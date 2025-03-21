@@ -1,4 +1,9 @@
 import prisma from '../lib/prisma';
+import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import fs from 'fs';
+
+const prismaClient = new PrismaClient();
 
 // Add this function to map database user to frontend format
 function mapUserToFrontend(user: any) {
@@ -150,7 +155,7 @@ export async function updateUser(id: string, data: any) {
     console.log('Final update data for main user record:', updateData);
     
     // Start a transaction to update the user and related data
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.transaction(async (tx) => {
       // Update the main user record
       const updatedUser = await tx.users.update({
         where: { id },
@@ -319,24 +324,121 @@ export async function updateUser(id: string, data: any) {
   }
 }
 
-export async function uploadProfileImage(id: string, file: Express.Multer.File) {
-  // This would typically involve:
-  // 1. Uploading the file to a storage service (S3, etc.)
-  // 2. Getting the URL of the uploaded file
-  // 3. Updating the user's profile_image field with the URL
-  
-  // For this example, we'll assume the file is saved locally and we just store the path
-  const imagePath = `/uploads/${file.filename}`;
-  
-  await prisma.users.update({
-    where: { id },
-    data: {
-      profile_image: imagePath
+export const updateUserProfile = async (userId: string, data: any) => {
+  try {
+    console.log('Service: Updating user profile with data:', data);
+    
+    // Validate userId
+    if (!userId) {
+      throw new Error('User ID is required');
     }
-  });
-  
-  return imagePath;
-}
+
+    // First check if user exists
+    const existingUser = await prisma.users.findUnique({
+      where: { id: userId }
+    });
+
+    if (!existingUser) {
+      throw new Error('User not found');
+    }
+
+    // Define allowed fields to update
+    const allowedFields = [
+      'username',
+      'email',
+      'bio',
+      'user_type',
+      'profile_image_url',
+      'profile_image_upload'
+    ];
+
+    // Filter out any fields that aren't in our allowed list
+    const filteredData = Object.keys(data)
+      .filter(key => allowedFields.includes(key))
+      .reduce((obj: any, key) => {
+        obj[key] = data[key];
+        return obj;
+      }, {});
+
+    // Add updated_at timestamp
+    const updateData = {
+      ...filteredData,
+      updated_at: new Date()
+    };
+
+    console.log('Service: Filtered update data:', updateData);
+
+    const updatedUser = await prisma.users.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        bio: true,
+        profile_image_url: true,
+        profile_image_upload: true,
+        user_type: true,
+        created_at: true,
+        updated_at: true
+      }
+    });
+
+    console.log('Service: User updated successfully:', updatedUser);
+    return updatedUser;
+  } catch (error: any) {
+    console.error('Service: Error updating user profile:', {
+      error,
+      message: error.message,
+      code: error.code,
+      meta: error?.meta
+    });
+
+    if (error.code === 'P2002') {
+      throw new Error('A user with this email already exists');
+    }
+
+    throw error; // Let the controller handle other errors
+  }
+};
+
+export const handleProfileImageUpload = async (userId: string, filePath: string) => {
+  try {
+    console.log('Service: Handling profile image upload:', { userId, filePath });
+    
+    // Get relative path for storage
+    const relativePath = path.relative(
+      path.join(__dirname, '../../uploads'),
+      filePath
+    );
+
+    // Create full URL path for the image
+    const fullPath = `/uploads/${relativePath.replace(/\\/g, '/')}`;  // Convert Windows paths to URL format
+
+    console.log('Service: Image paths:', {
+      relativePath,
+      fullPath
+    });
+
+    // Update user with new image path
+    const updatedUser = await prisma.users.update({
+      where: { id: userId },
+      data: {
+        profile_image_upload: fullPath,  // Store the full URL path
+        profile_image_url: null // Clear URL when upload is used
+      }
+    });
+
+    console.log('Service: Profile image updated successfully:', updatedUser);
+    return {
+      path: fullPath,
+      user: updatedUser
+    };
+  } catch (error) {
+    console.error('Service: Error handling profile image upload:', error);
+    throw new Error(`Failed to handle profile image upload: ${error.message}`);
+  }
+};
 
 export async function getUserByEmail(email: string) {
   try {

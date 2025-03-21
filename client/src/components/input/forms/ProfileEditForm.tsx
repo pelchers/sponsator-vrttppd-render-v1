@@ -11,6 +11,8 @@ import ImageUpload from "./ImageUpload"
 import { Button } from "@/components/ui/button"
 import Layout from "@/components/layout/Layout"
 import './ProfileEditForm.css'
+import { Input } from '@/components/ui/input'
+import { API_BASE_URL } from '@/api/config'
 
 export default function ProfileEditForm() {
   const { id } = useParams<{ id: string }>()
@@ -42,6 +44,7 @@ export default function ProfileEditForm() {
     success,
     handleInputChange,
     handleImageSelect,
+    handleImageUrlChange,
     handleAddTag,
     handleRemoveTag,
     handleSubmit,
@@ -80,17 +83,52 @@ export default function ProfileEditForm() {
               )}
           </div>
 
+      {/* Profile Image Section */}
+            <div className="form-section">
+              <h2 className="section-title">Profile Image</h2>
+              
+              <div className="w-full flex flex-col items-center">
+                {/* Image upload component */}
+                <div className="w-full max-w-md flex flex-col items-center space-y-8">
+                  <div className="w-full flex justify-center">
+                    <ImageUpload 
+                      onImageSelect={handleImageSelect} 
+                      currentImage={
+                        formData.profile_image_url || 
+                        (formData.profile_image_upload ? `${API_BASE_URL}${formData.profile_image_upload}` : null)
+                      }
+                      maxSize={10 * 1024 * 1024}
+                      accept="image/*"
+                      ariaLabel="Upload profile image"
+                    />
+                  </div>
+                  
+                  {/* Image URL input */}
+                  <div className="w-full">
+                    <label className="form-label block mb-2" htmlFor="profile_image_url">
+                      Or use image URL
+                    </label>
+                    <input
+                      type="url"
+                      id="profile_image_url"
+                      name="profile_image_url"
+                      value={formData.profile_image_url || ''}
+                      onChange={(e) => handleImageUrlChange(e.target.value)}
+                      placeholder="https://example.com/image.jpg"
+                      className="form-input w-full px-3 py-2 border rounded"
+                      disabled={false}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
       {/* Basic Information */}
             <div className="form-section">
               <h2 className="section-title">Basic Information</h2>
-              <div className="image-upload-container">
-                <ImageUpload 
-                  onImageSelect={handleImageSelect} 
-                  initialImage={formData.profile_image as string}
-                />
-              </div>
-
-              <div className="form-grid">
+              
+              {/* Form fields with increased top margin */}
+              <div className="form-grid mt-12">
                 <div className="form-group">
                   <label className="form-label" htmlFor="username">Username</label>
               <input

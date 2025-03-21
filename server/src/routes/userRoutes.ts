@@ -3,6 +3,8 @@ import multer from 'multer';
 import * as userController from '../controllers/userController';
 import { authenticate } from '../middlewares/auth'; // If using authentication
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -19,6 +21,33 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// Configure multer for profile image uploads
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../../uploads/profiles'));
+  },
+  filename: (req, file, cb) => {
+    // Create unique filename with timestamp
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${req.params.id}-${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+
+const profileUpload = multer({
+  storage: profileStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only images
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 // IMPORTANT: Put specific routes BEFORE parameterized routes
 // Search users route must come before /:id
@@ -49,7 +78,7 @@ router.get('/:id', userController.getUserById);
 router.put('/:id', authenticate, userController.updateUser);
 
 // Upload profile image
-router.post('/:id/image', authenticate, upload.single('image'), userController.uploadProfileImage);
+router.post('/:id/profile-image', authenticate, profileUpload.single('profile_image'), userController.uploadProfileImage);
 
 // Add a test endpoint to check database connection
 router.get('/test-db', async (req, res) => {
