@@ -10,6 +10,194 @@
 
 This guide explains how to add dual image handling (URL and uploads) to our existing system.
 
+## 1. File Storage Structure
+
+### Directory Setup
+```bash
+server/
+  └── uploads/
+      ├── profiles/      # User profile images
+      ├── projects/      # Project-related images
+      ├── posts/         # Post images
+      └── articles/      # Article images
+```
+
+### Storage Considerations
+
+1. **File Organization**
+   - Each content type has its own directory
+   - Files are stored with unique names to prevent collisions
+   - Original filenames are preserved in metadata
+
+2. **File Naming Convention**
+   ```
+   {type}_{userId}_{timestamp}_{originalFileName}
+   ```
+   Example: `profile_123_1678234567_avatar.jpg`
+
+3. **Size Limits**
+   - Profile Images: Max 2MB
+   - Post Images: Max 5MB
+   - Project Images: Max 5MB
+   - Article Images: Max 5MB
+
+4. **Supported Formats**
+   - Images: .jpg, .jpeg, .png, .gif, .webp
+   - Maximum dimensions: 2048x2048 pixels
+
+5. **Security Considerations**
+   - Validate file types using both extension and MIME type
+   - Scan for malware (implement virus scanning)
+   - Use signed URLs for secure access
+   - Implement rate limiting for uploads
+
+## 2. Database Schema
+
+```prisma
+model users {
+  // ... existing fields ...
+  profile_image_url    String?   // For external URLs
+  profile_image_upload String?   // For local uploads
+  profile_image       String?    // Legacy field
+}
+
+// Similar structure for projects, posts, and articles
+```
+
+## 3. File Handling Workflow
+
+1. **Upload Process**
+   ```typescript
+   // Example upload flow
+   async function handleImageUpload(file: File, type: 'profile' | 'project' | 'post' | 'article') {
+     // 1. Validate file
+     validateFileType(file);
+     validateFileSize(file, type);
+     
+     // 2. Generate unique filename
+     const filename = generateUniqueFilename(file, type);
+     
+     // 3. Store file
+     await storeFile(file, filename, type);
+     
+     // 4. Update database
+     await updateImageReference(type, filename);
+     
+     // 5. Return file path
+     return `/uploads/${type}s/${filename}`;
+   }
+   ```
+
+2. **Cleanup Process**
+   - Remove old files when new ones are uploaded
+   - Implement periodic cleanup for orphaned files
+   - Handle deletion when content is removed
+
+## 4. Environment Configuration
+
+```env
+# Add to .env
+MAX_FILE_SIZE_PROFILE=2097152    # 2MB in bytes
+MAX_FILE_SIZE_POST=5242880       # 5MB in bytes
+MAX_FILE_SIZE_PROJECT=5242880    # 5MB in bytes
+MAX_FILE_SIZE_ARTICLE=5242880    # 5MB in bytes
+UPLOAD_PATH=/path/to/uploads
+ALLOWED_FILE_TYPES=image/jpeg,image/png,image/gif,image/webp
+```
+
+## 5. Backup Considerations
+
+1. **Regular Backups**
+   - Include uploaded files in backup strategy
+   - Sync with cloud storage (optional)
+   - Maintain file metadata backup
+
+2. **Recovery Process**
+   - Document file restoration procedures
+   - Keep file-database relationships intact
+   - Implement verification after restore
+
+## 6. Performance Optimization
+
+1. **Image Processing**
+   - Compress images on upload
+   - Generate thumbnails for previews
+   - Convert to efficient formats (WebP)
+
+2. **Caching Strategy**
+   - Implement CDN for frequently accessed images
+   - Use appropriate cache headers
+   - Consider browser caching policies
+
+## 7. Migration Strategy
+
+1. **Data Migration**
+   ```sql
+   -- Example migration for existing data
+   UPDATE users 
+   SET profile_image_url = profile_image 
+   WHERE profile_image LIKE 'http%';
+   
+   UPDATE users 
+   SET profile_image_upload = profile_image 
+   WHERE profile_image NOT LIKE 'http%';
+   ```
+
+2. **Legacy Support**
+   - Maintain backward compatibility
+   - Handle both URL and file paths
+   - Implement gradual transition
+
+## 8. Monitoring and Maintenance
+
+1. **Storage Monitoring**
+   - Track disk usage
+   - Monitor upload patterns
+   - Set up alerts for capacity issues
+
+2. **Regular Maintenance**
+   - Clean up unused files
+   - Verify file integrity
+   - Update security measures
+
+## 9. Error Handling
+
+```typescript
+class FileUploadError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = 'FileUploadError';
+  }
+}
+
+// Usage
+try {
+  await handleImageUpload(file, 'profile');
+} catch (error) {
+  if (error instanceof FileUploadError) {
+    // Handle specific upload errors
+  }
+  // Handle other errors
+}
+```
+
+## 10. Testing Considerations
+
+1. **Unit Tests**
+   - File validation
+   - Name generation
+   - Error handling
+
+2. **Integration Tests**
+   - Upload process
+   - File cleanup
+   - Storage limits
+
+3. **Security Tests**
+   - File type validation
+   - Access control
+   - Upload limits
+
 ## 1. Database Schema Update
 
 ```prisma:server/prisma/schema.prisma

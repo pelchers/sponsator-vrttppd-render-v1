@@ -35,3 +35,13 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw? 
+
+# Uploaded files
+server/uploads/profiles/*
+!server/uploads/profiles/.gitkeep
+server/uploads/projects/*
+!server/uploads/projects/.gitkeep
+server/uploads/posts/*
+!server/uploads/posts/.gitkeep
+server/uploads/articles/*
+!server/uploads/articles/.gitkeep 
