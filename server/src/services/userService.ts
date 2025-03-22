@@ -1,9 +1,4 @@
 import prisma from '../lib/prisma';
-import { PrismaClient } from '@prisma/client';
-import path from 'path';
-import fs from 'fs';
-
-const prismaClient = new PrismaClient();
 
 // Add this function to map database user to frontend format
 function mapUserToFrontend(user: any) {
@@ -93,6 +88,23 @@ function mapFrontendToUser(userData: any) {
   };
 }
 
+// Add interfaces for related data
+interface WorkExperienceInput {
+  title: string;
+  company: string;
+  years: string;
+  media?: string | null;
+}
+
+interface EducationInput {
+  degree: string;
+  school: string;
+  year: string;
+  media?: string | null;
+}
+
+// ... similar interfaces for other related data ...
+
 export async function getUserById(id: string) {
   try {
     const user = await prisma.users.findUnique({
@@ -112,9 +124,17 @@ export async function getUserById(id: string) {
     
     // Remove sensitive data
     const { password_hash, ...userWithoutPassword } = user;
+
+    // Ensure proper image path is set based on display preference
+    const processedUser = {
+      ...userWithoutPassword,
+      profile_image: userWithoutPassword.profile_image_display === 'url' 
+        ? userWithoutPassword.profile_image_url
+        : userWithoutPassword.profile_image_upload
+    };
     
     // Map to frontend format
-    return mapUserToFrontend(userWithoutPassword);
+    return mapUserToFrontend(processedUser);
   } catch (error) {
     console.error('Error in getUserById:', error);
     throw error;
@@ -140,8 +160,17 @@ export async function updateUser(id: string, data: any) {
 
     // Map frontend data to database format for main user fields
     const dbData = mapFrontendToUser(mainData);
-    console.log('Mapped data for database:', dbData);
     
+    // Handle image display preference
+    if (dbData.profile_image_url && (!dbData.profile_image_display || dbData.profile_image_display === 'url')) {
+      dbData.profile_image_display = 'url';
+      // Keep legacy field in sync
+      dbData.profile_image = dbData.profile_image_url;
+    } else if (dbData.profile_image_upload && dbData.profile_image_display === 'upload') {
+      // Keep legacy field in sync
+      dbData.profile_image = dbData.profile_image_upload;
+    }
+
     // Extract fields that shouldn't be directly updated
     const {
       password_hash,
@@ -155,7 +184,7 @@ export async function updateUser(id: string, data: any) {
     console.log('Final update data for main user record:', updateData);
     
     // Start a transaction to update the user and related data
-    const result = await prisma.transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // Update the main user record
       const updatedUser = await tx.users.update({
         where: { id },
@@ -163,22 +192,20 @@ export async function updateUser(id: string, data: any) {
       });
 
       // Update work experience
-      if (work_experience) {
+      if (work_experience?.length > 0) {
         await tx.user_work_experience.deleteMany({
           where: { user_id: id }
         });
         
-        if (work_experience.length > 0) {
-          await tx.user_work_experience.createMany({
-            data: work_experience.map(exp => ({
-              user_id: id,
-              title: exp.title || '',
-              company: exp.company || '',
-              years: exp.years || '',
-              media: exp.media || null
-            }))
-          });
-        }
+        await tx.user_work_experience.createMany({
+          data: work_experience.map((exp: WorkExperienceInput) => ({
+            user_id: id,
+            title: exp.title || '',
+            company: exp.company || '',
+            years: exp.years || '',
+            media: exp.media || null
+          }))
+        });
       }
 
       // Update education
@@ -324,121 +351,29 @@ export async function updateUser(id: string, data: any) {
   }
 }
 
-export const updateUserProfile = async (userId: string, data: any) => {
+export async function uploadProfileImage(id: string, file: Express.Multer.File) {
   try {
-    console.log('Service: Updating user profile with data:', data);
+    // Store just the filename, not the full path
+    const imagePath = file.filename;
     
-    // Validate userId
-    if (!userId) {
-      throw new Error('User ID is required');
-    }
-
-    // First check if user exists
-    const existingUser = await prisma.users.findUnique({
-      where: { id: userId }
-    });
-
-    if (!existingUser) {
-      throw new Error('User not found');
-    }
-
-    // Define allowed fields to update
-    const allowedFields = [
-      'username',
-      'email',
-      'bio',
-      'user_type',
-      'profile_image_url',
-      'profile_image_upload'
-    ];
-
-    // Filter out any fields that aren't in our allowed list
-    const filteredData = Object.keys(data)
-      .filter(key => allowedFields.includes(key))
-      .reduce((obj: any, key) => {
-        obj[key] = data[key];
-        return obj;
-      }, {});
-
-    // Add updated_at timestamp
-    const updateData = {
-      ...filteredData,
-      updated_at: new Date()
-    };
-
-    console.log('Service: Filtered update data:', updateData);
-
     const updatedUser = await prisma.users.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        bio: true,
-        profile_image_url: true,
-        profile_image_upload: true,
-        user_type: true,
-        created_at: true,
-        updated_at: true
-      }
-    });
-
-    console.log('Service: User updated successfully:', updatedUser);
-    return updatedUser;
-  } catch (error: any) {
-    console.error('Service: Error updating user profile:', {
-      error,
-      message: error.message,
-      code: error.code,
-      meta: error?.meta
-    });
-
-    if (error.code === 'P2002') {
-      throw new Error('A user with this email already exists');
-    }
-
-    throw error; // Let the controller handle other errors
-  }
-};
-
-export const handleProfileImageUpload = async (userId: string, filePath: string) => {
-  try {
-    console.log('Service: Handling profile image upload:', { userId, filePath });
-    
-    // Get relative path for storage
-    const relativePath = path.relative(
-      path.join(__dirname, '../../uploads'),
-      filePath
-    );
-
-    // Create full URL path for the image
-    const fullPath = `/uploads/${relativePath.replace(/\\/g, '/')}`;  // Convert Windows paths to URL format
-
-    console.log('Service: Image paths:', {
-      relativePath,
-      fullPath
-    });
-
-    // Update user with new image path
-    const updatedUser = await prisma.users.update({
-      where: { id: userId },
+      where: { id },
       data: {
-        profile_image_upload: fullPath,  // Store the full URL path
-        profile_image_url: null // Clear URL when upload is used
+        profile_image: imagePath,
+        profile_image_upload: imagePath,
+        profile_image_display: 'upload'
       }
     });
-
-    console.log('Service: Profile image updated successfully:', updatedUser);
+    
     return {
-      path: fullPath,
+      path: imagePath,
       user: updatedUser
     };
   } catch (error) {
-    console.error('Service: Error handling profile image upload:', error);
-    throw new Error(`Failed to handle profile image upload: ${error.message}`);
+    console.error('Error uploading profile image:', error);
+    throw error;
   }
-};
+}
 
 export async function getUserByEmail(email: string) {
   try {
@@ -675,7 +610,9 @@ export const getUserLikedContent = async (
   await Promise.all(promises);
   
   // Calculate total items and pages
-  const totalItems = Object.values(totalCounts).reduce((sum: number, count: number) => sum + count, 0);
+  const totalItems = Object.values(totalCounts).reduce<number>((sum, count) => 
+    sum + (typeof count === 'number' ? count : 0), 0
+  );
   const totalPages = Math.ceil(totalItems / limit) || 1;
   
   console.log(`[USER SERVICE] Found ${totalItems} liked items across ${Object.keys(totalCounts).length} content types`);

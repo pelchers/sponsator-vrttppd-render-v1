@@ -3,23 +3,17 @@ import * as userService from '../services/userService';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
-import path from 'path';
-import fs from 'fs';
 
 const prisma = new PrismaClient();
 
-export const getUserById = async (req: Request, res: Response) => {
+export async function getUserById(req: Request, res: Response) {
   try {
     const { id } = req.params;
     
+    // Fetch user from database with all related data
     const user = await prisma.users.findUnique({
       where: { id },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        profile_image_url: true,
-        profile_image_upload: true,
+      include: {
         user_work_experience: true,
         user_education: true,
         user_certifications: true,
@@ -34,54 +28,48 @@ export const getUserById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json(user);
+    // Remove sensitive data
+    const { password_hash, ...userWithoutPassword } = user;
+    
+    res.json(userWithoutPassword);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Error fetching user' });
+    console.error('Error in getUserById:', error);
+    res.status(500).json({ message: 'Failed to fetch user' });
   }
-};
+}
 
-export const updateUser = async (req: Request, res: Response) => {
+export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const updateData = req.body;
+    const userData = req.body;
     
-    console.log('Controller: Received update request for user:', id);
-    console.log('Controller: Update data:', updateData);
-
-    const updatedUser = await userService.updateUserProfile(id, updateData);
+    console.log('Update user request received for ID:', id);
+    console.log('Update data:', userData);
     
-    console.log('Controller: User updated successfully:', updatedUser);
+    // Validate input
+    if (Object.keys(userData).length === 0) {
+      return res.status(400).json({ message: 'No update data provided' });
+    }
+    
+    // Check if the user exists
+    console.log('Checking if user exists');
+    const existingUser = await userService.getUserById(id);
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Update the user
+    console.log('Updating user in database');
+    const updatedUser = await userService.updateUser(id, userData);
+    
+    // Return the updated user
+    console.log('User updated successfully');
     res.json(updatedUser);
-  } catch (error: any) {
-    console.error('Controller: Error updating user:', {
-      error,
-      message: error.message,
-      stack: error.stack
-    });
-
-    // Send appropriate status code based on error
-    if (error.message.includes('User not found')) {
-      return res.status(404).json({ 
-        message: 'User not found',
-        error: error.message 
-      });
-    }
-
-    if (error.message.includes('email already exists')) {
-      return res.status(409).json({ 
-        message: 'Email already in use',
-        error: error.message 
-      });
-    }
-
-    // Generic error response
-    res.status(500).json({ 
-      message: 'Error updating user',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ message: 'Error updating user' });
   }
-};
+}
 
 export const uploadProfileImage = async (req: Request, res: Response) => {
   try {
@@ -92,10 +80,17 @@ export const uploadProfileImage = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const result = await userService.handleProfileImageUpload(id, file.path);
-    res.json(result);
+    const result = await userService.uploadProfileImage(id, file);
+
+    res.json({
+      success: true,
+      data: {
+        path: result.path,
+        display: 'upload'
+      }
+    });
   } catch (error) {
-    console.error('Error uploading profile image:', error);
+    console.error('Error in uploadProfileImage controller:', error);
     res.status(500).json({ error: 'Failed to upload profile image' });
   }
 };
@@ -152,7 +147,7 @@ export async function registerUser(req: Request, res: Response) {
       user: userWithoutPassword,
       token
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error registering user:', error);
     res.status(500).json({ 
       message: 'Error registering user',
@@ -177,6 +172,9 @@ export async function loginUser(req: Request, res: Response) {
     }
     
     // Compare passwords
+    if (!user?.password_hash) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
