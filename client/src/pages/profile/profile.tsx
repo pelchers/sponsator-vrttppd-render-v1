@@ -424,9 +424,9 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Tags & Categories */}
+            {/* Tags & Categories (update the title and add missing tag sections) */}
             <div className="profile-section">
-              <h2 className="section-title">Skills & Expertise</h2>
+              <h2 className="section-title">Tags & Categories</h2>
               <div className="profile-grid">
                 <div className="info-group">
                   <label className="info-label">Skills</label>
@@ -441,6 +441,31 @@ export default function Profile() {
                   <div className="tag-container">
                     {user.expertise.map((item, index) => (
                       <span key={index} className="tag">{item}</span>
+                    ))}
+                  </div>
+                </div>
+                {/* Add missing tag sections */}
+                <div className="info-group">
+                  <label className="info-label">Interest Tags</label>
+                  <div className="tag-container">
+                    {user.interest_tags.map((tag, index) => (
+                      <span key={index} className="tag">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="info-group">
+                  <label className="info-label">Experience Tags</label>
+                  <div className="tag-container">
+                    {user.experience_tags.map((tag, index) => (
+                      <span key={index} className="tag">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="info-group">
+                  <label className="info-label">Education Tags</label>
+                  <div className="tag-container">
+                    {user.education_tags.map((tag, index) => (
+                      <span key={index} className="tag">{tag}</span>
                     ))}
                   </div>
                 </div>
@@ -518,41 +543,134 @@ export default function Profile() {
             {/* Qualifications */}
             <div className="profile-section">
               <h2 className="section-title">Qualifications</h2>
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Work Experience */}
                 <div className="info-group">
                   <h3 className="section-title">Work Experience</h3>
-                  {user.work_experience.map((exp, index) => (
-                    <div key={index} className="info-value mb-4">
-                      <div className="font-medium">{exp.title}</div>
-                      <div>{exp.company}</div>
-                      <div className="text-sm text-gray-500">{exp.years}</div>
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.work_experience.map((exp, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Title</label>
+                            <div className="font-medium">{exp.title}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Company</label>
+                            <div>{exp.company}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Years</label>
+                            <div>{exp.years}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Education */}
                 <div className="info-group">
                   <h3 className="section-title">Education</h3>
-                  {user.education.map((edu, index) => (
-                    <div key={index} className="info-value mb-4">
-                      <div className="font-medium">{edu.degree}</div>
-                      <div>{edu.school}</div>
-                      <div className="text-sm text-gray-500">{edu.year}</div>
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.education.map((edu, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Degree</label>
+                            <div className="font-medium">{edu.degree}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">School</label>
+                            <div>{edu.school}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Year</label>
+                            <div>{edu.year}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Certifications */}
                 <div className="info-group">
                   <h3 className="section-title">Certifications</h3>
-                  {user.certifications.map((cert, index) => (
-                    <div key={index} className="info-value mb-4">
-                      <div className="font-medium">{cert.name}</div>
-                      <div>{cert.issuer}</div>
-                      <div className="text-sm text-gray-500">{cert.year}</div>
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.certifications.map((cert, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Name</label>
+                            <div className="font-medium">{cert.name}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Issuer</label>
+                            <div>{cert.issuer}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Year</label>
+                            <div>{cert.year}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Accolades */}
+                <div className="info-group">
+                  <h3 className="section-title">Accolades</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.accolades.map((accolade, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Title</label>
+                            <div className="font-medium">{accolade.title}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Issuer</label>
+                            <div>{accolade.issuer}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Year</label>
+                            <div>{accolade.year}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Endorsements */}
+                <div className="info-group">
+                  <h3 className="section-title">Endorsements</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.endorsements.map((endorsement, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Name</label>
+                            <div className="font-medium">{endorsement.name}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Position</label>
+                            <div>{endorsement.position}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Company</label>
+                            <div>{endorsement.company}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Testimonial</label>
+                            <div className="text-sm">{endorsement.text}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -583,34 +701,65 @@ export default function Profile() {
             {/* Portfolio & Showcase */}
             <div className="profile-section">
               <h2 className="section-title">Portfolio & Showcase</h2>
-              <div className="profile-grid">
+              <div className="space-y-8">
                 <div>
                   <h3 className="section-title">Featured Projects</h3>
-                  {user.featured_projects.map((project, index) => (
-                    <div key={index} className="info-value mb-4">
-                      <div className="font-medium">{project.title}</div>
-                      <div className="text-sm">{project.description}</div>
-                      {project.url && (
-                        <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          View Project
-                        </a>
-                      )}
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.featured_projects.map((project, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Title</label>
+                            <div className="font-medium">{project.title}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Description</label>
+                            <div className="text-sm">{project.description}</div>
+                          </div>
+                          {project.url && (
+                            <div>
+                              <label className="text-sm text-gray-500">Project Link</label>
+                              <div>
+                                <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                  View Project
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
                 <div>
                   <h3 className="section-title">Case Studies</h3>
-                  {user.case_studies.map((study, index) => (
-                    <div key={index} className="info-value mb-4">
-                      <div className="font-medium">{study.title}</div>
-                      <div className="text-sm">{study.description}</div>
-                      {study.url && (
-                        <a href={study.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          View Case Study
-                        </a>
-                      )}
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {user.case_studies.map((study, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-sm text-gray-500">Title</label>
+                            <div className="font-medium">{study.title}</div>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-500">Description</label>
+                            <div className="text-sm">{study.description}</div>
+                          </div>
+                          {study.url && (
+                            <div>
+                              <label className="text-sm text-gray-500">Case Study Link</label>
+                              <div>
+                                <a href={study.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                  View Case Study
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
