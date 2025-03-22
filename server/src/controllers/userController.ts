@@ -71,30 +71,29 @@ export async function updateUser(req: Request, res: Response) {
   }
 }
 
-export async function uploadProfileImage(req: Request, res: Response) {
+export const uploadProfileImage = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const file = req.file;
-    
+
     if (!file) {
-      return res.status(400).json({ message: 'No image file provided' });
+      return res.status(400).json({ error: 'No file uploaded' });
     }
-    
-    // Check if the user exists
-    const existingUser = await userService.getUserById(id);
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Upload the image and update the user
-    const imageUrl = await userService.uploadProfileImage(id, file);
-    
-    res.json({ imageUrl });
+
+    const result = await userService.uploadProfileImage(id, file);
+
+    res.json({
+      success: true,
+      data: {
+        path: result.path,
+        display: 'upload'
+      }
+    });
   } catch (error) {
-    console.error('Error uploading profile image:', error);
-    res.status(500).json({ message: 'Error uploading profile image' });
+    console.error('Error in uploadProfileImage controller:', error);
+    res.status(500).json({ error: 'Failed to upload profile image' });
   }
-}
+};
 
 export async function registerUser(req: Request, res: Response) {
   try {
@@ -148,7 +147,7 @@ export async function registerUser(req: Request, res: Response) {
       user: userWithoutPassword,
       token
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error registering user:', error);
     res.status(500).json({ 
       message: 'Error registering user',
@@ -173,6 +172,9 @@ export async function loginUser(req: Request, res: Response) {
     }
     
     // Compare passwords
+    if (!user?.password_hash) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });

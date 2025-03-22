@@ -88,6 +88,23 @@ function mapFrontendToUser(userData: any) {
   };
 }
 
+// Add interfaces for related data
+interface WorkExperienceInput {
+  title: string;
+  company: string;
+  years: string;
+  media?: string | null;
+}
+
+interface EducationInput {
+  degree: string;
+  school: string;
+  year: string;
+  media?: string | null;
+}
+
+// ... similar interfaces for other related data ...
+
 export async function getUserById(id: string) {
   try {
     const user = await prisma.users.findUnique({
@@ -107,9 +124,17 @@ export async function getUserById(id: string) {
     
     // Remove sensitive data
     const { password_hash, ...userWithoutPassword } = user;
+
+    // Ensure proper image path is set based on display preference
+    const processedUser = {
+      ...userWithoutPassword,
+      profile_image: userWithoutPassword.profile_image_display === 'url' 
+        ? userWithoutPassword.profile_image_url
+        : userWithoutPassword.profile_image_upload
+    };
     
     // Map to frontend format
-    return mapUserToFrontend(userWithoutPassword);
+    return mapUserToFrontend(processedUser);
   } catch (error) {
     console.error('Error in getUserById:', error);
     throw error;
@@ -135,8 +160,17 @@ export async function updateUser(id: string, data: any) {
 
     // Map frontend data to database format for main user fields
     const dbData = mapFrontendToUser(mainData);
-    console.log('Mapped data for database:', dbData);
     
+    // Handle image display preference
+    if (dbData.profile_image_url && (!dbData.profile_image_display || dbData.profile_image_display === 'url')) {
+      dbData.profile_image_display = 'url';
+      // Keep legacy field in sync
+      dbData.profile_image = dbData.profile_image_url;
+    } else if (dbData.profile_image_upload && dbData.profile_image_display === 'upload') {
+      // Keep legacy field in sync
+      dbData.profile_image = dbData.profile_image_upload;
+    }
+
     // Extract fields that shouldn't be directly updated
     const {
       password_hash,
@@ -158,22 +192,20 @@ export async function updateUser(id: string, data: any) {
       });
 
       // Update work experience
-      if (work_experience) {
+      if (work_experience?.length > 0) {
         await tx.user_work_experience.deleteMany({
           where: { user_id: id }
         });
         
-        if (work_experience.length > 0) {
-          await tx.user_work_experience.createMany({
-            data: work_experience.map(exp => ({
-              user_id: id,
-              title: exp.title || '',
-              company: exp.company || '',
-              years: exp.years || '',
-              media: exp.media || null
-            }))
-          });
-        }
+        await tx.user_work_experience.createMany({
+          data: work_experience.map((exp: WorkExperienceInput) => ({
+            user_id: id,
+            title: exp.title || '',
+            company: exp.company || '',
+            years: exp.years || '',
+            media: exp.media || null
+          }))
+        });
       }
 
       // Update education
@@ -320,22 +352,27 @@ export async function updateUser(id: string, data: any) {
 }
 
 export async function uploadProfileImage(id: string, file: Express.Multer.File) {
-  // This would typically involve:
-  // 1. Uploading the file to a storage service (S3, etc.)
-  // 2. Getting the URL of the uploaded file
-  // 3. Updating the user's profile_image field with the URL
-  
-  // For this example, we'll assume the file is saved locally and we just store the path
-  const imagePath = `/uploads/${file.filename}`;
-  
-  await prisma.users.update({
-    where: { id },
-    data: {
-      profile_image: imagePath
-    }
-  });
-  
-  return imagePath;
+  try {
+    // Store just the filename, not the full path
+    const imagePath = file.filename;
+    
+    const updatedUser = await prisma.users.update({
+      where: { id },
+      data: {
+        profile_image: imagePath,
+        profile_image_upload: imagePath,
+        profile_image_display: 'upload'
+      }
+    });
+    
+    return {
+      path: imagePath,
+      user: updatedUser
+    };
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    throw error;
+  }
 }
 
 export async function getUserByEmail(email: string) {
@@ -573,7 +610,9 @@ export const getUserLikedContent = async (
   await Promise.all(promises);
   
   // Calculate total items and pages
-  const totalItems = Object.values(totalCounts).reduce((sum: number, count: number) => sum + count, 0);
+  const totalItems = Object.values(totalCounts).reduce<number>((sum, count) => 
+    sum + (typeof count === 'number' ? count : 0), 0
+  );
   const totalPages = Math.ceil(totalItems / limit) || 1;
   
   console.log(`[USER SERVICE] Found ${totalItems} liked items across ${Object.keys(totalCounts).length} content types`);

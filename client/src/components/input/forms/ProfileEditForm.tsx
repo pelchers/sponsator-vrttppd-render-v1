@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
 import { useProfileForm } from '@/hooks/useProfileForm'
 import PageSection from "@/components/sections/PageSection"
@@ -11,6 +11,7 @@ import ImageUpload from "./ImageUpload"
 import { Button } from "@/components/ui/button"
 import Layout from "@/components/layout/Layout"
 import './ProfileEditForm.css'
+import { API_URL } from '@/config'
 
 export default function ProfileEditForm() {
   const { id } = useParams<{ id: string }>()
@@ -65,6 +66,44 @@ export default function ProfileEditForm() {
     );
   }
 
+  // Add image toggle buttons
+  const ImageToggleButtons = () => (
+    <div className="flex items-center space-x-4 mb-6">
+      <button
+        type="button"
+        className={`px-4 py-2 rounded transition-colors ${
+          formData.profile_image_display === 'url' 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-200 hover:bg-gray-300'
+        }`}
+        onClick={() => setFormData(prev => ({ 
+          ...prev, 
+          profile_image_display: 'url',
+          // Clear upload when switching to URL
+          profile_image_upload: null 
+        }))}
+      >
+        Use URL Image
+      </button>
+      <button
+        type="button"
+        className={`px-4 py-2 rounded transition-colors ${
+          formData.profile_image_display === 'upload' 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-200 hover:bg-gray-300'
+        }`}
+        onClick={() => setFormData(prev => ({ 
+          ...prev, 
+          profile_image_display: 'upload',
+          // Clear URL when switching to upload
+          profile_image_url: '' 
+        }))}
+      >
+        Use Uploaded Image
+      </button>
+    </div>
+  );
+
   return (
   
       <div className="w-full">
@@ -84,66 +123,109 @@ export default function ProfileEditForm() {
             <div className="form-section">
               <h2 className="section-title">Basic Information</h2>
               <div className="image-upload-container">
-                <ImageUpload 
-                  onImageSelect={handleImageSelect} 
-                  initialImage={formData.profile_image as string}
-                />
+                <ImageToggleButtons />
               </div>
 
+              {formData.profile_image_display === 'url' ? (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Image URL
+                  </label>
+                  <input
+                    type="url"
+                    name="profile_image_url"
+                    value={formData.profile_image_url}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      profile_image_url: e.target.value
+                    }))}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              ) : (
+                <ImageUpload 
+                  onImageSelect={handleImageSelect}
+                  currentImage={
+                    formData.profile_image_upload 
+                      ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
+                      : null
+                  }
+                />
+              )}
+              
+              {/* Preview current image */}
+              {(formData.profile_image_url || formData.profile_image_upload) && (
+                <div className="mt-4">
+                  <img
+                    src={
+                      formData.profile_image_display === 'url'
+                        ? formData.profile_image_url
+                        : formData.profile_image_upload
+                          ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
+                          : '/placeholder.svg'
+                    }
+                    alt="Profile preview"
+                    className="w-32 h-32 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+
+              {/* Add back the basic user information fields */}
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label" htmlFor="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
                     className="form-input"
-              />
-            </div>
-
+                  />
+                </div>
+                
                 <div className="form-group">
                   <label className="form-label" htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     className="form-input"
-              />
-            </div>
+                  />
+                </div>
 
                 <div className="form-group">
                   <label className="form-label" htmlFor="bio">Bio</label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={formData.bio}
-                onChange={handleInputChange}
-                rows={4}
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    rows={4}
                     className="form-input"
                   />
-            </div>
-
+                </div>
+                
                 <div className="form-group">
                   <label className="form-label" htmlFor="user_type">User Type</label>
-              <select
-                id="user_type"
-                name="user_type"
-                value={formData.user_type}
-                onChange={handleInputChange}
+                  <select
+                    id="user_type"
+                    name="user_type"
+                    value={formData.user_type}
+                    onChange={handleInputChange}
                     className="form-input"
-              >
-                <option value="">Select user type...</option>
-                <option value="creator">Creator</option>
-                <option value="brand">Brand</option>
-                <option value="freelancer">Freelancer</option>
-                <option value="contractor">Contractor</option>
-              </select>
-            </div>
-          </div>
+                  >
+                    <option value="">Select user type...</option>
+                    <option value="creator">Creator</option>
+                    <option value="brand">Brand</option>
+                    <option value="freelancer">Freelancer</option>
+                    <option value="contractor">Contractor</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
       {/* Professional Information */}
@@ -161,21 +243,21 @@ export default function ProfileEditForm() {
                   name="career_title"
                   value={formData.career_title}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
-              </div>
+            </div>
 
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="career_experience">Career Experience (Years)</label>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="career_experience">Career Experience (Years)</label>
                 <input
                   type="number"
                   id="career_experience"
                   name="career_experience"
                   value={formData.career_experience}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
-              </div>
+            </div>
             </div>
 
                 {/* Social Media Details */}
@@ -189,7 +271,7 @@ export default function ProfileEditForm() {
                   name="social_media_handle"
                   value={formData.social_media_handle}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
               </div>
 
@@ -201,7 +283,7 @@ export default function ProfileEditForm() {
                   name="social_media_followers"
                   value={formData.social_media_followers}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
               </div>
             </div>
@@ -220,7 +302,7 @@ export default function ProfileEditForm() {
                   name="company"
                   value={formData.company}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
               </div>
               <div className="form-group">
@@ -231,7 +313,7 @@ export default function ProfileEditForm() {
                   name="company_location"
                   value={formData.company_location}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
               </div>
               <div className="form-group">
@@ -242,7 +324,7 @@ export default function ProfileEditForm() {
                   name="company_website"
                   value={formData.company_website}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                   placeholder="https://..."
                 />
               </div>
@@ -258,7 +340,7 @@ export default function ProfileEditForm() {
                   name="contract_type"
                   value={formData.contract_type}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 >
                   <option value="">Select contract type...</option>
                   <option value="full-time">Full Time</option>
@@ -275,7 +357,7 @@ export default function ProfileEditForm() {
                   name="contract_duration"
                   value={formData.contract_duration}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                   placeholder="e.g., 6 months, 1 year"
                 />
               </div>
@@ -287,7 +369,7 @@ export default function ProfileEditForm() {
                   name="contract_rate"
                   value={formData.contract_rate}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                   placeholder="e.g., $50/hour, $5000/month"
                 />
               </div>
@@ -309,7 +391,7 @@ export default function ProfileEditForm() {
                   name="availability_status"
                   value={formData.availability_status}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 >
                   <option value="">Select availability...</option>
                   <option value="available">Available</option>
@@ -324,7 +406,7 @@ export default function ProfileEditForm() {
                   name="preferred_work_type"
                   value={formData.preferred_work_type}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 >
                   <option value="">Select work type...</option>
                   <option value="part_time_employment">Part Time Employment</option>
@@ -349,7 +431,7 @@ export default function ProfileEditForm() {
                   value={formData.standard_service_rate}
                   onChange={handleInputChange}
                   placeholder="e.g. $100"
-                      className="form-input"
+                    className="form-input"
                 />
               </div>
                   <div className="form-group">
@@ -361,7 +443,7 @@ export default function ProfileEditForm() {
                   value={formData.rate_range}
                   onChange={handleInputChange}
                   placeholder="e.g. $50-100"
-                      className="form-input"
+                    className="form-input"
                 />
               </div>
                   <div className="form-group">
@@ -371,7 +453,7 @@ export default function ProfileEditForm() {
                   name="standard_rate_type"
                   value={formData.standard_rate_type}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 >
                   <option value="">Select rate type...</option>
                   <option value="hourly">Hourly</option>
@@ -388,7 +470,7 @@ export default function ProfileEditForm() {
                   name="compensation_type"
                   value={formData.compensation_type}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 >
                   <option value="">Select compensation type...</option>
                   <option value="usd">USD</option>
@@ -1366,7 +1448,7 @@ export default function ProfileEditForm() {
                   name="profile_visibility"
                   value={formData.profile_visibility}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 >
                   <option value="public">Public</option>
                   <option value="private">Private</option>
@@ -1380,7 +1462,7 @@ export default function ProfileEditForm() {
                   name="search_visibility"
                   checked={formData.search_visibility}
                   onChange={handleInputChange}
-                      className="form-input"
+                    className="form-input"
                 />
                 <label htmlFor="search_visibility" className="ml-2 block text-sm text-gray-900">
                   Visible in search results
@@ -1407,7 +1489,7 @@ export default function ProfileEditForm() {
                         },
                       }))
                     }}
-                          className="form-input"
+                        className="form-input"
                   />
                   <label htmlFor={`notification_${key}`} className="ml-2 block text-sm text-gray-900 capitalize">
                     {key.replace("_", " ")} Notifications

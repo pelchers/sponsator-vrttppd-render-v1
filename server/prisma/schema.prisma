@@ -19,6 +19,9 @@ datasource db {
 model users {
   id                             String    @id @default(uuid())
   profile_image                  String?
+  profile_image_url              String?
+  profile_image_upload           String?
+  profile_image_display          String?   @default("url")
   username                       String?
   email                         String    @unique  // This field already has a unique constraint in the database
   bio                           String?
@@ -196,6 +199,9 @@ model posts {
   user_id     String
   title       String?
   mediaUrl    String?
+  post_image_url               String?
+  post_image_upload            String?
+  post_image_display           String?   @default("url")
   tags        String[]
   description String?
   likes       Int      @default(0)
@@ -225,6 +231,9 @@ model projects {
   project_type                       String?
   project_category                   String?
   project_image                      String?
+  project_image_url                  String?
+  project_image_upload               String?
+  project_image_display              String?   @default("url")
   project_title                      String?
   project_duration                   String?
   project_handle                     String?
@@ -303,6 +312,9 @@ model articles {
   id            String   @id @default(uuid())
   user_id       String
   title         String?
+  article_image_url                String?
+  article_image_upload             String?
+  article_image_display            String?   @default("url")
   tags          String[]
   citations     String[]
   contributors  String[]

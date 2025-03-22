@@ -64,6 +64,9 @@ export function useProfileForm(userId: string | undefined) {
   const [formData, setFormData] = useState({
     // Basic Information
     profile_image: null as File | null,
+    profile_image_url: '',
+    profile_image_upload: '',
+    profile_image_display: 'url' as 'url' | 'upload',
     username: "",
     email: "",
     bio: "",
@@ -298,6 +301,9 @@ export function useProfileForm(userId: string | undefined) {
               push: true,
               digest: true,
             },
+            profile_image_url: userData.profile_image_url || '',
+            profile_image_upload: userData.profile_image_upload || '',
+            profile_image_display: userData.profile_image_display || 'url',
           };
           console.log('New form data:', newData);
           return newData;
@@ -324,10 +330,37 @@ export function useProfileForm(userId: string | undefined) {
   };
 
   // Handle image upload
-  const handleImageSelect = (file: File) => {
+  const handleImageSelect = async (file: File) => {
+    if (!userId) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        return;
+      }
+
+      const result = await uploadProfileImage(userId, file, token);
+      
+      setFormData(prev => ({
+        ...prev,
+        profile_image: file,
+        profile_image_upload: result.path,
+        profile_image_url: '', // Clear URL when upload is set
+        profile_image_display: 'upload'
+      }));
+    } catch (error) {
+      console.error('Error handling image select:', error);
+    }
+  };
+
+  // Add URL input handler
+  const handleImageUrlChange = (url: string) => {
     setFormData(prev => ({
       ...prev,
-      profile_image: file
+      profile_image_url: url,
+      profile_image_upload: '', // Clear upload when URL is set
+      profile_image_display: 'url'
     }));
   };
 
@@ -611,6 +644,7 @@ export function useProfileForm(userId: string | undefined) {
     success,
     handleInputChange,
     handleImageSelect,
+    handleImageUrlChange,
     handleAddTag,
     handleRemoveTag,
     handleSubmit,

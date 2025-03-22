@@ -13,6 +13,7 @@ import { HeartIcon } from '@/components/icons/HeartIcon';
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
+import { API_URL } from '@/config';
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
@@ -213,7 +214,13 @@ export default function Profile() {
               </div>
               <div className="image-container">
                 <img 
-                  src={user.profile_image || '/placeholder.svg'} 
+                  src={
+                    user.profile_image_display === 'url'
+                      ? user.profile_image_url
+                      : user.profile_image_upload
+                        ? `${API_URL.replace('/api', '')}/uploads/${user.profile_image_upload}`
+                        : '/placeholder.svg'
+                  } 
                   alt="Profile" 
                   className="profile-image"
                 />
