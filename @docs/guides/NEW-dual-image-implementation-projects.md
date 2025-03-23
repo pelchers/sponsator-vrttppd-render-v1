@@ -1,104 +1,92 @@
 # Dual Image Implementation Guide (Projects System)
 
-This guide extends the profile image implementation to handle project images, with notes for articles and posts following the same pattern.
+This guide extends the profile image implementation to handle project images, incorporating all fixes and improvements from the profile system.
 
-## Directory Structure Extension
+## Key Differences from Profile Implementation
 
-First, extend the uploads directory structure:
+1. **Directory Structure**:
+   ```bash
+   server/
+     ├── uploads/
+     │   ├── profiles/    # From previous implementation
+     │   └── projects/    # New directory for project images
+     └── src/
+         └── middleware/
+             └── upload.ts
+   ```
 
-```bash
-server/
-  ├── uploads/
-  │   ├── profiles/    # From previous implementation
-  │   ├── projects/    # New directory for project images
-  │   ├── articles/    # New directory for article images
-  │   └── posts/       # New directory for post images
-  └── src/
-      └── middleware/
-          └── upload.ts
+2. **Field Names**:
+   ```prisma
+   model projects {
+     project_image_url    String?   // For external URLs
+     project_image_upload String?   // For uploaded file paths (relative to uploads/projects)
+     project_image_display String?  @default("url")
+   }
+   ```
+
+3. **File Size Limits**:
+   - Projects: 10MB (larger for high-quality project images)
+   - Profiles: 5MB (standard profile photos)
+
+## 1. Type Definitions
+
+```typescript:client/src/types/project.ts
+export interface Project {
+  // ... existing fields
+  project_image_url?: string | null;    // External URL
+  project_image_upload?: string | null;  // Path like 'projects/project-123456.jpg'
+  project_image_display?: 'url' | 'upload';
+}
+
+export interface ProjectFormData extends Project {
+  project_image_file?: File | null;  // For handling file uploads
+}
 ```
 
-## 1. Update Upload Middleware
-
-Extend the upload middleware to handle multiple content types:
+## 2. Upload Middleware Configuration
 
 ```typescript:server/src/middleware/upload.ts
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure all upload directories exist
+// Ensure directories exist
 const uploadsDir = path.join(__dirname, '../../uploads');
-const profilesDir = path.join(uploadsDir, 'profiles');
 const projectsDir = path.join(uploadsDir, 'projects');
-const articlesDir = path.join(uploadsDir, 'articles');
-const postsDir = path.join(uploadsDir, 'posts');
 
-// Create directories if they don't exist
-[uploadsDir, profilesDir, projectsDir, articlesDir, postsDir].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+if (!fs.existsSync(projectsDir)) {
+  fs.mkdirSync(projectsDir);
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, projectsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = `project-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
-// Create storage configurations for each content type
-const createStorage = (directory: string, prefix: string) => {
-  return multer.diskStorage({
-    destination: (_req, _file, cb) => {
-      cb(null, directory);
-    },
-    filename: (_req, file, cb) => {
-      const uniqueSuffix = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-      cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
-    }
-  });
-};
-
-// Export upload middleware for each content type
-export const uploadProfile = multer({ 
-  storage: createStorage(profilesDir, 'profile'),
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
-
 export const uploadProject = multer({ 
-  storage: createStorage(projectsDir, 'project'),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB for projects
-});
-
-export const uploadArticle = multer({ 
-  storage: createStorage(articlesDir, 'article'),
-  limits: { fileSize: 10 * 1024 * 1024 }
-});
-
-export const uploadPost = multer({ 
-  storage: createStorage(postsDir, 'post'),
-  limits: { fileSize: 5 * 1024 * 1024 }
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit for project images
+  }
 });
 ```
 
-## 2. Update Static File Serving
-
-Add routes for each content type in Express:
+## 3. Static File Serving
 
 ```typescript:server/src/index.ts
-import path from 'path';
-import express from 'express';
-
-// ... other imports and setup ...
-
-// Serve static files for all content types
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
+// Add to existing static file serving
 app.use('/uploads/projects', express.static(path.join(__dirname, '../uploads/projects')));
-app.use('/uploads/articles', express.static(path.join(__dirname, '../uploads/articles')));
-app.use('/uploads/posts', express.static(path.join(__dirname, '../uploads/posts')));
-
-// ... rest of server setup
 ```
 
-## 3. Project Service Implementation
-
-Create a dedicated image handling service for projects:
+## 4. Project Service Implementation
 
 ```typescript:server/src/services/projectService.ts
 export async function uploadProjectImage(id: string, file: Express.Multer.File) {
@@ -140,7 +128,7 @@ function mapProjectToFrontend(project: any) {
 }
 ```
 
-## 4. Frontend Components
+## 5. Frontend Components
 
 ### Project Image Component
 
@@ -186,6 +174,97 @@ export function ProjectImage({ project, className, fallback }: ProjectImageProps
 
 ### Project Form Implementation
 
+```typescript:client/src/components/input/forms/ProjectEditForm.tsx
+export function ProjectEditForm() {
+  // ... other form setup ...
+
+  return (
+    <div className="form-section">
+      <h2 className="section-title">Project Image</h2>
+      
+      {/* Image section container */}
+      <div className="flex flex-col items-center space-y-4">
+        {/* Image Toggle Buttons */}
+        <div className="flex items-center space-x-4">
+          <button
+            type="button"
+            className={`px-4 py-2 rounded transition-colors ${
+              formData.project_image_display === 'url' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 hover:bg-gray-300'
+            }`}
+            onClick={() => setFormData(prev => ({ 
+              ...prev, 
+              project_image_display: 'url',
+              project_image_upload: null 
+            }))}
+          >
+            Use URL Image
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-2 rounded transition-colors ${
+              formData.project_image_display === 'upload' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 hover:bg-gray-300'
+            }`}
+            onClick={() => setFormData(prev => ({ 
+              ...prev, 
+              project_image_display: 'upload',
+              project_image_url: '' 
+            }))}
+          >
+            Use Uploaded Image
+          </button>
+        </div>
+
+        {/* URL Input or Upload Component */}
+        {formData.project_image_display === 'url' ? (
+          <div className="w-full max-w-md">
+            <label className="block text-sm font-medium text-gray-700">
+              Image URL
+            </label>
+            <input
+              type="url"
+              name="project_image_url"
+              value={formData.project_image_url}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                project_image_url: e.target.value
+              }))}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="https://example.com/image.jpg"
+            />
+            {/* URL preview */}
+            {formData.project_image_url && (
+              <div className="mt-4 flex justify-center">
+                <img
+                  src={formData.project_image_url}
+                  alt="Project preview"
+                  className="w-full max-w-md rounded-lg object-cover border-2 border-gray-200"
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <ImageUpload 
+            onImageSelect={handleImageSelect}
+            currentImage={
+              formData.project_image_upload 
+                ? `/uploads/${formData.project_image_upload}`
+                : null
+            }
+            showPreview={true}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+## 6. Form Hook Implementation
+
 ```typescript:client/src/hooks/useProjectForm.ts
 export function useProjectForm(projectId?: string) {
   const [formData, setFormData] = useState({
@@ -218,108 +297,57 @@ export function useProjectForm(projectId?: string) {
 }
 ```
 
-## 5. Usage in Components
-
-```typescript:client/src/components/ProjectCard.tsx
-import { ProjectImage } from './ProjectImage';
-
-export function ProjectCard({ project }) {
-  return (
-    <div className="project-card">
-      <ProjectImage
-        project={project}
-        className="w-full h-48 object-cover rounded-t-lg"
-        fallback={
-          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-            <span className="text-gray-400">No image</span>
-          </div>
-        }
-      />
-      {/* ... rest of card content ... */}
-    </div>
-  );
-}
-```
-
-## Implementation Notes
-
-### For Articles and Posts
-
-Follow the same pattern but:
-1. Use the appropriate directory (`articles/` or `posts/`)
-2. Update field names accordingly:
-   - `article_image_url`, `article_image_upload`, `article_image_display`
-   - `post_image_url`, `post_image_upload`, `post_image_display`
-3. Create corresponding components (`ArticleImage.tsx`, `PostImage.tsx`)
-
-### Key Differences from Profile Implementation
-
-1. **Storage Limits**:
-   - Projects/Articles: 10MB (larger for high-quality images)
-   - Posts/Profiles: 5MB (standard web images)
-
-2. **Directory Structure**:
-   - Each content type has its own directory
-   - Prevents filename collisions
-   - Easier cleanup and management
-
-3. **Naming Conventions**:
-   - Each file type has its own prefix
-   - Makes file origin immediately clear
-   - Helps with debugging and monitoring
-
-### Best Practices
+## Key Implementation Notes
 
 1. **Path Handling**:
-   ```typescript
-   // Good - Use relative paths in database
-   project_image_upload: 'projects/project-123456.jpg'
-   
-   // Bad - Store absolute paths
-   project_image_upload: '/var/www/uploads/projects/project-123456.jpg'
-   ```
+   - Always use relative paths in database: `projects/project-123456.jpg`
+   - Construct full paths in frontend: `/uploads/projects/project-123456.jpg`
+   - Never store absolute paths
 
-2. **Component Reuse**:
-   ```typescript
-   // Create a base component for reuse
-   interface ContentImageProps {
-    contentType: 'project' | 'article' | 'post';
-    content: {
-      [key: string]: any;
-    };
-    // ... other props
-   }
-   ```
+2. **Preview Handling**:
+   - Let each mode handle its own preview
+   - URL mode shows preview below input
+   - Upload mode uses ImageUpload component's preview
 
-3. **Error Handling**:
-   ```typescript
-   // Add specific error types
-   class ImageUploadError extends Error {
-     constructor(contentType: string, message: string) {
-       super(`${contentType} image upload failed: ${message}`);
-     }
-   }
-   ```
+3. **Layout Organization**:
+   - Use flex container for consistent centering
+   - Group related elements with proper spacing
+   - Maintain responsive design
 
-### Testing Checklist
+4. **Error Handling**:
+   - Validate file types and sizes
+   - Handle upload failures gracefully
+   - Provide user feedback
 
-1. ✅ Directory Creation
-   - All content type directories exist
-   - Proper permissions set
+5. **State Management**:
+   - Clear unused fields when switching modes
+   - Maintain consistent state
+   - Handle loading states properly
 
-2. ✅ Upload Functionality
-   - Each content type uploads to correct directory
-   - File size limits enforced
-   - Proper error handling
+## Testing Checklist
 
-3. ✅ Path Resolution
-   - Static files served correctly
-   - Images load in all contexts
-   - No 404 errors
+1. ✅ Directory Setup
+   - Verify `/uploads/projects` exists
+   - Check directory permissions
 
-4. ✅ Component Integration
-   - Preview works in forms
-   - Display works in cards/pages
-   - Fallbacks show correctly
+2. ✅ Image Upload
+   - Test file size limits
+   - Verify file type restrictions
+   - Check path construction
 
-This implementation provides a scalable solution for handling images across different content types while maintaining consistency with the profile image implementation. 
+3. ✅ URL Input
+   - Test URL validation
+   - Verify preview display
+   - Check error handling
+
+4. ✅ Display Modes
+   - Test mode switching
+   - Verify state clearing
+   - Check preview consistency
+
+5. ✅ Integration
+   - Test in project list view
+   - Verify in project details
+   - Check edit form functionality
+
+This implementation provides a robust solution for handling both URL and uploaded images in projects, incorporating all the improvements and fixes from the profile implementation. 
