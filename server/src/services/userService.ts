@@ -18,9 +18,19 @@ function mapUserToFrontend(user: any) {
     digest: user.notification_preferences_digest || false,
   };
 
+  // Ensure proper image path is set based on display preference
+  const processedUser = {
+    ...user,
+    profile_image: user.profile_image_display === 'url' 
+      ? user.profile_image_url
+      : user.profile_image_upload 
+        ? `/uploads/${user.profile_image_upload}`  // Add /uploads prefix for uploaded images
+        : null
+  };
+
   // Return user with nested objects
   return {
-    ...user,
+    ...processedUser,
     social_links,
     notification_preferences,
     // Remove the flattened fields to avoid duplication
@@ -124,17 +134,9 @@ export async function getUserById(id: string) {
     
     // Remove sensitive data
     const { password_hash, ...userWithoutPassword } = user;
-
-    // Ensure proper image path is set based on display preference
-    const processedUser = {
-      ...userWithoutPassword,
-      profile_image: userWithoutPassword.profile_image_display === 'url' 
-        ? userWithoutPassword.profile_image_url
-        : userWithoutPassword.profile_image_upload
-    };
     
     // Map to frontend format
-    return mapUserToFrontend(processedUser);
+    return mapUserToFrontend(userWithoutPassword);
   } catch (error) {
     console.error('Error in getUserById:', error);
     throw error;
@@ -353,21 +355,21 @@ export async function updateUser(id: string, data: any) {
 
 export async function uploadProfileImage(id: string, file: Express.Multer.File) {
   try {
-    // Store just the filename, not the full path
-    const imagePath = file.filename;
+    // Store the path relative to the uploads directory
+    const relativePath = `profiles/${file.filename}`;
     
     const updatedUser = await prisma.users.update({
       where: { id },
       data: {
-        profile_image: imagePath,
-        profile_image_upload: imagePath,
-        profile_image_display: 'upload'
+        profile_image_upload: relativePath,
+        profile_image_url: null,
+        profile_image_display: 'upload' as 'url' | 'upload'
       }
     });
     
     return {
-      path: imagePath,
-      user: updatedUser
+      path: relativePath,
+      user: mapUserToFrontend(updatedUser)
     };
   } catch (error) {
     console.error('Error uploading profile image:', error);

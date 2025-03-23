@@ -66,44 +66,6 @@ export default function ProfileEditForm() {
     );
   }
 
-  // Add image toggle buttons
-  const ImageToggleButtons = () => (
-    <div className="flex items-center space-x-4 mb-6">
-      <button
-        type="button"
-        className={`px-4 py-2 rounded transition-colors ${
-          formData.profile_image_display === 'url' 
-            ? 'bg-blue-500 text-white' 
-            : 'bg-gray-200 hover:bg-gray-300'
-        }`}
-        onClick={() => setFormData(prev => ({ 
-          ...prev, 
-          profile_image_display: 'url',
-          // Clear upload when switching to URL
-          profile_image_upload: null 
-        }))}
-      >
-        Use URL Image
-      </button>
-      <button
-        type="button"
-        className={`px-4 py-2 rounded transition-colors ${
-          formData.profile_image_display === 'upload' 
-            ? 'bg-blue-500 text-white' 
-            : 'bg-gray-200 hover:bg-gray-300'
-        }`}
-        onClick={() => setFormData(prev => ({ 
-          ...prev, 
-          profile_image_display: 'upload',
-          // Clear URL when switching to upload
-          profile_image_url: '' 
-        }))}
-      >
-        Use Uploaded Image
-      </button>
-    </div>
-  );
-
   return (
   
       <div className="w-full">
@@ -122,51 +84,81 @@ export default function ProfileEditForm() {
       {/* Basic Information */}
             <div className="form-section">
               <h2 className="section-title">Basic Information</h2>
-              <div className="image-upload-container">
-                <ImageToggleButtons />
+              
+              {/* Image section container */}
+              <div className="flex flex-col items-center space-y-4">
+                {/* Image Toggle Buttons */}
+                <div className="flex items-center space-x-4">
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded transition-colors ${
+                      formData.profile_image_display === 'url' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
+                    onClick={() => setFormData(prev => ({ 
+                      ...prev, 
+                      profile_image_display: 'url',
+                      profile_image_upload: null 
+                    }))}
+                  >
+                    Use URL Image
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded transition-colors ${
+                      formData.profile_image_display === 'upload' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
+                    onClick={() => setFormData(prev => ({ 
+                      ...prev, 
+                      profile_image_display: 'upload',
+                      profile_image_url: '' 
+                    }))}
+                  >
+                    Use Uploaded Image
+                  </button>
+                </div>
+
+                {/* URL Input or Upload Component */}
+                {formData.profile_image_display === 'url' ? (
+                  <div className="w-full max-w-md">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Image URL
+                    </label>
+                    <input
+                      type="url"
+                      name="profile_image_url"
+                      value={formData.profile_image_url}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        profile_image_url: e.target.value
+                      }))}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+                ) : (
+                  <ImageUpload 
+                    onImageSelect={handleImageSelect}
+                    currentImage={
+                      formData.profile_image_upload 
+                        ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
+                        : null
+                    }
+                    showPreview={true}
+                  />
+                )}
               </div>
 
-              {formData.profile_image_display === 'url' ? (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Image URL
-                  </label>
-                  <input
-                    type="url"
-                    name="profile_image_url"
-                    value={formData.profile_image_url}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      profile_image_url: e.target.value
-                    }))}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-              ) : (
-                <ImageUpload 
-                  onImageSelect={handleImageSelect}
-                  currentImage={
-                    formData.profile_image_upload 
-                      ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
-                      : null
-                  }
-                />
-              )}
-              
-              {/* Preview current image */}
-              {(formData.profile_image_url || formData.profile_image_upload) && (
-                <div className="mt-4">
+              {/* Only show this preview for URL mode */}
+              {formData.profile_image_display === 'url' && formData.profile_image_url && (
+                <div className="mt-4 flex justify-center">
                   <img
-                    src={
-                      formData.profile_image_display === 'url'
-                        ? formData.profile_image_url
-                        : formData.profile_image_upload
-                          ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
-                          : '/placeholder.svg'
-                    }
+                    src={formData.profile_image_url}
                     alt="Profile preview"
-                    className="w-32 h-32 object-cover rounded-lg"
+                    className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
                   />
                 </div>
               )}

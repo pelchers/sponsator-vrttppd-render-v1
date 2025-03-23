@@ -29,6 +29,8 @@ app.use(express.json());
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// For profile images specifically
+app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
 
 // Add logging middleware
 app.use((req, res, next) => {

@@ -8,8 +8,8 @@ This guide documents the implementation of dual image handling (URL and Upload) 
 ```prisma
 model users {
   // ... existing fields
-  profile_image_url              String?
-  profile_image_upload           String?
+  profile_image_url              String?   // For external URLs
+  profile_image_upload           String?   // For uploaded file paths (relative to uploads/profiles)
   profile_image_display          String?   @default("url")
   // ... rest of fields
 }
@@ -50,13 +50,13 @@ npx prisma migrate dev --name add_image_display_preferences
 ```typescript
 export interface User {
   // ... existing fields
-  profile_image_url?: string;
-  profile_image_upload?: string;
+  profile_image_url?: string | null;    // External URL
+  profile_image_upload?: string | null;  // Path like 'profiles/profile-123456.jpg'
   profile_image_display?: 'url' | 'upload';
 }
 
 export interface UserFormData extends User {
-  profile_image_file?: File | null;
+  profile_image_file?: File | null;  // For handling file uploads
 }
 ```
 
@@ -65,9 +65,9 @@ export interface UserFormData extends User {
 export function useProfileForm(userId: string | undefined) {
   const [formData, setFormData] = useState({
     // ... other fields
-    profile_image: null as File | null,
+    profile_image_file: null as File | null,
     profile_image_url: '',
-    profile_image_upload: '',
+    profile_image_upload: '',  // Will store relative path like 'profiles/profile-123456.jpg'
     profile_image_display: 'url' as 'url' | 'upload',
   });
 
@@ -83,8 +83,8 @@ export function useProfileForm(userId: string | undefined) {
         const result = await uploadProfileImage(userId, file, token);
         setFormData(prev => ({
           ...prev,
-          profile_image: file,
-          profile_image_upload: result.path,
+          profile_image_file: file,
+          profile_image_upload: result.path,  // Will be like 'profiles/profile-123456.jpg'
           profile_image_url: null,
           profile_image_display: 'upload'
         }));
@@ -153,7 +153,7 @@ export function useProfileForm(userId: string | undefined) {
       formData.profile_image_display === 'url'
         ? formData.profile_image_url
         : formData.profile_image_upload 
-          ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}` 
+          ? `/uploads/${formData.profile_image_upload}`
           : null
     }
     disabled={formData.profile_image_display === 'url'}
@@ -168,7 +168,7 @@ export function useProfileForm(userId: string | undefined) {
     user.profile_image_display === 'url' 
       ? user.profile_image_url
       : user.profile_image_upload 
-        ? `${API_URL.replace('/api', '')}/uploads/${user.profile_image_upload}` 
+        ? `/uploads/${user.profile_image_upload}`
         : DEFAULT_AVATAR
   }
   alt={`${user.username}'s profile`}
@@ -178,26 +178,24 @@ export function useProfileForm(userId: string | undefined) {
 
 ### API Service (`client/src/api/users.ts`)
 ```typescript
-export const updateUserProfile = async (userId: string, data: any, token: string) => {
+export const uploadProfileImage = async (userId: string, file: File, token: string) => {
   try {
-    if (!token) {
-      throw new Error('Authentication token is required');
-    }
+    const formData = new FormData();
+    formData.append('image', file);
 
-    const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-
-    const response = await fetch(`${API_URL}/users/${userId}`, {
-      method: 'PUT',
+    const response = await fetch(`${API_URL}/users/${userId}/profile-image`, {
+      method: 'POST',
       headers: {
-        'Authorization': authToken,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(data)
+      body: formData
     });
 
-    // ... error handling and response processing
+    const data = await response.json();
+    // data.path will be like 'profiles/profile-123456.jpg'
+    return data;
   } catch (error) {
-    console.error('API: Error updating user profile:', error);
+    console.error('Error uploading profile image:', error);
     throw error;
   }
 };
@@ -367,7 +365,7 @@ const [formData, setFormData] = useState({
 const displayImage = user.profile_image_display === 'url'
   ? user.profile_image_url // Show URL if selected
   : user.profile_image_upload 
-    ? `${API_URL.replace('/api', '')}/uploads/${user.profile_image_upload}` // Show upload if selected and exists
+    ? `/uploads/${user.profile_image_upload}` // Show upload if selected and exists
     : DEFAULT_AVATAR; // Fallback if no image
 
 <img 
@@ -656,7 +654,7 @@ const handleImageSelect = async (file: File) => {
       profile_image: file,
       profile_image_upload: result.path,
       profile_image_url: '', // Clear URL when upload is set
-      profile_image_display: 'upload'
+      profile_image_display: 'upload' // Switch to upload display
     }));
   } catch (error) {
     console.error('Error handling image select:', error);
@@ -737,3 +735,313 @@ This implementation ensures:
 - Proper clearing of unused fields
 - Consistent state management
 - Smooth user experience when switching modes 
+
+## Preview Handling Fix
+
+When implementing the dual image system, a common issue arises with duplicate previews when both the ImageUpload component and the parent form component try to display previews. Here's how to handle it correctly:
+
+### The Problem
+```typescript
+// BAD: Shows two previews in upload mode
+<ImageUpload 
+  showPreview={false}  // Still shows preview from parent
+  // ... other props
+/>
+
+{/* Duplicate preview logic */}
+{(formData.profile_image_url || formData.profile_image_upload) && (
+  <div className="mt-4 flex justify-center">
+    <img src={/* ... */} />
+  </div>
+)}
+```
+
+### The Solution
+Let each mode handle its own preview:
+
+```typescript
+// In ProfileEditForm.tsx
+{formData.profile_image_display === 'url' ? (
+  // URL Input Mode
+  <div className="mb-4">
+    <input type="url" /* ... */ />
+    {/* URL preview only shown in URL mode */}
+    {formData.profile_image_url && (
+      <div className="mt-4 flex justify-center">
+        <img
+          src={formData.profile_image_url}
+          alt="Profile preview"
+          className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
+        />
+      </div>
+    )}
+  </div>
+) : (
+  // Upload Mode - Let ImageUpload handle its own preview
+  <ImageUpload 
+    onImageSelect={handleImageSelect}
+    currentImage={
+      formData.profile_image_upload 
+        ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
+        : null
+    }
+    showPreview={true}  // Let ImageUpload handle preview in upload mode
+  />
+)}
+```
+
+### Why This Works Better
+1. **Clear Responsibility**:
+   - URL mode handles its own preview
+   - Upload mode delegates preview to ImageUpload component
+   - No overlap in preview logic
+
+2. **Simpler State Management**:
+   - Each mode only looks at its own relevant state
+   - URL mode only checks `profile_image_url`
+   - Upload mode only checks `profile_image_upload`
+
+3. **Consistent Styling**:
+   ```typescript
+   // Same styling applied in both places
+   const previewImageClasses = "w-32 h-32 rounded-full object-cover border-2 border-gray-200";
+   ```
+
+4. **Better Maintainability**:
+   - Easier to modify preview behavior for each mode independently
+   - Clearer code organization
+   - Reduced chance of conflicts
+
+### Implementation Checklist
+- [ ] Remove shared preview section
+- [ ] Enable preview in ImageUpload component (`showPreview={true}`)
+- [ ] Add conditional preview for URL mode only
+- [ ] Ensure consistent styling between both previews
+- [ ] Test preview in both modes
+
+This approach provides a cleaner implementation with clear separation of concerns and no duplicate previews. 
+
+## Critical Path Resolution Fix
+
+When implementing the dual image system, a common issue arises with image paths not being found. Here's the exact fix:
+
+### 1. Server Directory Structure
+```bash
+server/
+  ├── uploads/
+  │   └── profiles/  # Dedicated directory for profile images
+  └── src/
+      └── middleware/
+          └── upload.ts
+```
+
+### 2. Configure Upload Middleware
+```typescript:server/src/middleware/upload.ts
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// Ensure uploads directories exist
+const uploadsDir = path.join(__dirname, '../../uploads');
+const profilesDir = path.join(uploadsDir, 'profiles');
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+if (!fs.existsSync(profilesDir)) {
+  fs.mkdirSync(profilesDir);
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Store profile images in the profiles subdirectory
+    cb(null, profilesDir);
+  },
+  filename: function (req, file, cb) {
+    // Include 'profile-' prefix for clarity
+    const uniqueSuffix = `profile-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+
+export const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+});
+```
+
+### 3. Configure Static File Serving
+```typescript:server/src/index.ts
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// For profile images specifically
+app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
+```
+
+### 4. Update User Service
+```typescript:server/src/services/userService.ts
+export async function uploadProfileImage(id: string, file: Express.Multer.File) {
+  try {
+    // Store the path relative to the uploads directory
+    const relativePath = `profiles/${file.filename}`;
+    
+    const updatedUser = await prisma.users.update({
+      where: { id },
+      data: {
+        profile_image_upload: relativePath,
+        profile_image_url: null,
+        profile_image_display: 'upload' as 'url' | 'upload'
+      }
+    });
+    
+    return {
+      path: relativePath,
+      user: mapUserToFrontend(updatedUser)
+    };
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    throw error;
+  }
+}
+```
+
+### Why This Fix Works
+1. **Dedicated Directory**: Creates a specific `profiles` directory for profile images, preventing path conflicts
+2. **Consistent Path Structure**: Uses relative paths (`profiles/filename.ext`) in the database
+3. **Multiple Static Routes**: Serves files from both `/uploads` and `/uploads/profiles`, ensuring backward compatibility
+4. **Path Construction**: Properly constructs file paths for both storage and retrieval
+
+### Common Pitfalls Avoided
+1. ❌ Storing absolute paths in database
+2. ❌ Mixing path formats between upload and retrieval
+3. ❌ Using single static file route
+4. ❌ Not handling directory creation
+
+### Testing the Fix
+1. Upload a profile image
+2. Check the stored path in database (should be like `profiles/profile-1234567890.jpg`)
+3. Verify image loads in both profile view and edit form
+4. Confirm path in browser dev tools (should be `/uploads/profiles/profile-1234567890.jpg`)
+
+This fix ensures consistent path handling throughout the application and resolves the common "404 Not Found" errors for uploaded images. 
+
+## Layout Organization Fix
+
+When implementing the dual image system, proper layout organization is crucial for consistent UI. Here's how to structure the image section:
+
+### The Problem
+```typescript
+// BAD: Scattered layout with inconsistent centering
+<div className="form-section">
+  <h2 className="section-title">Basic Information</h2>
+  <div className="image-upload-container">
+    <ImageToggleButtons />
+  </div>
+  
+  {/* URL/Upload inputs floating without proper alignment */}
+  {formData.profile_image_display === 'url' ? (
+    <div className="mb-4">
+      <input type="url" /* ... */ />
+    </div>
+  ) : (
+    <ImageUpload /* ... */ />
+  )}
+  
+  {/* Preview floating separately */}
+  {formData.profile_image_url && (
+    <div className="mt-4">
+      <img /* ... */ />
+    </div>
+  )}
+</div>
+```
+
+### The Solution
+Group all image-related elements in a centered flex container:
+
+```typescript
+{/* Basic Information */}
+<div className="form-section">
+  <h2 className="section-title">Basic Information</h2>
+  
+  {/* Image section container */}
+  <div className="flex flex-col items-center space-y-4">
+    {/* Image Toggle Buttons */}
+    <div className="flex items-center space-x-4">
+      <button
+        type="button"
+        className={`px-4 py-2 rounded transition-colors ${
+          formData.profile_image_display === 'url' 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-200 hover:bg-gray-300'
+        }`}
+        onClick={() => setFormData(prev => ({ 
+          ...prev, 
+          profile_image_display: 'url',
+          profile_image_upload: null 
+        }))}
+      >
+        Use URL Image
+      </button>
+      <button /* ... similar for upload button ... */ />
+    </div>
+
+    {/* URL Input or Upload Component */}
+    {formData.profile_image_display === 'url' ? (
+      <div className="w-full max-w-md">
+        <label className="block text-sm font-medium text-gray-700">
+          Image URL
+        </label>
+        <input
+          type="url"
+          name="profile_image_url"
+          value={formData.profile_image_url}
+          onChange={(e) => setFormData(prev => ({
+            ...prev,
+            profile_image_url: e.target.value
+          }))}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="https://example.com/image.jpg"
+        />
+      </div>
+    ) : (
+      <ImageUpload 
+        onImageSelect={handleImageSelect}
+        currentImage={/* ... */}
+        showPreview={true}
+      />
+    )}
+  </div>
+</div>
+```
+
+### Why This Works Better
+1. **Consistent Centering**:
+   - All image-related elements are centered using flex layout
+   - Toggle buttons and inputs maintain alignment
+   - Consistent spacing with `space-y-4`
+
+2. **Contained Width**:
+   - URL input has `max-w-md` to prevent stretching
+   - Maintains readability and form aesthetics
+
+3. **Logical Grouping**:
+   - All image controls are grouped in one container
+   - Preview is handled separately for each mode
+   - Clear visual hierarchy
+
+4. **Responsive Design**:
+   - Flex layout adjusts to different screen sizes
+   - Maintains center alignment at all breakpoints
+   - Consistent spacing regardless of content
+
+### Implementation Checklist
+- [ ] Create main flex container with `flex-col` and `items-center`
+- [ ] Group toggle buttons with proper spacing
+- [ ] Add width constraints to URL input
+- [ ] Ensure consistent preview styling
+- [ ] Test responsive behavior
+
+This layout organization provides a clean, centered interface that works well across different screen sizes and maintains visual consistency between URL and upload modes. 
