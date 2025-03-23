@@ -22,15 +22,18 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: '*', // Allow all origins during development
-  credentials: true
+  origin: '*', // In production, specify your frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-// For profile images specifically
+
+// For specific subdirectories
 app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
+app.use('/uploads/projects', express.static(path.join(__dirname, '../uploads/projects')));
 
 // Add logging middleware
 app.use((req, res, next) => {

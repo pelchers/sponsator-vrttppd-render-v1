@@ -2,9 +2,10 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure uploads directories exist
+// Ensure directories exist
 const uploadsDir = path.join(__dirname, '../../uploads');
 const profilesDir = path.join(uploadsDir, 'profiles');
+const projectsDir = path.join(uploadsDir, 'projects');
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
@@ -12,22 +13,53 @@ if (!fs.existsSync(uploadsDir)) {
 if (!fs.existsSync(profilesDir)) {
   fs.mkdirSync(profilesDir);
 }
+if (!fs.existsSync(projectsDir)) {
+  fs.mkdirSync(projectsDir);
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Store profile images in the profiles subdirectory
-    cb(null, profilesDir);
+    // Determine the destination based on the route
+    const url = req.originalUrl;
+    let destination = uploadsDir;
+    
+    if (url.includes('/users/') || url.includes('/profile/')) {
+      destination = profilesDir;
+    } else if (url.includes('/projects/') || url.includes('/project/')) {
+      destination = projectsDir;
+    }
+    
+    console.log('File upload destination:', {
+      url: req.originalUrl,
+      destination,
+      file: file.originalname
+    });
+    
+    cb(null, destination);
   },
   filename: function (req, file, cb) {
-    // Include 'profile-' prefix for clarity
-    const uniqueSuffix = `profile-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
+    // Create a unique filename with appropriate prefix
+    const url = req.originalUrl;
+    let prefix = 'file';
+    
+    if (url.includes('/users/') || url.includes('/profile/')) {
+      prefix = 'profile';
+    } else if (url.includes('/projects/') || url.includes('/project/')) {
+      prefix = 'project';
+    }
+    
+    const uniqueSuffix = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    const filename = `${uniqueSuffix}${path.extname(file.originalname)}`;
+    
+    console.log('Generated filename:', filename);
+    
+    cb(null, filename);
   }
 });
 
 export const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 10 * 1024 * 1024 // 10MB limit
   }
 }); 

@@ -40,6 +40,7 @@ import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 import CommentsSection from '@/components/comments/CommentsSection';
+import { ProjectImage } from '@/components/ProjectImage';
 
 const DisplayField = ({ label, value }: { label: string; value: string | number | null | undefined }) => (
   <div className="form-group">
@@ -632,19 +633,17 @@ export default function ProjectPage() {
           <CategorySection>
             <div className="space-y-6 w-full">
               <div className="flex flex-col items-center gap-4">
-                <div className="relative w-32 h-32">
-        {project.project_image ? (
-            <img 
-              src={project.project_image} 
-                      alt="Project"
-                      className="rounded-full object-cover w-full h-full"
-            />
-        ) : (
-                    <div className="w-full h-full bg-gray-100 rounded-full flex items-center justify-center">
-                      <span className="text-gray-400">No image</span>
-          </div>
-        )}
-      </div>
+                <div className="project-image-container">
+                  <ProjectImage 
+                    project={project}
+                    className="w-full h-64 object-cover rounded-lg"
+                    fallback={
+                      <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
+                        <span className="text-gray-500">No image available</span>
+                      </div>
+                    }
+                  />
+                </div>
               </div>
 
               <DisplayField 

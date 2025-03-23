@@ -17,4 +17,14 @@ export const useAuth = () => {
   }, []);
 
   return { user, loading };
+};
+
+// Add this to your auth hook or wherever you handle authentication
+export const getAuthToken = () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.error('No authentication token found');
+    return null;
+  }
+  return token;
 }; 

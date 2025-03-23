@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { projectService } from '../services/projectService';
 import { uploadFile } from '../services/fileService';
+import { upload } from '../middleware/upload';
+import path from 'path';
 
 // Add type for user in request
 interface AuthRequest extends Request {
@@ -53,17 +55,28 @@ export const projectController = {
   // Create new project
   async createProject(req: Request, res: Response) {
     try {
+      console.log('Create project request received');
+      console.log('Request body:', JSON.stringify(req.body, null, 2));
+      
       const userId = req.user?.id; // From auth middleware
       if (!userId) {
+        console.log('Authentication required');
         return res.status(401).json({ message: 'Authentication required' });
       }
 
       const projectData = req.body;
+      console.log('Creating project for user:', userId);
+      
       const project = await projectService.createProject(userId, projectData);
+      console.log('Project created successfully:', project.id);
+      
       res.status(201).json(project);
     } catch (error) {
       console.error('Error in createProject:', error);
-      res.status(500).json({ message: 'Failed to create project' });
+      res.status(500).json({ 
+        message: 'Failed to create project',
+        error: error.message
+      });
     }
   },
 
@@ -76,6 +89,20 @@ export const projectController = {
       // Log the incoming data to verify fields
       console.log('Updating project with data:', JSON.stringify(req.body, null, 2));
       
+      if (!userId) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+      
+      // Check if project exists and belongs to user
+      const existingProject = await projectService.getProjectById(id);
+      if (!existingProject) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+      
+      if (existingProject.user_id !== userId) {
+        return res.status(403).json({ message: 'Not authorized to update this project' });
+      }
+      
       // Pass all fields to the service
       const updatedProject = await projectService.updateProject(id, userId, req.body);
       
@@ -83,7 +110,7 @@ export const projectController = {
       return res.status(200).json(updatedProject);
     } catch (error) {
       console.error('Error updating project:', error);
-      return res.status(500).json({ message: 'Failed to update project' });
+      return res.status(500).json({ message: 'Failed to update project', error: error.message });
     }
   },
 
@@ -115,27 +142,17 @@ export const projectController = {
   async uploadProjectImage(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const userId = req.user?.id;
       
-      // Check if project exists and belongs to user
-      const existingProject = await projectService.getProjectById(id);
-      if (!existingProject) {
-        return res.status(404).json({ message: 'Project not found' });
-      }
-      
-      if (existingProject.user_id !== userId) {
-        return res.status(403).json({ message: 'Not authorized to update this project' });
-      }
-
       if (!req.file) {
-        return res.status(400).json({ message: 'No image file provided' });
+        return res.status(400).json({ error: 'No image file provided' });
       }
 
-      const imagePath = await projectService.uploadProjectImage(id, req.file);
-      res.json({ imagePath });
+      const result = await projectService.uploadProjectImage(id, req.file);
+      
+      res.status(200).json(result);
     } catch (error) {
-      console.error('Error in uploadProjectImage:', error);
-      res.status(500).json({ message: 'Failed to upload project image' });
+      console.error('Error uploading project image:', error);
+      res.status(500).json({ error: 'Failed to upload project image' });
     }
   },
 

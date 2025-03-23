@@ -1,6 +1,7 @@
 import { PrismaClient, projects as PrismaProject } from '@prisma/client'
 import prisma from '../lib/prisma'
 import { Project } from '@prisma/client'
+import path from 'path'
 
 const prismaClient = new PrismaClient()
 
@@ -181,11 +182,42 @@ function transformApiToDb(data: any) {
 export const projectService = {
   async createProject(userId: string, projectData: any) {
     try {
-      const dbData = transformFormToDb(projectData);
+      console.log('Creating project with data:', JSON.stringify(projectData, null, 2));
+      
+      // Filter out any fields that don't exist in the schema
+      const allowedFields = [
+        'project_name', 'project_description', 'project_type', 'project_category',
+        'project_image_url', 'project_image_upload', 'project_image_display',
+        'project_title', 'project_duration', 'project_handle', 'project_followers',
+        'client', 'client_location', 'client_website',
+        'contract_type', 'contract_duration', 'contract_value',
+        'project_timeline', 'budget', 'project_status',
+        'preferred_collaboration_type', 'budget_range', 'currency',
+        'standard_rate', 'rate_type', 'compensation_type',
+        'skills_required', 'expertise_needed', 'target_audience', 'solutions_offered',
+        'project_tags', 'industry_tags', 'technology_tags', 'project_status_tag',
+        'seeking_creator', 'seeking_brand', 'seeking_freelancer', 'seeking_contractor',
+        'social_links_youtube', 'social_links_instagram', 'social_links_github',
+        'social_links_twitter', 'social_links_linkedin',
+        'website_links', 'short_term_goals', 'long_term_goals',
+        'project_visibility', 'search_visibility',
+        'notification_preferences_email', 'notification_preferences_push', 'notification_preferences_digest',
+        'team_members', 'collaborators', 'advisors', 'partners', 'testimonials',
+        'deliverables', 'milestones'
+      ];
+      
+      const filteredData = Object.keys(projectData)
+        .filter(key => allowedFields.includes(key))
+        .reduce((obj: any, key) => {
+          obj[key] = projectData[key];
+          return obj;
+        }, {});
+      
+      console.log('Filtered project data:', JSON.stringify(filteredData, null, 2));
       
       const project = await prismaClient.projects.create({
         data: {
-          ...dbData,
+          ...filteredData,
           user_id: userId,
           created_at: new Date(),
           updated_at: new Date()
@@ -199,144 +231,26 @@ export const projectService = {
     }
   },
 
-  async updateProject(projectId: string, userId: string, projectData: any) {
+  async updateProject(id: string, userId: string, data: any) {
     try {
-      // Extract all fields including the ones that were missing
-      const {
-        project_name,
-        project_description,
-        project_type,
-        project_category,
-        project_title,
-        project_duration,
-        project_timeline,
-        project_status_tag,
-        project_visibility,
-        search_visibility,
-        project_image,
-        client,
-        client_location,
-        client_website,
-        contract_type,
-        contract_duration,
-        contract_value,
-        budget,
-        budget_range,
-        currency,
-        standard_rate,
-        rate_type,
-        compensation_type,
-        skills_required,
-        expertise_needed,
-        target_audience,
-        solutions_offered,
-        project_tags,
-        industry_tags,
-        technology_tags,
-        team_members,
-        collaborators,
-        advisors,
-        partners,
-        testimonials,
-        deliverables,
-        milestones,
-        social_links_youtube,
-        social_links_instagram,
-        social_links_github,
-        social_links_twitter,
-        social_links_linkedin,
-        seeking_creator,
-        seeking_brand,
-        seeking_freelancer,
-        seeking_contractor,
-        notification_preferences_email,
-        notification_preferences_push,
-        notification_preferences_digest,
-        website_links,
-        short_term_goals,
-        long_term_goals,
-        project_status,
-        preferred_collaboration_type,
-      } = projectData;
+      console.log('Updating project with data:', data);
       
-      // Prepare JSON fields
-      const jsonFields = {
-        team_members: Array.isArray(team_members) ? JSON.stringify(team_members) : team_members,
-        collaborators: Array.isArray(collaborators) ? JSON.stringify(collaborators) : collaborators,
-        advisors: Array.isArray(advisors) ? JSON.stringify(advisors) : advisors,
-        partners: Array.isArray(partners) ? JSON.stringify(partners) : partners,
-        testimonials: Array.isArray(testimonials) ? JSON.stringify(testimonials) : testimonials,
-        deliverables: Array.isArray(deliverables) ? JSON.stringify(deliverables) : deliverables,
-        milestones: Array.isArray(milestones) ? JSON.stringify(milestones) : milestones,
+      // Make sure we preserve the image display preference
+      const updateData = {
+        ...data,
+        project_image_display: data.project_image_display || 'url',
+        project_image_url: data.project_image_display === 'url' ? data.project_image_url : '',
+        project_image_upload: data.project_image_display === 'upload' ? data.project_image_upload : '',
       };
-      
-      // Prepare array fields
-      const arrayFields = {
-        skills_required: Array.isArray(skills_required) ? skills_required : [],
-        expertise_needed: Array.isArray(expertise_needed) ? expertise_needed : [],
-        target_audience: Array.isArray(target_audience) ? target_audience : [],
-        solutions_offered: Array.isArray(solutions_offered) ? solutions_offered : [],
-        project_tags: Array.isArray(project_tags) ? project_tags : [],
-        industry_tags: Array.isArray(industry_tags) ? industry_tags : [],
-        technology_tags: Array.isArray(technology_tags) ? technology_tags : [],
-        website_links: Array.isArray(website_links) ? website_links : [],
-      };
-      
-      // Update the project with all fields
-      const updatedProject = await prismaClient.projects.update({
-        where: { 
-          id: projectId,
-          user_id: userId 
-        },
-        data: {
-          project_name,
-          project_description,
-          project_type,
-          project_category,
-          project_title,
-          project_duration,
-          project_timeline,
-          project_status_tag,
-          project_visibility,
-          search_visibility,
-          project_image,
-          client,
-          client_location,
-          client_website,
-          contract_type,
-          contract_duration,
-          contract_value,
-          budget,
-          budget_range,
-          currency,
-          standard_rate,
-          rate_type,
-          compensation_type,
-          ...arrayFields,
-          ...jsonFields,
-          social_links_youtube,
-          social_links_instagram,
-          social_links_github,
-          social_links_twitter,
-          social_links_linkedin,
-          seeking_creator,
-          seeking_brand,
-          seeking_freelancer,
-          seeking_contractor,
-          notification_preferences_email,
-          notification_preferences_push,
-          notification_preferences_digest,
-          short_term_goals,
-          long_term_goals,
-          project_status,
-          preferred_collaboration_type,
-          updated_at: new Date()
-        }
+
+      const project = await prismaClient.projects.update({
+        where: { id },
+        data: updateData
       });
-      
-      return transformDbToApi(updatedProject);
+
+      return mapProjectToFrontend(project);
     } catch (error) {
-      console.error('Error in updateProject service:', error);
+      console.error('Error updating project:', error);
       throw error;
     }
   },
@@ -365,7 +279,26 @@ export const projectService = {
       const project = await prismaClient.projects.findUnique({
         where: { id },
       });
-      return project ? transformDbToApi(project) : null;
+      
+      if (!project) {
+        return null;
+      }
+      
+      // Transform the project data
+      const transformedProject = transformDbToApi(project);
+      
+      // Map the project data for the frontend
+      const mappedProject = mapProjectToFrontend(transformedProject);
+      
+      console.log('Project data for frontend:', {
+        id: mappedProject.id,
+        image_url: mappedProject.project_image_url,
+        image_upload: mappedProject.project_image_upload,
+        image_display: mappedProject.project_image_display,
+        image: mappedProject.project_image
+      });
+      
+      return mappedProject;
     } catch (error) {
       console.error('Error in getProjectById:', error);
       throw error;
@@ -386,19 +319,33 @@ export const projectService = {
 
   async uploadProjectImage(id: string, file: Express.Multer.File) {
     try {
-      const imagePath = `/uploads/${file.filename}`;
+      // Store the path relative to the uploads directory
+      // Make sure this path is consistent with the static file serving
+      const relativePath = `projects/${file.filename}`;
       
-      const project = await prismaClient.projects.update({
+      console.log('Uploading project image:', relativePath);
+      
+      const updatedProject = await prismaClient.projects.update({
         where: { id },
         data: {
-          project_image: imagePath,
-          updated_at: new Date()
-        },
+          project_image_upload: relativePath,
+          project_image_url: '',
+          project_image_display: 'upload'
+        }
       });
       
-      return imagePath;
+      // Log the updated project for debugging
+      console.log('Updated project image data:', {
+        project_image_upload: updatedProject.project_image_upload,
+        project_image_display: updatedProject.project_image_display
+      });
+      
+      return {
+        path: relativePath,
+        project: mapProjectToFrontend(updatedProject)
+      };
     } catch (error) {
-      console.error('Error in uploadProjectImage:', error);
+      console.error('Error uploading project image:', error);
       throw error;
     }
   },
@@ -438,4 +385,29 @@ export const projectService = {
       throw error;
     }
   }
+}
+
+function mapProjectToFrontend(project: any) {
+  // Ensure proper image path is set based on display preference
+  const processedProject = {
+    ...project,
+    project_image: project.project_image_display === 'url' 
+      ? project.project_image_url
+      : project.project_image_upload 
+        ? `/uploads/${project.project_image_upload}`
+        : null,
+    // Keep the original fields
+    project_image_url: project.project_image_url || '',
+    project_image_upload: project.project_image_upload || '',
+    project_image_display: project.project_image_display || 'url'
+  };
+
+  console.log('Mapped project image fields:', {
+    display: processedProject.project_image_display,
+    url: processedProject.project_image_url,
+    upload: processedProject.project_image_upload,
+    final: processedProject.project_image
+  });
+
+  return processedProject;
 } 

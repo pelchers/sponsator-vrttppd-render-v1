@@ -157,8 +157,22 @@ export async function fetchProject(projectId: string, token?: string): Promise<P
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await axios.get(`${API_URL}/projects/${projectId}`, { headers });
-    return transformApiResponse(response.data);
+    const response = await fetch(`${API_URL}/projects/${projectId}`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch project');
+    }
+    
+    const data = await response.json();
+    console.log('Fetched project data:', data);
+    
+    // Make sure image fields are properly set
+    const transformedData = transformApiResponse(data);
+    console.log('Transformed project data:', transformedData);
+    
+    return transformedData;
   } catch (error) {
     console.error('Error fetching project:', error);
     throw error;
@@ -178,14 +192,34 @@ const handleApiError = (error: any, defaultMessage: string) => {
 // Create new project
 export async function createProject(projectData: ProjectFormDataWithFile, token: string): Promise<Project> {
   try {
-    const apiData = transformFormToApi(projectData);
-    const response = await axios.post(`${API_URL}${API_ROUTES.PROJECTS.CREATE}`, apiData, {
+    console.log('Creating project with data:', JSON.stringify(projectData, null, 2));
+    
+    // Remove any fields that might cause issues with Prisma
+    const cleanedData = { ...projectData };
+    delete cleanedData.project_image;
+    delete cleanedData.project_image_file;
+    
+    const response = await fetch(`${API_URL}/projects`, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify(cleanedData)
     });
-    return transformApiResponse(response.data);
+
+    console.log('Create project response status:', response.status);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error response data:', errorData);
+      throw new Error(errorData.message || errorData.error || `Server returned status ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Create project response data:', data);
+    
+    return transformApiResponse(data);
   } catch (error) {
     console.error('Error creating project:', error);
     throw error;
@@ -195,16 +229,29 @@ export async function createProject(projectData: ProjectFormDataWithFile, token:
 // Update existing project
 export const updateProject = async (projectId: string, data: any, token: string) => {
   try {
-    // Log what's being sent to the backend
-    console.log('Sending to backend:', data);
+    console.log('Updating project with data:', JSON.stringify(data, null, 2));
     
-    const response = await axios.put(`${API_URL}/projects/${projectId}`, data, {
+    const response = await fetch(`${API_URL}/projects/${projectId}`, {
+      method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify(data)
     });
-    return response.data;
+
+    console.log('Update project response status:', response.status);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error response data:', errorData);
+      throw new Error(errorData.message || `Server returned status ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log('Update project response data:', responseData);
+    
+    return responseData;
   } catch (error) {
     console.error('Error updating project:', error);
     throw error;
@@ -228,24 +275,30 @@ export async function deleteProject(projectId: string, token: string) {
 }
 
 // Upload project image
-export async function uploadProjectImage(projectId: string, file: File, token: string) {
+export const uploadProjectImage = async (projectId: string, file: File, token: string) => {
   try {
     const formData = new FormData();
     formData.append('image', file);
 
-    const url = replaceUrlParams(API_ROUTES.PROJECTS.UPLOAD_IMAGE, { id: projectId });
-    const response = await axios.post(`${API_URL}${url}`, formData, {
+    const response = await fetch(`${API_URL}/projects/${projectId}/image`, {
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data'
-      }
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
     });
-    return response.data;
+
+    if (!response.ok) {
+      throw new Error('Failed to upload project image');
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error uploading project image:', error);
     throw error;
   }
-}
+};
 
 // Upload team member media
 export async function uploadTeamMemberMedia(projectId: string, index: number, file: File, token: string) {

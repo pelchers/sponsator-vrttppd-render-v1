@@ -20,11 +20,11 @@ export const API_ROUTES = {
     UPLOAD_IMAGE: (id: string) => `/users/${id}/image`
   },
   PROJECTS: {
-    BASE: '/projects',
-    UPDATE: '/projects/:id',
     CREATE: '/projects',
+    GET_ALL: '/projects',
+    GET_BY_ID: '/projects/:id',
+    UPDATE: '/projects/:id',
     DELETE: '/projects/:id',
-    GET: '/projects/:id',
     GET_USER_PROJECTS: '/projects/user/:userId',
     UPLOAD_IMAGE: '/projects/:id/image',
     UPLOAD_TEAM_MEMBER_MEDIA: '/projects/:id/team-members/:index/media',

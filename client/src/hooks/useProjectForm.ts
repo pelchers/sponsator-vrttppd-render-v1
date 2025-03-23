@@ -22,6 +22,7 @@ import {
   uploadPartnerMedia,
   uploadTestimonialMedia
 } from '@/api/projects';
+import { API_URL } from '@/config';
 
 // Move all types here from project.ts
 export interface ProjectFormMedia {
@@ -91,11 +92,13 @@ export interface Milestone {
 }
 
 export interface ProjectFormData {
-  project_image: string | null;
   project_name: string;
   project_description: string;
   project_type: string;
   project_category: string;
+  project_image_url: string;
+  project_image_upload: string;
+  project_image_display: 'url' | 'upload';
   project_title: string;
   project_duration: string;
   project_handle: string;
@@ -197,7 +200,6 @@ export interface ProjectFormTestimonial extends Omit<Testimonial, 'media'> {
 }
 
 const defaultFormState: ProjectFormDataWithFile = {
-  project_image: null,
   project_name: "",
   project_description: "",
   project_type: "",
@@ -268,6 +270,9 @@ const defaultFormState: ProjectFormDataWithFile = {
   seeking_brand: false,
   seeking_freelancer: false,
   seeking_contractor: false,
+  project_image_url: '',
+  project_image_upload: '',
+  project_image_display: 'url',
 };
 
 export function useProjectForm(projectId?: string) {
@@ -307,6 +312,8 @@ export function useProjectForm(projectId?: string) {
       : (typeof defaultFormState.testimonials === 'string' 
           ? JSON.parse(defaultFormState.testimonials || '[]') 
           : []),
+    deliverables: [],
+    milestones: [],
   });
   
   useEffect(() => {
@@ -393,16 +400,30 @@ export function useProjectForm(projectId?: string) {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Authentication required');
         
-        await uploadProjectImage(projectId, file, token);
+        console.log('Uploading project image for project:', projectId);
+        const result = await uploadProjectImage(projectId, file, token);
+        console.log('Upload result:', result);
+        
+        setFormData((prev) => ({
+          ...prev,
+          project_image: file,
+          project_image_upload: result.path,
+          project_image_url: '',
+          project_image_display: 'upload'
+        }));
+      } else {
+        // If no projectId (creating new project), just update the form state
+        // The file will be uploaded when the project is created
+        console.log('Storing image in form state for new project');
+        setFormData((prev) => ({
+          ...prev,
+          project_image: file,
+          project_image_display: 'upload'
+        }));
       }
-      
-      setFormData((prev) => ({
-        ...prev,
-        project_image: file,
-      }));
     } catch (err) {
       setUploadError('Failed to upload image');
-      console.error(err);
+      console.error('Error uploading image:', err);
     } finally {
       setImageUploading(false);
     }
@@ -433,46 +454,53 @@ export function useProjectForm(projectId?: string) {
   const validateForm = () => {
     const errors: string[] = [];
 
-    // Basic validation
+    // Basic validation - always required
     if (!formData.project_name?.trim()) {
       errors.push('Project name is required');
     }
 
-    if (!formData.project_type?.trim()) {
+    // Only validate project type if creating a new project
+    // For existing projects, we should allow updates without requiring all fields
+    if (!projectId && !formData.project_type?.trim()) {
       errors.push('Project type is required');
     }
 
-    // Conditional validation based on project type
-    if (showClientContractSections.includes(formData.project_type)) {
-      if (!formData.client?.trim()) {
-        errors.push(`${clientInfoLabelMap[formData.project_type] || 'Client'} name is required`);
-      }
-      
-      if (!formData.contract_type?.trim()) {
-        errors.push('Contract type is required');
-      }
-    }
+    // Skip advanced validation for basic updates or when creating a minimal project
+    const isMinimalMode = true; // Set this to true to allow minimal project creation/updates
 
-    if (showBudgetSection.includes(formData.project_type)) {
-      if (!formData.budget?.trim()) {
-        errors.push(`${budgetLabelMap[formData.project_type] || 'Budget'} is required`);
+    if (!isMinimalMode) {
+      // Conditional validation based on project type
+      if (formData.project_type && showClientContractSections.includes(formData.project_type)) {
+        if (!formData.client?.trim()) {
+          errors.push(`${clientInfoLabelMap[formData.project_type] || 'Client'} name is required`);
+        }
+        
+        if (!formData.contract_type?.trim()) {
+          errors.push('Contract type is required');
+        }
       }
-    }
 
-    if (showSkillsExpertise.includes(formData.project_type)) {
-      if (formData.skills_required.length === 0) {
-        errors.push(`${skillsLabelMap[formData.project_type] || 'Skills'} are required`);
+      if (formData.project_type && showBudgetSection.includes(formData.project_type)) {
+        if (!formData.budget?.trim()) {
+          errors.push(`${budgetLabelMap[formData.project_type] || 'Budget'} is required`);
+        }
       }
-    }
 
-    // Portfolio validation
-    if (showPortfolio.includes(formData.project_type)) {
-      if (formData.deliverables.length === 0) {
-        errors.push(`${deliverablesLabelMap[formData.project_type] || 'Deliverables'} are required`);
+      if (formData.project_type && showSkillsExpertise.includes(formData.project_type)) {
+        if (formData.skills_required.length === 0) {
+          errors.push(`${skillsLabelMap[formData.project_type] || 'Skills'} are required`);
+        }
       }
-      
-      if (formData.milestones.length === 0) {
-        errors.push(`${milestonesLabelMap[formData.project_type] || 'Milestones'} are required`);
+
+      // Portfolio validation
+      if (formData.project_type && showPortfolio.includes(formData.project_type)) {
+        if (formData.deliverables.length === 0) {
+          errors.push(`${deliverablesLabelMap[formData.project_type] || 'Deliverables'} are required`);
+        }
+        
+        if (formData.milestones.length === 0) {
+          errors.push(`${milestonesLabelMap[formData.project_type] || 'Milestones'} are required`);
+        }
       }
     }
 
@@ -481,6 +509,7 @@ export function useProjectForm(projectId?: string) {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submission triggered');
     
     try {
       setSaving(true);
@@ -488,6 +517,8 @@ export function useProjectForm(projectId?: string) {
       setSuccess(false);
       
       const token = localStorage.getItem('token');
+      console.log('Auth token:', token ? 'Present' : 'Missing');
+      
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -495,43 +526,60 @@ export function useProjectForm(projectId?: string) {
       // Validate form data
       const errors = validateForm();
       if (errors.length > 0) {
+        console.log('Validation errors:', errors);
         setError(errors.join(', '));
+        setSaving(false);
         return;
       }
+      
+      console.log('Validation passed successfully');
       
       if (!formData) {
         throw new Error('No form data available');
       }
 
       // Log the form data before transformation
-      console.log('Form data before transformation:', formData);
+      console.log('Form data before transformation:', JSON.stringify(formData, null, 2));
       
       const apiData = transformFormDataForApi(formData);
       
       // Log the data after transformation
-      console.log('API data after transformation:', apiData);
+      console.log('API data after transformation:', JSON.stringify(apiData, null, 2));
       
       let result;
+      console.log('Sending request to API...');
+      console.log('Project ID:', projectId ? projectId : 'Creating new project');
+      
       if (projectId) {
+        console.log('Updating existing project');
         result = await updateProject(projectId, apiData, token);
       } else {
+        console.log('Creating new project');
         result = await createProject(apiData, token);
       }
       
+      console.log('API response:', result);
+      
       setSuccess(true);
+      console.log('Success state set to true');
       
       // Add delay before redirect
+      console.log('Waiting before redirect...');
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       if (result?.id) {
+        console.log('Redirecting to project page:', result.id);
         navigate(`/projects/${result.id}`);
+      } else {
+        console.log('No project ID in result, not redirecting');
       }
       
     } catch (err) {
-      setError('Failed to save project');
-      console.error(err);
+      console.error('Error saving project:', err);
+      setError('Failed to save project: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setSaving(false);
+      console.log('Saving state set to false');
     }
   };
   
@@ -555,80 +603,116 @@ export function useProjectForm(projectId?: string) {
 
 // Transform form data before sending to API
 const transformFormDataForApi = (formData: ProjectFormDataWithFile) => {
-  // Create a copy to avoid mutating the original
-  const apiData = { ...formData };
+  const apiData: any = {};
   
-  // Make sure project_status and preferred_collaboration_type are included
+  // Basic fields
+  apiData.project_name = formData.project_name || '';
+  apiData.project_description = formData.project_description || '';
+  apiData.project_type = formData.project_type || '';
+  apiData.project_category = formData.project_category || '';
+  
+  // Handle image fields properly
+  apiData.project_image_display = formData.project_image_display || 'url';
+  apiData.project_image_url = formData.project_image_display === 'url' 
+    ? formData.project_image_url 
+    : '';
+  apiData.project_image_upload = formData.project_image_display === 'upload' 
+    ? formData.project_image_upload 
+    : '';
+
+  // Include other basic fields
+  apiData.project_title = formData.project_title || '';
+  apiData.project_duration = formData.project_duration || '';
+  apiData.client = formData.client || '';
+  apiData.client_location = formData.client_location || '';
+  apiData.client_website = formData.client_website || '';
+  apiData.contract_type = formData.contract_type || '';
+  apiData.contract_duration = formData.contract_duration || '';
+  apiData.contract_value = formData.contract_value || '';
+  apiData.project_timeline = formData.project_timeline || '';
+  apiData.budget = formData.budget || '';
   apiData.project_status = formData.project_status || '';
   apiData.preferred_collaboration_type = formData.preferred_collaboration_type || '';
+  apiData.budget_range = formData.budget_range || '';
+  apiData.currency = formData.currency || 'USD';
+  apiData.standard_rate = formData.standard_rate || '';
+  apiData.rate_type = formData.rate_type || '';
+  apiData.compensation_type = formData.compensation_type || '';
   
-  // Handle file upload separately
-  if (formData.project_image instanceof File) {
-    apiData.project_image_file = formData.project_image;
-    apiData.project_image = null;
-  }
+  // Handle array fields
+  apiData.skills_required = formData.skills_required || [];
+  apiData.expertise_needed = formData.expertise_needed || [];
+  apiData.target_audience = formData.target_audience || [];
+  apiData.solutions_offered = formData.solutions_offered || [];
+  apiData.project_tags = formData.project_tags || [];
+  apiData.industry_tags = formData.industry_tags || [];
+  apiData.technology_tags = formData.technology_tags || [];
+  apiData.website_links = formData.website_links || [];
+  
+  // Handle boolean fields
+  apiData.search_visibility = formData.search_visibility === undefined ? true : formData.search_visibility;
+  apiData.project_visibility = formData.project_visibility || 'public';
+  
+  // Handle text fields
+  apiData.short_term_goals = formData.short_term_goals || '';
+  apiData.long_term_goals = formData.long_term_goals || '';
+  apiData.project_status_tag = formData.project_status_tag || '';
   
   // Explicitly flatten nested objects to individual fields
   if (formData.seeking) {
-    apiData.seeking_creator = formData.seeking.creator;
-    apiData.seeking_brand = formData.seeking.brand;
-    apiData.seeking_freelancer = formData.seeking.freelancer;
-    apiData.seeking_contractor = formData.seeking.contractor;
-    delete apiData.seeking; // Remove the nested object
+    apiData.seeking_creator = formData.seeking.creator || false;
+    apiData.seeking_brand = formData.seeking.brand || false;
+    apiData.seeking_freelancer = formData.seeking.freelancer || false;
+    apiData.seeking_contractor = formData.seeking.contractor || false;
   }
   
   if (formData.social_links) {
-    apiData.social_links_youtube = formData.social_links.youtube;
-    apiData.social_links_instagram = formData.social_links.instagram;
-    apiData.social_links_github = formData.social_links.github;
-    apiData.social_links_twitter = formData.social_links.twitter;
-    apiData.social_links_linkedin = formData.social_links.linkedin;
-    delete apiData.social_links; // Remove the nested object
+    apiData.social_links_youtube = formData.social_links.youtube || '';
+    apiData.social_links_instagram = formData.social_links.instagram || '';
+    apiData.social_links_github = formData.social_links.github || '';
+    apiData.social_links_twitter = formData.social_links.twitter || '';
+    apiData.social_links_linkedin = formData.social_links.linkedin || '';
   }
   
   if (formData.notification_preferences) {
-    apiData.notification_preferences_email = formData.notification_preferences.email;
-    apiData.notification_preferences_push = formData.notification_preferences.push;
-    apiData.notification_preferences_digest = formData.notification_preferences.digest;
-    delete apiData.notification_preferences; // Remove the nested object
+    apiData.notification_preferences_email = formData.notification_preferences.email || false;
+    apiData.notification_preferences_push = formData.notification_preferences.push || false;
+    apiData.notification_preferences_digest = formData.notification_preferences.digest || false;
   }
   
-  // Stringify array fields
-  if (Array.isArray(apiData.team_members)) {
-    apiData.team_members = JSON.stringify(apiData.team_members);
-  }
+  // Stringify JSON fields
+  apiData.team_members = JSON.stringify(formData.team_members || []);
+  apiData.collaborators = JSON.stringify(formData.collaborators || []);
+  apiData.advisors = JSON.stringify(formData.advisors || []);
+  apiData.partners = JSON.stringify(formData.partners || []);
+  apiData.testimonials = JSON.stringify(formData.testimonials || []);
+  apiData.deliverables = JSON.stringify(formData.deliverables || []);
+  apiData.milestones = JSON.stringify(formData.milestones || []);
   
-  if (Array.isArray(apiData.collaborators)) {
-    apiData.collaborators = JSON.stringify(apiData.collaborators);
-  }
-  
-  if (Array.isArray(apiData.advisors)) {
-    apiData.advisors = JSON.stringify(apiData.advisors);
-  }
-  
-  if (Array.isArray(apiData.partners)) {
-    apiData.partners = JSON.stringify(apiData.partners);
-  }
-  
-  if (Array.isArray(apiData.testimonials)) {
-    apiData.testimonials = JSON.stringify(apiData.testimonials);
-  }
-  
-  if (Array.isArray(apiData.deliverables)) {
-    apiData.deliverables = JSON.stringify(apiData.deliverables);
-  }
-  
-  if (Array.isArray(apiData.milestones)) {
-    apiData.milestones = JSON.stringify(apiData.milestones);
-  }
+  // Remove any fields that don't exist in the schema
+  delete apiData.project_image;
+  delete apiData.project_image_file;
   
   return apiData;
 };
 
 // Transform API data to form format
 const transformApiDataToForm = (data: any): ProjectFormDataWithFile => {
+  if (!data) {
+    return defaultFormState;
+  }
+
+  console.log('Transforming API data to form:', data);
+
   return {
-    ...data,
+    ...defaultFormState, // Start with default values
+    ...data, // Spread API data
+    
+    // Ensure image fields are properly set
+    project_image_url: data.project_image_url || '',
+    project_image_upload: data.project_image_upload || '',
+    project_image_display: data.project_image_display || 'url',
+    
     // Transform social links back to object
     social_links: {
       youtube: data.social_links_youtube || "",
@@ -645,5 +729,49 @@ const transformApiDataToForm = (data: any): ProjectFormDataWithFile => {
       freelancer: data.seeking_freelancer || false,
       contractor: data.seeking_contractor || false,
     },
+    
+    // Ensure notification preferences are properly set
+    notification_preferences: {
+      email: data.notification_preferences_email || false,
+      push: data.notification_preferences_push || false,
+      digest: data.notification_preferences_digest || false,
+    },
+    
+    // Parse JSON fields if they're strings
+    team_members: Array.isArray(data.team_members) 
+      ? data.team_members 
+      : (typeof data.team_members === 'string' 
+          ? JSON.parse(data.team_members || '[]') 
+          : []),
+    collaborators: Array.isArray(data.collaborators) 
+      ? data.collaborators 
+      : (typeof data.collaborators === 'string' 
+          ? JSON.parse(data.collaborators || '[]') 
+          : []),
+    advisors: Array.isArray(data.advisors) 
+      ? data.advisors 
+      : (typeof data.advisors === 'string' 
+          ? JSON.parse(data.advisors || '[]') 
+          : []),
+    partners: Array.isArray(data.partners) 
+      ? data.partners 
+      : (typeof data.partners === 'string' 
+          ? JSON.parse(data.partners || '[]') 
+          : []),
+    testimonials: Array.isArray(data.testimonials) 
+      ? data.testimonials 
+      : (typeof data.testimonials === 'string' 
+          ? JSON.parse(data.testimonials || '[]') 
+          : []),
+    deliverables: Array.isArray(data.deliverables) 
+      ? data.deliverables 
+      : (typeof data.deliverables === 'string' 
+          ? JSON.parse(data.deliverables || '[]') 
+          : []),
+    milestones: Array.isArray(data.milestones) 
+      ? data.milestones 
+      : (typeof data.milestones === 'string' 
+          ? JSON.parse(data.milestones || '[]') 
+          : []),
   };
 }; 

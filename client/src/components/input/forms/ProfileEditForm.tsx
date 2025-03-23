@@ -99,7 +99,7 @@ export default function ProfileEditForm() {
                     onClick={() => setFormData(prev => ({ 
                       ...prev, 
                       profile_image_display: 'url',
-                      profile_image_upload: null 
+                      profile_image_upload: ''
                     }))}
                   >
                     Use URL Image
@@ -145,7 +145,7 @@ export default function ProfileEditForm() {
                     currentImage={
                       formData.profile_image_upload 
                         ? `${API_URL.replace('/api', '')}/uploads/${formData.profile_image_upload}`
-                        : null
+                        : undefined
                     }
                     showPreview={true}
                   />

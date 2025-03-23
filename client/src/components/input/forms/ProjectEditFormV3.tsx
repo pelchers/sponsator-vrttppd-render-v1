@@ -29,6 +29,8 @@ import {
 } from '@/components/input/forms/config/projectFormConfig'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { v4 as uuidv4 } from 'uuid'
+import ProjectImageUpload from './ProjectImageUpload'
+import { API_URL } from '@/config'
 
 interface ProjectEditFormProps {
   projectId?: string;
@@ -741,7 +743,87 @@ function ProjectEditFormContent({ projectId }: ProjectEditFormProps) {
         <PageSection title="Basic Information">
           <CategorySection>
             <div className="space-y-6 w-full">
-              <ImageUpload onImageSelect={handleImageSelect} />
+              {/* Image section container */}
+              <div className="flex flex-col items-center space-y-4">
+                {/* Image Toggle Buttons */}
+                <div className="flex items-center space-x-4">
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded transition-colors ${
+                      formData.project_image_display === "url" 
+                        ? "bg-blue-500 text-white" 
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                    onClick={() => setFormData(prev => ({ 
+                      ...prev, 
+                      project_image_display: "url",
+                      project_image_upload: "" // Use empty string instead of null
+                    }))}
+                  >
+                    Use URL Image
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded transition-colors ${
+                      formData.project_image_display === "upload" 
+                        ? "bg-blue-500 text-white" 
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                    onClick={() => setFormData(prev => ({ 
+                      ...prev, 
+                      project_image_display: "upload",
+                      project_image_url: "" // Use empty string instead of null
+                    }))}
+                  >
+                    Use Uploaded Image
+                  </button>
+                </div>
+
+                {/* URL Input or Upload Component */}
+                {formData.project_image_display === "url" ? (
+                  <div className="w-full max-w-md">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Image URL
+                    </label>
+                    <input
+                      type="url"
+                      name="project_image_url"
+                      value={formData.project_image_url || ''}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        project_image_url: e.target.value
+                      }))}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+                ) : (
+                  <ProjectImageUpload 
+                    onImageSelect={handleImageSelect}
+                    currentImage={
+                      formData.project_image_upload 
+                        ? `${API_URL.replace("/api", "")}/uploads/${formData.project_image_upload}`
+                        : undefined
+                    }
+                    showPreview={true}
+                  />
+                )}
+
+                {/* Image Preview for URL mode */}
+                {formData.project_image_display === "url" && formData.project_image_url && (
+                  <div className="mt-4 flex justify-center">
+                    <img
+                      src={formData.project_image_url}
+                      alt="Project preview"
+                      className="w-64 h-48 object-cover rounded-lg border-2 border-gray-200"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/300x200?text=Invalid+Image+URL';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
 
               <div>
                 <label htmlFor="project_name" className="block text-sm font-medium text-gray-700">
