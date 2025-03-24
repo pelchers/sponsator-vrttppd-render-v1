@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { fetchArticle } from '@/api/articles';
+import { getCurrentUser } from '@/api/auth';
+import { ArticleImage } from '@/components/ArticleImage';
 import PageSection from "@/components/sections/PageSection";
 import { Button } from "@/components/ui/button";
 import './Article.css';
@@ -10,51 +12,33 @@ import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 import CommentsSection from '@/components/comments/CommentsSection';
 
-export default function ArticleViewPage() {
+export default function ArticlePage() {
   const { id } = useParams();
-  const [article, setArticle] = useState(null);
+  const navigate = useNavigate();
+  const [article, setArticle] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [comment, setComment] = useState({ author: '', text: '' });
   const [comments, setComments] = useState([]);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const currentUser = getCurrentUser();
 
   useEffect(() => {
-    // Fetch the actual article data from the API
-    if (id) {
-      setLoading(true);
-      fetchArticle(id)
-        .then(data => {
-          console.log('Fetched article data:', data);
-          
-          // Sort sections by id or created_at if available
-          if (data.sections && Array.isArray(data.sections)) {
-            // Sort sections by their natural order in the database
-            // This assumes sections have some sort of order indicator
-            data.sections.sort((a, b) => {
-              // If sections have an explicit order field, use that
-              if (a.order !== undefined && b.order !== undefined) {
-                return a.order - b.order;
-              }
-              // Otherwise, sort by ID which should preserve creation order
-              return a.id.localeCompare(b.id);
-            });
-          }
-          
-          setArticle(data);
-          // In a real app, you'd fetch comments separately or they'd be included in the article data
-          setComments(data.comments || []);
-        })
-        .catch(error => {
-          console.error('Error fetching article:', error);
-          setError('Failed to load article. Please try again later.');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
+    const loadArticle = async () => {
+      try {
+        const data = await fetchArticle(id!);
+        setArticle(data);
+      } catch (err) {
+        setError('Failed to load article');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArticle();
   }, [id]);
 
   useEffect(() => {
@@ -119,33 +103,41 @@ export default function ArticleViewPage() {
     }
   };
 
-  if (loading) {
-    return <div className="article-container">
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    </div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!article) return <div>Article not found</div>;
 
-  if (error) {
-    return <div className="article-container">
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        <p>{error}</p>
-      </div>
-    </div>;
-  }
-
-  if (!article) {
-    return <div className="article-container">
-      <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-        <p>Article not found</p>
-      </div>
-    </div>;
-  }
+  const isOwner = currentUser?.id === article.user_id;
 
   return (
-    <div className="article-container">
-      <h1 className="article-title">{article.title}</h1>
+    <div className="container mx-auto px-4 py-8">
+      {/* Edit Button - Only visible to article owner */}
+      {isOwner && (
+        <div className="flex justify-end mb-4">
+          <Button
+            onClick={() => navigate(`/article/edit/${article.id}`)}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Edit Article
+          </Button>
+        </div>
+      )}
+
+      {/* Article Header with Image */}
+      <div className="relative mb-8">
+        <ArticleImage
+          article={article}
+          className="w-full h-[400px] object-cover rounded-lg"
+          fallback={
+            <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center rounded-lg">
+              <span className="text-gray-500">No cover image</span>
+            </div>
+          }
+        />
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+          <h1 className="text-4xl font-bold text-white">{article.title}</h1>
+        </div>
+      </div>
 
       <div className="flex justify-center items-center space-x-6 mt-4">
         <div className="flex flex-col items-center">

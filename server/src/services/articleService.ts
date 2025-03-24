@@ -34,7 +34,11 @@ export const articleService = {
     const article = await prisma.articles.findUnique({
       where: { id },
       include: {
-        article_sections: true
+        article_sections: {
+          orderBy: {
+            order: 'asc'
+          }
+        }
       }
     });
     
@@ -79,50 +83,82 @@ export const articleService = {
   
   // Update an existing article
   updateArticle: async (id: string, userId: string, articleData: any) => {
-    // Check if the article exists and belongs to the user
-    const existingArticle = await prisma.articles.findFirst({
-      where: {
-        id,
-        user_id: userId
+    try {
+      // Check if the article exists and belongs to the user
+      const existingArticle = await prisma.articles.findFirst({
+        where: {
+          id,
+          user_id: userId
+        }
+      });
+      
+      if (!existingArticle) return null;
+
+      const { 
+        article_image_url,
+        article_image_upload,
+        article_image_display,
+        sections,
+        ...otherData 
+      } = articleData;
+
+      // First update the basic article data
+      await prisma.articles.update({
+        where: { id },
+        data: {
+          ...otherData,
+          article_image_url: article_image_url || '',
+          article_image_upload: article_image_upload || '',
+          article_image_display: article_image_display || 'url',
+          updated_at: new Date()
+        }
+      });
+
+      // Then handle sections if they exist
+      if (sections) {
+        // Delete existing sections
+        await prisma.article_sections.deleteMany({
+          where: { article_id: id }
+        });
+
+        // Create new sections
+        if (sections.length > 0) {
+          await prisma.$transaction(
+            sections.map((section, index) => 
+              prisma.article_sections.create({
+                data: {
+                  article_id: id,
+                  type: section.type || 'full-width-text',
+                  title: section.title || '',
+                  subtitle: section.subtitle || '',
+                  text: section.text || '',
+                  media_url: section.mediaUrl || '',
+                  media_subtext: section.mediaSubtext || '',
+                  order: section.order ?? index
+                }
+              })
+            )
+          );
+        }
       }
-    });
-    
-    if (!existingArticle) return null;
-    
-    const { title, tags, citations, contributors, related_media, sections } = articleData;
-    
-    // Update the article
-    await prisma.articles.update({
-      where: { id },
-      data: {
-        title: title || 'Untitled Article',
-        tags: tags || [],
-        citations: citations || [],
-        contributors: contributors || [],
-        related_media: related_media || [],
-        updated_at: new Date()
-      }
-    });
-    
-    // Delete existing sections
-    await prisma.article_sections.deleteMany({
-      where: { article_id: id }
-    });
-    
-    // Create new sections
-    if (sections && sections.length > 0) {
-      await createSections(id, sections);
+
+      // Finally, fetch the complete updated article with sections
+      const completeArticle = await prisma.articles.findUnique({
+        where: { id },
+        include: {
+          article_sections: {
+            orderBy: {
+              order: 'asc'
+            }
+          }
+        }
+      });
+
+      return transformDbToApi(completeArticle);
+    } catch (error) {
+      console.error('Error updating article:', error);
+      throw error;
     }
-    
-    // Fetch the updated article with sections
-    const updatedArticle = await prisma.articles.findUnique({
-      where: { id },
-      include: {
-        article_sections: true
-      }
-    });
-    
-    return transformDbToApi(updatedArticle);
   },
   
   // Delete an article
@@ -186,6 +222,62 @@ export const articleService = {
     });
     
     return mediaUrl;
+  },
+
+  async uploadArticleCoverImage(id: string, file: Express.Multer.File) {
+    try {
+      // Store the path relative to the uploads directory
+      const relativePath = `articles/${file.filename}`;
+      
+      console.log('Uploading article cover image:', relativePath);
+      
+      const updatedArticle = await prisma.articles.update({
+        where: { id },
+        data: {
+          article_image_upload: relativePath,
+          article_image_url: '',
+          article_image_display: 'upload',
+          updated_at: new Date()
+        }
+      });
+      
+      // Log the updated article data
+      console.log('Updated article image data:', {
+        article_image_upload: updatedArticle.article_image_upload,
+        article_image_display: updatedArticle.article_image_display
+      });
+      
+      // Return the data in the same format as the frontend expects
+      return {
+        path: relativePath,
+        article: {
+          ...updatedArticle,
+          article_image: `/uploads/${relativePath}`,
+          article_image_url: '',
+          article_image_upload: relativePath,
+          article_image_display: 'upload'
+        }
+      };
+    } catch (error) {
+      console.error('Error uploading article cover image:', error);
+      throw error;
+    }
+  },
+
+  // Add this helper function to map article data for frontend
+  mapArticleToFrontend(article: any) {
+    return {
+      ...article,
+      article_image: article.article_image_display === 'url' 
+        ? article.article_image_url
+        : article.article_image_upload 
+          ? `/uploads/${article.article_image_upload}`
+          : null,
+      // Keep original fields
+      article_image_url: article.article_image_url || '',
+      article_image_upload: article.article_image_upload || '',
+      article_image_display: article.article_image_display || 'url'
+    };
   }
 };
 
@@ -194,23 +286,26 @@ function transformDbToApi(article: any) {
   if (!article) return null;
   
   return {
-    id: article.id,
-    user_id: article.user_id,
-    title: article.title,
-    tags: article.tags,
-    citations: article.citations,
-    contributors: article.contributors,
-    related_media: article.related_media,
-    created_at: article.created_at,
-    updated_at: article.updated_at,
+    ...article,
+    // Add image fields to the response
+    article_image: article.article_image_display === 'url' 
+      ? article.article_image_url
+      : article.article_image_upload 
+        ? `/uploads/${article.article_image_upload}`
+        : null,
+    article_image_url: article.article_image_url || '',
+    article_image_upload: article.article_image_upload || '',
+    article_image_display: article.article_image_display || 'url',
+    // Transform sections to the expected format
     sections: article.article_sections?.map((section: any) => ({
       id: section.id,
-      type: section.type,
-      title: section.title,
-      subtitle: section.subtitle,
-      text: section.text,
-      mediaUrl: section.media_url,
-      mediaSubtext: section.media_subtext
+      type: section.type || 'full-width-text',
+      title: section.title || '',
+      subtitle: section.subtitle || '',
+      text: section.text || '',
+      mediaUrl: section.media_url || '',
+      mediaSubtext: section.media_subtext || '',
+      order: section.order ?? 0
     })) || []
   };
 }

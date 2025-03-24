@@ -35,6 +35,9 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
 app.use('/uploads/projects', express.static(path.join(__dirname, '../uploads/projects')));
 
+// Add articles directory to static file serving
+app.use('/uploads/articles', express.static(path.join(__dirname, '../uploads/articles')));
+
 // Add logging middleware
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);

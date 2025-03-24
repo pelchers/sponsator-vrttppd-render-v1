@@ -61,22 +61,31 @@ export const articleController = {
   updateArticle: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const userId = req.user.id;
-      const articleData = req.body;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       
       // Make sure sections have order values if not provided
       if (req.body.sections) {
-        req.body.sections = req.body.sections.map((section, index) => ({
+        req.body.sections = req.body.sections.map((section: any, index: number) => ({
           ...section,
           order: section.order !== undefined ? section.order : index
         }));
       }
       
-      const article = await articleService.updateArticle(id, userId, articleData);
+      // Log the incoming data
+      console.log('Updating article with data:', req.body);
+      
+      const article = await articleService.updateArticle(id, userId, req.body);
       
       if (!article) {
         return res.status(404).json({ error: 'Article not found or you do not have permission to update it' });
       }
+      
+      // Log the response data
+      console.log('Updated article response:', article);
       
       res.status(200).json(article);
     } catch (error) {
@@ -122,6 +131,33 @@ export const articleController = {
     } catch (error) {
       console.error(`Error in uploadArticleMedia controller for ID ${req.params.id}:`, error);
       res.status(500).json({ error: 'Failed to upload media' });
+    }
+  },
+
+  async uploadCoverImage(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id;
+
+      // Check if user owns the article
+      const article = await articleService.getArticle(id);
+      if (!article || article.user_id !== userId) {
+        return res.status(403).json({ error: 'Not authorized to update this article' });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ error: 'No image file provided' });
+      }
+
+      const result = await articleService.uploadArticleCoverImage(id, req.file);
+      
+      // Log the response being sent
+      console.log('Sending upload response:', result);
+      
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error uploading article cover image:', error);
+      res.status(500).json({ error: 'Failed to upload article cover image' });
     }
   }
 }; 

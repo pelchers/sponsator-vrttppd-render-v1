@@ -11,6 +11,9 @@ export interface Article {
   id: string;
   user_id: string;
   title: string;
+  article_image_url?: string;
+  article_image_upload?: string;
+  article_image_display?: 'url' | 'upload';
   sections: any[];
   citations: string[];
   contributors: string[];
@@ -110,6 +113,39 @@ export const uploadArticleMedia = async (articleId: string, sectionIndex: number
     return response.data;
   } catch (error) {
     console.error(`Error uploading media for article ${articleId}:`, error);
+    throw error;
+  }
+};
+
+// Add new function for uploading article cover image
+export const uploadArticleCoverImage = async (articleId: string, file: File) => {
+  try {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    console.log('Uploading article cover image:', {
+      articleId,
+      fileName: file.name,
+      fileSize: file.size
+    });
+    
+    const response = await axios.post(
+      `${API_URL}/articles/${articleId}/cover-image`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    console.log('Upload response:', response.data);
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading article cover image:', error);
     throw error;
   }
 }; 

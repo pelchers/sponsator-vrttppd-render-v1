@@ -6,6 +6,7 @@ import fs from 'fs';
 const uploadsDir = path.join(__dirname, '../../uploads');
 const profilesDir = path.join(uploadsDir, 'profiles');
 const projectsDir = path.join(uploadsDir, 'projects');
+const articlesDir = path.join(uploadsDir, 'articles');
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
@@ -15,6 +16,9 @@ if (!fs.existsSync(profilesDir)) {
 }
 if (!fs.existsSync(projectsDir)) {
   fs.mkdirSync(projectsDir);
+}
+if (!fs.existsSync(articlesDir)) {
+  fs.mkdirSync(articlesDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
@@ -27,6 +31,8 @@ const storage = multer.diskStorage({
       destination = profilesDir;
     } else if (url.includes('/projects/') || url.includes('/project/')) {
       destination = projectsDir;
+    } else if (url.includes('/articles/')) {
+      destination = articlesDir;
     }
     
     console.log('File upload destination:', {
@@ -46,6 +52,8 @@ const storage = multer.diskStorage({
       prefix = 'profile';
     } else if (url.includes('/projects/') || url.includes('/project/')) {
       prefix = 'project';
+    } else if (url.includes('/articles/')) {
+      prefix = 'article';
     }
     
     const uniqueSuffix = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
@@ -60,6 +68,6 @@ const storage = multer.diskStorage({
 export const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
+    fileSize: 10 * 1024 * 1024 // 10MB limit for articles
   }
 }); 

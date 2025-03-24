@@ -4,7 +4,9 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
 import PageSection from "@/components/sections/PageSection"
 import { Button } from "@/components/ui/button"
-import { createArticle, updateArticle, fetchArticle } from "@/api/articles"
+import { createArticle, updateArticle, fetchArticle, uploadArticleCoverImage } from "@/api/articles"
+import ArticleImageUpload from "@/components/input/forms/ArticleImageUpload"
+import { API_URL } from '@/config'
 
 type SectionType = "full-width-text" | "full-width-media" | "left-media-right-text" | "left-text-right-media"
 
@@ -30,6 +32,12 @@ export default function ArticleEditPage() {
   const [tags, setTags] = useState<string[]>([])
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    article_image_url: "",
+    article_image_upload: "",
+    article_image_display: "url" as 'url' | 'upload',
+  });
 
   // Fetch article data if editing an existing article
   useEffect(() => {
@@ -40,20 +48,33 @@ export default function ArticleEditPage() {
           if (data) {
             setTitle(data.title || '');
             
-            // Sort sections by order if available
-            const sortedSections = [...(data.sections || [])];
-            sortedSections.sort((a, b) => {
-              if (a.order !== undefined && b.order !== undefined) {
-                return a.order - b.order;
-              }
-              return 0;
-            });
+            // Make sure sections are properly formatted
+            const formattedSections = (data.sections || []).map(section => ({
+              type: section.type || 'full-width-text',
+              title: section.title || '',
+              subtitle: section.subtitle || '',
+              text: section.text || '',
+              mediaUrl: section.mediaUrl || '',
+              mediaSubtext: section.mediaSubtext || '',
+              order: section.order ?? 0
+            }));
+            
+            // Sort sections by order
+            const sortedSections = [...formattedSections].sort((a, b) => 
+              (a.order || 0) - (b.order || 0)
+            );
             
             setSections(sortedSections);
             setCitations(data.citations || []);
             setContributors(data.contributors || []);
             setRelatedMedia(data.related_media || []);
             setTags(data.tags || []);
+            setFormData({
+              title: data.title || '',
+              article_image_url: data.article_image_url || '',
+              article_image_upload: data.article_image_upload || '',
+              article_image_display: data.article_image_display || 'url'
+            });
           }
         })
         .catch(error => {
@@ -83,7 +104,10 @@ export default function ArticleEditPage() {
         citations,
         contributors,
         related_media: relatedMedia,
-        tags
+        tags,
+        article_image_url: formData.article_image_url,
+        article_image_upload: formData.article_image_upload,
+        article_image_display: formData.article_image_display
       };
       
       console.log('Submitting article data:', articleData);
@@ -302,6 +326,31 @@ export default function ArticleEditPage() {
     setTags(newTags)
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleImageSelect = async (file: File) => {
+    try {
+      if (id) {
+        const result = await uploadArticleCoverImage(id, file);
+        setFormData(prev => ({
+          ...prev,
+          article_image_upload: result.path,
+          article_image_url: '',
+          article_image_display: 'upload'
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      // Handle error (show message to user)
+    }
+  };
+
   if (loading) {
     return <div className="container mx-auto px-4 py-8">Loading...</div>;
   }
@@ -320,6 +369,88 @@ export default function ArticleEditPage() {
               onChange={(e) => setTitle(e.target.value)}
               className="w-full p-2 border rounded mb-4"
             />
+          </PageSection>
+        </div>
+
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
+          <PageSection title="Cover Image">
+            <div className="flex flex-col items-center space-y-4">
+              {/* Image Toggle Buttons */}
+              <div className="flex items-center space-x-4">
+                <button
+                  type="button"
+                  className={`px-4 py-2 rounded transition-colors ${
+                    formData.article_image_display === "url" 
+                      ? "bg-blue-500 text-white" 
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    article_image_display: "url",
+                    article_image_upload: "" 
+                  }))}
+                >
+                  Use URL Image
+                </button>
+                <button
+                  type="button"
+                  className={`px-4 py-2 rounded transition-colors ${
+                    formData.article_image_display === "upload" 
+                      ? "bg-blue-500 text-white" 
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    article_image_display: "upload",
+                    article_image_url: "" 
+                  }))}
+                >
+                  Use Uploaded Image
+                </button>
+              </div>
+
+              {/* URL Input or Upload Component */}
+              {formData.article_image_display === "url" ? (
+                <div className="w-full max-w-md">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Image URL
+                  </label>
+                  <input
+                    type="url"
+                    name="article_image_url"
+                    value={formData.article_image_url || ''}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              ) : (
+                <ArticleImageUpload 
+                  onImageSelect={handleImageSelect}
+                  currentImage={
+                    formData.article_image_upload 
+                      ? `${API_URL.replace("/api", "")}/uploads/${formData.article_image_upload}`
+                      : undefined
+                  }
+                  showPreview={true}
+                />
+              )}
+
+              {/* Preview for URL mode */}
+              {formData.article_image_display === "url" && formData.article_image_url && (
+                <div className="mt-4 flex justify-center">
+                  <img
+                    src={formData.article_image_url}
+                    alt="Article preview"
+                    className="w-full max-w-2xl object-cover rounded-lg border-2 border-gray-200"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'https://via.placeholder.com/1200x630?text=Invalid+Image+URL';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </PageSection>
         </div>
 
