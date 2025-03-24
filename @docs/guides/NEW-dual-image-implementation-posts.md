@@ -1,52 +1,70 @@
 # Dual Image Implementation Guide (Posts System)
 
-This guide extends the dual image implementation to handle post images, following the patterns established in profiles, projects, and articles.
+This guide provides a complete implementation for handling dual image sources in posts, incorporating lessons learned from profiles, projects, and articles implementations.
 
-## Goals and Expected Functionality
+## File Structure and Components
 
-1. Allow users to choose between two image sources for post images:
-   - External URL
-   - File upload
-2. Maintain image source preference (`url` or `upload`) in the database
-3. Clear unused fields when switching modes
-4. Show proper preview for both modes
-5. Handle image display consistently across:
-   - Post feed/list view
-   - Post detail view
-   - Post creation/edit form
-6. Preserve image choice when editing existing posts
+### Client-Side Files
+```bash
+client/src/
+  ├── components/
+  │   ├── PostImage.tsx                      # Post image display component
+  │   └── input/forms/
+  │       ├── PostImageUpload.tsx            # Image upload component
+  │       └── PostEditForm.tsx               # Post edit form
+  ├── api/
+  │   └── posts.ts                           # API calls for posts
+  └── pages/
+      └── post/
+          ├── post.tsx                       # Post view page
+          └── edit.tsx                       # Post edit page
+```
 
-## Database Schema
+### Server-Side Files
+```bash
+server/src/
+  ├── controllers/
+  │   └── postController.ts
+  ├── services/
+  │   └── postService.ts
+  ├── routes/
+  │   └── postRoutes.ts
+  └── uploads/
+      └── posts/                             # Posts image storage
+```
 
+## Implementation Steps
+
+### 1. Database Schema (Prisma)
 ```prisma
 model posts {
-  // ... existing fields
-  post_image_url    String?   // For external URLs
-  post_image_upload String?   // For uploaded file paths (relative to uploads/posts)
-  post_image_display String?  @default("url")  // Tracks which mode is active
+  id                  String    @id @default(uuid())
+  user_id             String
+  content             String?
+  post_image_url      String?   // For external URLs
+  post_image_upload   String?   // For uploaded file paths
+  post_image_display  String?   @default("url")
   // ... other fields
 }
 ```
 
-## Directory Structure
+### 2. Client-Side Components
 
-```bash
-server/
-  ├── uploads/
-  │   ├── profiles/
-  │   ├── projects/
-  │   ├── articles/
-  │   └── posts/      # New directory for post images
-  └── src/
-      └── middleware/
-          └── upload.ts
-```
+#### PostImage Component
+```typescript:client/src/components/PostImage.tsx
+import React from 'react';
+import { API_URL } from '@/config';
 
-## Component Implementation
+interface PostImageProps {
+  post: {
+    post_image_display?: 'url' | 'upload';
+    post_image_url?: string | null;
+    post_image_upload?: string | null;
+  };
+  className?: string;
+  fallback?: React.ReactNode;
+}
 
-### 1. PostImage Component
-```typescript
-// client/src/components/PostImage.tsx
 export function PostImage({ post, className, fallback }: PostImageProps) {
   const imageUrl = post.post_image_display === 'url'
     ? post.post_image_url
@@ -73,153 +91,210 @@ export function PostImage({ post, className, fallback }: PostImageProps) {
 }
 ```
 
-### 2. Post Creation/Edit Form Image Section
-```typescript
-// In PostForm.tsx
-<div className="flex flex-col items-center space-y-4">
-  {/* Image Toggle Buttons */}
-  <div className="flex items-center space-x-4">
-    <button
-      type="button"
-      className={`px-4 py-2 rounded transition-colors ${
-        formData.post_image_display === "url" 
-          ? "bg-blue-500 text-white" 
-          : "bg-gray-200 hover:bg-gray-300"
-      }`}
-      onClick={() => setFormData(prev => ({ 
-        ...prev, 
-        post_image_display: "url",
-        post_image_upload: "" 
-      }))}
-    >
-      Use URL Image
-    </button>
-    <button
-      type="button"
-      className={`px-4 py-2 rounded transition-colors ${
-        formData.post_image_display === "upload" 
-          ? "bg-blue-500 text-white" 
-          : "bg-gray-200 hover:bg-gray-300"
-      }`}
-      onClick={() => setFormData(prev => ({ 
-        ...prev, 
-        post_image_display: "upload",
-        post_image_url: "" 
-      }))}
-    >
-      Use Uploaded Image
-    </button>
-  </div>
+#### PostImageUpload Component
+```typescript:client/src/components/input/forms/PostImageUpload.tsx
+import React, { useState, useEffect } from 'react';
 
-  {/* URL Input or Upload Component */}
-  {formData.post_image_display === "url" ? (
-    <div className="w-full max-w-md">
-      <label className="block text-sm font-medium text-gray-700">
-        Image URL
-      </label>
-      <input
-        type="url"
-        name="post_image_url"
-        value={formData.post_image_url || ''}
-        onChange={handleInputChange}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        placeholder="https://example.com/image.jpg"
-      />
-    </div>
-  ) : (
-    <PostImageUpload 
-      onImageSelect={handleImageSelect}
-      currentImage={
-        formData.post_image_upload 
-          ? `${API_URL.replace("/api", "")}/uploads/${formData.post_image_upload}`
-          : undefined
-      }
-      showPreview={true}
-    />
-  )}
+interface PostImageUploadProps {
+  onImageSelect: (file: File) => Promise<void>;
+  currentImage?: string;
+  showPreview?: boolean;
+}
 
-  {/* Preview for URL mode */}
-  {formData.post_image_display === "url" && formData.post_image_url && (
-    <div className="mt-4 flex justify-center">
-      <img
-        src={formData.post_image_url}
-        alt="Post preview"
-        className="w-full max-w-xl object-cover rounded-lg border-2 border-gray-200"
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.src = 'https://via.placeholder.com/800x600?text=Invalid+Image+URL';
-        }}
-      />
-    </div>
-  )}
-</div>
-```
-
-### 3. Post Display in Feed
-```typescript
-// In PostCard.tsx
-<div className="post-card rounded-lg border border-gray-200 overflow-hidden">
-  <PostImage 
-    post={post}
-    className="w-full h-48 object-cover"
-    fallback={
-      <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-        <span className="text-gray-400">No image</span>
-      </div>
-    }
-  />
-  <div className="p-4">
-    <div className="post-content">{post.content}</div>
-    {/* Other post content */}
-  </div>
-</div>
-```
-
-## Key Implementation Details
-
-1. **Form Data Handling**:
-```typescript
-// In usePostForm.ts
-const transformFormDataForApi = (formData: PostFormData) => {
-  const apiData: any = {};
+const PostImageUpload: React.FC<PostImageUploadProps> = ({ 
+  onImageSelect, 
+  currentImage,
+  showPreview = false
+}) => {
+  const [preview, setPreview] = useState<string | undefined>(currentImage);
+  const [error, setError] = useState<string | null>(null);
   
-  // Handle image fields properly
-  apiData.post_image_display = formData.post_image_display || 'url';
-  apiData.post_image_url = formData.post_image_display === 'url' 
-    ? formData.post_image_url 
-    : '';
-  apiData.post_image_upload = formData.post_image_display === 'upload' 
-    ? formData.post_image_upload 
-    : '';
+  useEffect(() => {
+    setPreview(currentImage);
+  }, [currentImage]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setError(null);
+
+    if (file) {
+      // Validate file size (5MB limit for posts)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setError(`File size must be less than 5MB`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      onImageSelect(file);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center space-y-4">
+      {error && (
+        <div className="text-red-500 text-sm">{error}</div>
+      )}
+      
+      <div className="flex flex-col items-center">
+        {showPreview && preview ? (
+          <div className="relative mb-4">
+            <img
+              src={preview}
+              alt="Post preview"
+              className="w-full max-w-xl object-cover rounded-lg border-2 border-gray-200"
+            />
+          </div>
+        ) : (
+          <div className="w-full max-w-xl h-48 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg mb-4">
+            <span className="text-gray-500">No image selected</span>
+          </div>
+        )}
+        
+        <label className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
+          Select Image
+          <input
+            type="file"
+            className="hidden"
+            onChange={handleFileSelect}
+            accept="image/*"
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
+
+export default PostImageUpload;
+```
+
+### 3. API Integration
+
+#### Posts API
+```typescript:client/src/api/posts.ts
+export interface Post {
+  id: string;
+  user_id: string;
+  content: string;
+  post_image_url?: string;
+  post_image_upload?: string;
+  post_image_display?: 'url' | 'upload';
   // ... other fields
-  return apiData;
+}
+
+export const uploadPostCoverImage = async (postId: string, file: File) => {
+  try {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const response = await axios.post(
+      `${API_URL}/posts/${postId}/cover-image`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading post image:', error);
+    throw error;
+  }
 };
 ```
 
-2. **Server-Side Processing**:
-```typescript
-// In postService.ts
-function mapPostToFrontend(post: any) {
-  return {
-    ...post,
-    post_image: post.post_image_display === 'url' 
-      ? post.post_image_url
-      : post.post_image_upload 
-        ? `/uploads/${post.post_image_upload}`
-        : null,
-    // Keep original fields
-    post_image_url: post.post_image_url || '',
-    post_image_upload: post.post_image_upload || '',
-    post_image_display: post.post_image_display || 'url'
-  };
-}
+### 4. Server-Side Implementation
+
+#### Post Service
+```typescript:server/src/services/postService.ts
+export const postService = {
+  async uploadPostImage(id: string, file: Express.Multer.File) {
+    try {
+      const relativePath = `posts/${file.filename}`;
+      
+      const updatedPost = await prisma.posts.update({
+        where: { id },
+        data: {
+          post_image_upload: relativePath,
+          post_image_url: '',
+          post_image_display: 'upload',
+          updated_at: new Date()
+        }
+      });
+      
+      return {
+        path: relativePath,
+        post: {
+          ...updatedPost,
+          post_image: `/uploads/${relativePath}`,
+          post_image_url: '',
+          post_image_upload: relativePath,
+          post_image_display: 'upload'
+        }
+      };
+    } catch (error) {
+      console.error('Error uploading post image:', error);
+      throw error;
+    }
+  },
+
+  // Helper function to map post data for frontend
+  mapPostToFrontend(post: any) {
+    return {
+      ...post,
+      post_image: post.post_image_display === 'url' 
+        ? post.post_image_url
+        : post.post_image_upload 
+          ? `/uploads/${post.post_image_upload}`
+          : null,
+      post_image_url: post.post_image_url || '',
+      post_image_upload: post.post_image_upload || '',
+      post_image_display: post.post_image_display || 'url'
+    };
+  }
+};
 ```
 
-## Testing Checklist
+### 5. Key Considerations
+
+1. **File Paths**:
+   - Client uploads go to: `/uploads/posts/`
+   - Server stores relative paths: `posts/filename.jpg`
+   - Frontend displays: `${API_URL}/uploads/posts/filename.jpg`
+
+2. **Data Transformation**:
+   - Always transform data consistently between frontend and backend
+   - Use helper functions for mapping data
+   - Maintain proper types throughout
+
+3. **Error Handling**:
+   - Validate file sizes (5MB limit for posts)
+   - Handle upload errors gracefully
+   - Show user feedback for errors
+
+4. **State Management**:
+   - Clear unused fields when switching modes
+   - Preserve image choice on form reload
+   - Handle loading states properly
+
+5. **Type Safety**:
+   - Define proper interfaces for all components
+   - Use type guards where necessary
+   - Maintain consistent types across the application
+
+### 6. Testing Checklist
 
 1. ✅ Image Upload
-   - File size limits (5MB for posts)
+   - File size validation
    - File type validation
    - Upload progress
    - Error handling
@@ -230,21 +305,64 @@ function mapPostToFrontend(post: any) {
    - Error states
    - Fallback display
 
-3. ✅ Display Consistency
-   - Feed/list view
+3. ✅ Mode Switching
+   - URL to Upload
+   - Upload to URL
+   - Clear unused fields
+   - Preserve selected mode
+
+4. ✅ Edit Form
+   - Load existing image
+   - Show correct mode
+   - Update image
+   - Preserve choices
+
+5. ✅ Display
+   - Feed view
    - Post detail view
    - Edit form preview
    - Responsive sizing
 
-4. ✅ Mode Switching
-   - Clear unused fields
-   - Maintain state
-   - Preview updates
+### 7. Image Display Considerations
 
-5. ✅ Feed Performance
-   - Image loading optimization
-   - Lazy loading
-   - Proper sizing
-   - Cache handling
+When displaying images in the post view, consider these key aspects:
 
-This implementation provides a consistent user experience for handling post images, matching the patterns established in the profile, project, and article systems while considering the specific needs of a social feed-style display. 
+```typescript
+// Post image container with adaptive height
+<div className="relative w-full max-h-[600px] min-h-[300px]">
+  <PostImage
+    post={post}
+    className="w-full h-full max-h-[600px] object-contain bg-gray-100"
+    fallback={
+      <div className="w-full h-full min-h-[300px] bg-gray-200 flex items-center justify-center">
+        <span className="text-gray-500">No image available</span>
+      </div>
+    }
+  />
+</div>
+```
+
+**Key Styling Decisions:**
+1. **Adaptive Height**:
+   - Use `max-h-[600px]` to prevent overly tall images
+   - Set `min-h-[300px]` to maintain visual consistency
+
+2. **Image Containment**:
+   - Use `object-contain` instead of `object-cover` to show full image
+   - Add `bg-gray-100` for a clean background behind non-filling images
+
+3. **Responsive Design**:
+   - Container adapts to image dimensions while respecting max/min bounds
+   - Maintains aspect ratio without cropping
+
+4. **Fallback Handling**:
+   - Consistent height with actual images
+   - Clear visual indication when no image is available
+
+These considerations ensure:
+- No image cropping or distortion
+- Consistent layout across different image sizes
+- Clean presentation of both landscape and portrait images
+- Proper fallback for missing images
+
+This implementation ensures consistent image handling across the application while maintaining good user experience and proper error handling. 

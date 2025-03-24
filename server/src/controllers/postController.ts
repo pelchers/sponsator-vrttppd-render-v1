@@ -184,4 +184,64 @@ export const commentOnPost = async (req: Request, res: Response) => {
     console.error(`Error in commentOnPost controller for id ${req.params.id}:`, error);
     res.status(500).json({ error: 'Failed to comment on post' });
   }
+};
+
+export const uploadCoverImage = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Check if user owns the post
+    const post = await postService.getPostById(id);
+    if (!post || post.user_id !== userId) {
+      return res.status(403).json({ error: 'Not authorized to update this post' });
+    }
+    
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    // Log the upload attempt
+    console.log('Attempting to upload post image:', {
+      postId: id,
+      userId,
+      file: req.file.filename
+    });
+
+    const result = await postService.postService.uploadPostImage(id, req.file);
+    
+    // Log the response being sent
+    console.log('Upload successful, sending response:', result);
+    
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in uploadCoverImage:', error);
+    res.status(500).json({ error: 'Failed to upload post image' });
+  }
+};
+
+export const updatePostHandler = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const post = await postService.updatePost(id, userId, req.body);
+    
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found or you do not have permission to update it' });
+    }
+    
+    res.status(200).json(postService.mapPostToFrontend(post));
+  } catch (error) {
+    console.error('Error updating post:', error);
+    res.status(500).json({ error: 'Failed to update post' });
+  }
 }; 

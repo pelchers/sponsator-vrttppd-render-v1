@@ -1,242 +1,312 @@
 # Dual Image Implementation Guide (Articles System)
 
-This guide extends the dual image implementation to handle article images, following the patterns established in profiles and projects.
+This guide provides a complete implementation for handling dual image sources in articles, incorporating lessons learned from profiles, projects, and our actual implementation experience.
 
-## Goals and Expected Functionality
+## File Structure and Components
 
-1. Allow users to choose between two image sources for article cover/header images:
-   - External URL
-   - File upload
-2. Maintain image source preference (`url` or `upload`) in the database
-3. Clear unused fields when switching modes
-4. Show proper preview for both modes
-5. Handle image display consistently across:
-   - Article list view
-   - Article detail page
-   - Article edit form
-6. Preserve image choice when editing existing articles
-
-## Database Schema
-
-```prisma
-model articles {
-  // ... existing fields
-  article_image_url    String?   // For external URLs
-  article_image_upload String?   // For uploaded file paths (relative to uploads/articles)
-  article_image_display String?  @default("url")  // Tracks which mode is active
-  // ... other fields
-}
-```
-
-## Directory Structure
-
+### Client-Side Files
 ```bash
-server/
-  ├── uploads/
-  │   ├── profiles/
-  │   ├── projects/
-  │   └── articles/    # New directory for article images
-  └── src/
-      └── middleware/
-          └── upload.ts
+client/src/
+  ├── components/
+  │   ├── ArticleImage.tsx                   # Article image display component
+  │   └── input/forms/
+  │       ├── ArticleImageUpload.tsx         # Image upload component
+  │   └── sections/
+  │       └── PageSection.tsx                # Section wrapper component
+  ├── api/
+  │   └── articles.ts                        # API calls for articles
+  └── pages/
+      └── article/
+          ├── article.tsx                    # Article view page
+          └── editarticle.tsx                # Article edit page
 ```
 
-## Component Implementation
-
-### 1. ArticleImage Component
-```typescript
-// client/src/components/ArticleImage.tsx
-export function ArticleImage({ article, className, fallback }: ArticleImageProps) {
-  const imageUrl = article.article_image_display === 'url'
-    ? article.article_image_url
-    : article.article_image_upload
-      ? `${API_URL.replace('/api', '')}/uploads/${article.article_image_upload}`
-      : null;
-
-  if (!imageUrl) return fallback || null;
-
-  return (
-    <img
-      src={imageUrl}
-      alt="Article cover"
-      className={className}
-      onError={(e) => {
-        const target = e.target as HTMLImageElement;
-        target.style.display = 'none';
-        if (fallback && target.parentElement) {
-          target.parentElement.appendChild(fallback as Node);
-        }
-      }}
-    />
-  );
-}
+### Server-Side Files
+```bash
+server/src/
+  ├── controllers/
+  │   └── articleController.ts
+  ├── services/
+  │   └── articleService.ts
+  ├── routes/
+  │   └── articleRoutes.ts
+  └── uploads/
+      └── articles/                          # Articles image storage
 ```
 
-### 2. Article Edit Form Image Section
-```typescript
-// In ArticleEditPage.tsx
-<div className="flex flex-col items-center space-y-4">
-  {/* Image Toggle Buttons */}
-  <div className="flex items-center space-x-4">
-    <button
-      type="button"
-      className={`px-4 py-2 rounded transition-colors ${
-        formData.article_image_display === "url" 
-          ? "bg-blue-500 text-white" 
-          : "bg-gray-200 hover:bg-gray-300"
-      }`}
-      onClick={() => setFormData(prev => ({ 
-        ...prev, 
-        article_image_display: "url",
-        article_image_upload: "" 
-      }))}
-    >
-      Use URL Image
-    </button>
-    <button
-      type="button"
-      className={`px-4 py-2 rounded transition-colors ${
-        formData.article_image_display === "upload" 
-          ? "bg-blue-500 text-white" 
-          : "bg-gray-200 hover:bg-gray-300"
-      }`}
-      onClick={() => setFormData(prev => ({ 
-        ...prev, 
-        article_image_display: "upload",
-        article_image_url: "" 
-      }))}
-    >
-      Use Uploaded Image
-    </button>
-  </div>
+## Common Issues and Solutions
 
-  {/* URL Input or Upload Component */}
-  {formData.article_image_display === "url" ? (
-    <div className="w-full max-w-md">
-      <label className="block text-sm font-medium text-gray-700">
-        Image URL
-      </label>
-      <input
-        type="url"
-        name="article_image_url"
-        value={formData.article_image_url || ''}
-        onChange={handleInputChange}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        placeholder="https://example.com/image.jpg"
-      />
-    </div>
-  ) : (
-    <ArticleImageUpload 
-      onImageSelect={handleImageSelect}
-      currentImage={
-        formData.article_image_upload 
-          ? `${API_URL.replace("/api", "")}/uploads/${formData.article_image_upload}`
-          : undefined
-      }
-      showPreview={true}
-    />
-  )}
+### 1. Section Loading Issues
+Problem: Sections not loading properly after save or on edit form reload.
 
-  {/* Preview for URL mode */}
-  {formData.article_image_display === "url" && formData.article_image_url && (
-    <div className="mt-4 flex justify-center">
-      <img
-        src={formData.article_image_url}
-        alt="Article preview"
-        className="w-full max-w-2xl object-cover rounded-lg border-2 border-gray-200"
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.src = 'https://via.placeholder.com/1200x630?text=Invalid+Image+URL';
-        }}
-      />
-    </div>
-  )}
-</div>
-```
-
-### 3. Article Detail Display
-```typescript
-// In ArticlePage.tsx
-<div className="article-header relative">
-  <ArticleImage 
-    article={article}
-    className="w-full h-[400px] object-cover rounded-t-lg"
-    fallback={
-      <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center rounded-t-lg">
-        <span className="text-gray-500">No cover image</span>
-      </div>
-    }
-  />
-  <div className="article-title-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-    <h1 className="text-4xl font-bold text-white">{article.title}</h1>
-  </div>
-</div>
-```
-
-## Key Implementation Details
-
-1. **Form Data Handling**:
-```typescript
-// In useArticleForm.ts
-const transformFormDataForApi = (formData: ArticleFormData) => {
-  const apiData: any = {};
-  
-  // Handle image fields properly
-  apiData.article_image_display = formData.article_image_display || 'url';
-  apiData.article_image_url = formData.article_image_display === 'url' 
-    ? formData.article_image_url 
-    : '';
-  apiData.article_image_upload = formData.article_image_display === 'upload' 
-    ? formData.article_image_upload 
-    : '';
-
-  // ... other fields
-  return apiData;
-};
-```
-
-2. **Server-Side Processing**:
+Solution:
 ```typescript
 // In articleService.ts
-function mapArticleToFrontend(article: any) {
+function transformDbToApi(article: any) {
+  if (!article) return null;
+  
   return {
     ...article,
-    article_image: article.article_image_display === 'url' 
-      ? article.article_image_url
-      : article.article_image_upload 
-        ? `/uploads/${article.article_image_upload}`
-        : null,
-    // Keep original fields
-    article_image_url: article.article_image_url || '',
-    article_image_upload: article.article_image_upload || '',
-    article_image_display: article.article_image_display || 'url'
+    // Transform sections to the expected format
+    sections: article.article_sections?.map((section: any) => ({
+      id: section.id,
+      type: section.type || 'full-width-text',
+      title: section.title || '',
+      subtitle: section.subtitle || '',
+      text: section.text || '',
+      mediaUrl: section.media_url || '',
+      mediaSubtext: section.media_subtext || '',
+      order: section.order ?? 0
+    })) || []
   };
 }
 ```
 
+### 2. Image Field Type Safety
+Problem: TypeScript errors with image fields.
+
+Solution:
+```typescript
+// In articles.ts
+export interface Article {
+  id: string;
+  user_id: string;
+  title: string;
+  article_image_url?: string;
+  article_image_upload?: string;
+  article_image_display?: 'url' | 'upload';
+  sections: ArticleSection[];
+  // ... other fields
+}
+
+// In articleService.ts
+interface ArticleImageUpdate {
+  article_image_url: string;
+  article_image_upload: string;
+  article_image_display: 'url' | 'upload';
+}
+```
+
+### 3. Section Ordering
+Problem: Sections losing order after updates.
+
+Solution:
+```typescript
+// In articleService.ts
+async updateArticle(id: string, userId: string, articleData: any) {
+  try {
+    // ... auth check ...
+
+    if (sections) {
+      await prisma.article_sections.deleteMany({
+        where: { article_id: id }
+      });
+
+      if (sections.length > 0) {
+        await prisma.$transaction(
+          sections.map((section, index) => 
+            prisma.article_sections.create({
+              data: {
+                article_id: id,
+                type: section.type || 'full-width-text',
+                title: section.title || '',
+                subtitle: section.subtitle || '',
+                text: section.text || '',
+                media_url: section.mediaUrl || '',
+                media_subtext: section.mediaSubtext || '',
+                order: section.order ?? index
+              }
+            })
+          )
+        );
+      }
+    }
+
+    // Fetch with ordered sections
+    const completeArticle = await prisma.articles.findUnique({
+      where: { id },
+      include: {
+        article_sections: {
+          orderBy: {
+            order: 'asc'
+          }
+        }
+      }
+    });
+
+    return transformDbToApi(completeArticle);
+  } catch (error) {
+    console.error('Error updating article:', error);
+    throw error;
+  }
+}
+```
+
+### 4. Auth Type Safety
+Problem: TypeScript errors with req.user.
+
+Solution:
+```typescript
+// In articleController.ts
+interface AuthRequest extends Request {
+  user?: {
+    id: string;
+    // ... other user fields
+  };
+}
+
+export const articleController = {
+  async updateArticle(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      // ... rest of the handler
+    } catch (error) {
+      // ... error handling
+    }
+  }
+};
+```
+
+### 5. Image Upload Response Format
+Problem: Inconsistent image data format between upload and regular fetches.
+
+Solution:
+```typescript
+// In articleService.ts
+async uploadArticleCoverImage(id: string, file: Express.Multer.File) {
+  try {
+    const relativePath = `articles/${file.filename}`;
+    
+    const updatedArticle = await prisma.articles.update({
+      where: { id },
+      data: {
+        article_image_upload: relativePath,
+        article_image_url: '',
+        article_image_display: 'upload',
+        updated_at: new Date()
+      }
+    });
+    
+    // Return consistent format
+    return {
+      path: relativePath,
+      article: {
+        ...updatedArticle,
+        article_image: `/uploads/${relativePath}`,
+        article_image_url: '',
+        article_image_upload: relativePath,
+        article_image_display: 'upload'
+      }
+    };
+  } catch (error) {
+    console.error('Error uploading article cover image:', error);
+    throw error;
+  }
+}
+```
+
+### 6. Form Data Loading
+Problem: Form not properly loading existing data.
+
+Solution:
+```typescript
+// In editarticle.tsx
+useEffect(() => {
+  if (id && id !== 'new') {
+    setLoading(true);
+    fetchArticle(id)
+      .then(data => {
+        if (data) {
+          // Make sure sections are properly formatted
+          const formattedSections = (data.sections || []).map(section => ({
+            type: section.type || 'full-width-text',
+            title: section.title || '',
+            subtitle: section.subtitle || '',
+            text: section.text || '',
+            mediaUrl: section.mediaUrl || '',
+            mediaSubtext: section.mediaSubtext || '',
+            order: section.order ?? 0
+          }));
+          
+          // Sort sections by order
+          const sortedSections = [...formattedSections].sort((a, b) => 
+            (a.order || 0) - (b.order || 0)
+          );
+          
+          setSections(sortedSections);
+          setFormData({
+            title: data.title || '',
+            article_image_url: data.article_image_url || '',
+            article_image_upload: data.article_image_upload || '',
+            article_image_display: data.article_image_display || 'url'
+          });
+        }
+      })
+      .finally(() => setLoading(false));
+  }
+}, [id]);
+```
+
+## Key Implementation Details
+
+1. **Image Handling**:
+   - Always use empty strings instead of null for unused image fields
+   - Maintain consistent image path structure
+   - Handle both relative and absolute paths properly
+
+2. **Section Management**:
+   - Use transactions for section updates
+   - Maintain order during CRUD operations
+   - Provide defaults for all section fields
+
+3. **Type Safety**:
+   - Define proper interfaces for all data structures
+   - Handle auth types properly
+   - Use type guards where needed
+
+4. **Error Handling**:
+   - Validate file sizes (10MB limit for articles)
+   - Handle upload errors gracefully
+   - Show user feedback for errors
+
+5. **State Management**:
+   - Clear unused fields when switching modes
+   - Preserve image choice on form reload
+   - Handle loading states properly
+
 ## Testing Checklist
 
-1. ✅ Image Upload
-   - File size limits (10MB)
-   - File type validation
-   - Upload progress
-   - Error handling
+1. ✅ Image Handling
+   - URL input works
+   - File upload works
+   - Preview displays correctly
+   - Mode switching works
 
-2. ✅ URL Images
-   - URL validation
-   - Preview loading
-   - Error states
-   - Fallback display
+2. ✅ Section Management
+   - Sections save correctly
+   - Order is preserved
+   - All fields load properly
+   - CRUD operations work
 
-3. ✅ Display Consistency
-   - List view thumbnails
-   - Detail page header
-   - Edit form preview
-   - Responsive sizing
+3. ✅ Data Loading
+   - Form loads existing data
+   - Images display correctly
+   - Sections load in order
+   - All fields populate
 
-4. ✅ Mode Switching
-   - Clear unused fields
-   - Maintain state
-   - Preview updates
+4. ✅ Error States
+   - Invalid URLs handled
+   - Upload errors handled
+   - Auth errors handled
+   - Loading states shown
 
-This implementation provides a consistent user experience for handling article images, matching the patterns established in the profile and project systems. 
+5. ✅ Type Safety
+   - No TypeScript errors
+   - Proper type definitions
+   - Auth types handled
+   - Consistent interfaces
+
+This implementation provides a robust solution for handling both article content and images while maintaining type safety and good user experience. 

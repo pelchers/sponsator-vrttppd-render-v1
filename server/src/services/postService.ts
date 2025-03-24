@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -68,9 +69,12 @@ export const createPost = async (data: any) => {
     data: {
       user_id: data.user_id,
       title: data.title,
-      mediaUrl: data.mediaUrl,
       description: data.description,
-      tags: data.tags || []
+      tags: data.tags || [],
+      // Add image fields
+      post_image_url: data.post_image_url || '',
+      post_image_upload: data.post_image_upload || '',
+      post_image_display: data.post_image_display || 'url'
     },
     include: {
       users: {
@@ -83,7 +87,11 @@ export const createPost = async (data: any) => {
   
   return {
     ...post,
-    username: post.users.username
+    username: post.users.username,
+    // Ensure image fields are properly returned
+    post_image_url: post.post_image_url || '',
+    post_image_upload: post.post_image_upload || '',
+    post_image_display: post.post_image_display || 'url'
   };
 };
 
@@ -93,9 +101,12 @@ export const updatePost = async (id: string, data: any) => {
     where: { id },
     data: {
       title: data.title,
-      mediaUrl: data.mediaUrl,
       description: data.description,
       tags: data.tags || [],
+      // Handle image fields properly
+      post_image_url: data.post_image_url || '',
+      post_image_upload: data.post_image_upload || '',
+      post_image_display: data.post_image_display || 'url',
       updated_at: new Date()
     },
     include: {
@@ -109,7 +120,11 @@ export const updatePost = async (id: string, data: any) => {
   
   return {
     ...post,
-    username: post.users.username
+    username: post.users.username,
+    // Ensure image fields are properly returned
+    post_image_url: post.post_image_url || '',
+    post_image_upload: post.post_image_upload || '',
+    post_image_display: post.post_image_display || 'url'
   };
 };
 
@@ -168,4 +183,78 @@ export const commentOnPost = async (id: string) => {
     ...post,
     username: post.users.username
   };
+};
+
+export const postService = {
+  async uploadPostImage(id: string, file: Express.Multer.File) {
+    try {
+      // Store the path relative to the uploads directory
+      const relativePath = `posts/${file.filename}`;
+      
+      console.log('Uploading post image:', relativePath);
+      
+      // First check if post exists
+      const existingPost = await prisma.posts.findUnique({
+        where: { id }
+      });
+
+      if (!existingPost) {
+        throw new Error('Post not found');
+      }
+      
+      const updatedPost = await prisma.posts.update({
+        where: { id },
+        data: {
+          post_image_upload: relativePath,
+          post_image_url: '',
+          post_image_display: 'upload',
+          updated_at: new Date()
+        },
+        include: {
+          users: {
+            select: {
+              username: true
+            }
+          }
+        }
+      });
+      
+      // Log the updated post data
+      console.log('Updated post image data:', {
+        post_image_upload: updatedPost.post_image_upload,
+        post_image_display: updatedPost.post_image_display
+      });
+      
+      // Return consistent format
+      return {
+        path: relativePath,
+        post: {
+          ...updatedPost,
+          username: updatedPost.users.username,
+          post_image: `/uploads/${relativePath}`,
+          post_image_url: '',
+          post_image_upload: relativePath,
+          post_image_display: 'upload'
+        }
+      };
+    } catch (error) {
+      console.error('Error in uploadPostImage:', error);
+      throw error;
+    }
+  },
+
+  // Helper function to map post data for frontend
+  mapPostToFrontend(post: any) {
+    return {
+      ...post,
+      post_image: post.post_image_display === 'url' 
+        ? post.post_image_url
+        : post.post_image_upload 
+          ? `/uploads/${post.post_image_upload}`
+          : null,
+      post_image_url: post.post_image_url || '',
+      post_image_upload: post.post_image_upload || '',
+      post_image_display: post.post_image_display || 'url'
+    };
+  }
 }; 

@@ -1,9 +1,16 @@
 import axios from 'axios';
+import { getToken } from '@/api/auth';
+import { API_URL } from '@/config';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4100/api';
-
-// Get token from localStorage
-const getToken = () => localStorage.getItem('token');
+export interface Post {
+  id: string;
+  user_id: string;
+  content: string;
+  post_image_url?: string;
+  post_image_upload?: string;
+  post_image_display?: 'url' | 'upload';
+  // ... other fields
+}
 
 // Get all posts with pagination
 export const fetchPosts = async (page = 1, limit = 10) => {
@@ -32,11 +39,45 @@ export const fetchPost = async (id: string) => {
   }
 };
 
-// Create a new post
+// Add new function for uploading post cover image
+export const uploadPostCoverImage = async (postId: string, file: File) => {
+  try {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    console.log('Uploading post cover image:', {
+      postId,
+      fileName: file.name,
+      fileSize: file.size
+    });
+    
+    const response = await axios.post(
+      `${API_URL}/posts/${postId}/cover-image`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    console.log('Upload response:', response.data);
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading post cover image:', error);
+    throw error;
+  }
+};
+
+// Update createPost to handle image fields
 export const createPost = async (data: any) => {
   try {
+    const token = getToken();
     const response = await axios.post(`${API_URL}/posts`, data, {
-      headers: { Authorization: `Bearer ${getToken()}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   } catch (error) {
@@ -45,11 +86,12 @@ export const createPost = async (data: any) => {
   }
 };
 
-// Update an existing post
+// Update updatePost to handle image fields
 export const updatePost = async (id: string, data: any) => {
   try {
+    const token = getToken();
     const response = await axios.put(`${API_URL}/posts/${id}`, data, {
-      headers: { Authorization: `Bearer ${getToken()}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   } catch (error) {

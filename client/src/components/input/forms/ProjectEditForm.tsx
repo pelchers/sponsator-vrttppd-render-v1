@@ -58,23 +58,23 @@ export default function ProjectEditForm() {
   }, [loading, formData]);
 
   if (loading) {
-    return (
+        return (
       <div className="project-edit-container">
         <div className="form-section">Loading project data...</div>
-      </div>
+            </div>
     )
   }
 
   return (
-    <div className="w-full">
+            <div className="w-full">
       <form onSubmit={handleSubmit} className="project-edit-container">
-        <div>
+            <div>
           <div className="form-section">
             {error && (
               <div className="error-message bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
                 <strong className="font-bold">Error: </strong>
                 <span className="block sm:inline">{error}</span>
-              </div>
+                  </div>
             )}
             {success && (
               <div className="success-message bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
@@ -82,7 +82,7 @@ export default function ProjectEditForm() {
                 <span className="block sm:inline">Project updated successfully!</span>
               </div>
             )}
-          </div>
+            </div>
 
           {/* Project Information */}
           <div className="form-section">
@@ -92,37 +92,37 @@ export default function ProjectEditForm() {
             <div className="flex flex-col items-center space-y-4">
               {/* Image Toggle Buttons */}
               <div className="flex items-center space-x-4">
-                <button
-                  type="button"
+              <button
+                type="button"
                   className={`px-4 py-2 rounded transition-colors ${
                     formData.project_image_display === "url" 
                       ? "bg-blue-500 text-white" 
                       : "bg-gray-200 hover:bg-gray-300"
                   }`}
                   onClick={() => setFormData(prev => ({ 
-                    ...prev, 
+                    ...prev,
                     project_image_display: "url",
                     project_image_upload: "" // Use empty string instead of null
                   }))}
                 >
                   Use URL Image
-                </button>
-                <button
-                  type="button"
+              </button>
+                  <button
+                    type="button"
                   className={`px-4 py-2 rounded transition-colors ${
                     formData.project_image_display === "upload" 
                       ? "bg-blue-500 text-white" 
                       : "bg-gray-200 hover:bg-gray-300"
                   }`}
                   onClick={() => setFormData(prev => ({ 
-                    ...prev, 
+                        ...prev,
                     project_image_display: "upload",
                     project_image_url: "" // Use empty string instead of null
                   }))}
                 >
                   Use Uploaded Image
-                </button>
-              </div>
+                  </button>
+                </div>
 
               {/* URL Input or Upload Component */}
               {formData.project_image_display === "url" ? (
@@ -135,7 +135,7 @@ export default function ProjectEditForm() {
                     name="project_image_url"
                     value={formData.project_image_url || ''}
                     onChange={(e) => setFormData(prev => ({
-                      ...prev,
+                        ...prev,
                       project_image_url: e.target.value
                     }))}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -153,7 +153,7 @@ export default function ProjectEditForm() {
                   showPreview={true}
                 />
               )}
-            </div>
+                </div>
 
             {/* Only show this preview for URL mode */}
             {formData.project_image_display === "url" && formData.project_image_url && (
@@ -186,7 +186,7 @@ export default function ProjectEditForm() {
               
               <div className="form-group">
                 <label className="form-label" htmlFor="project_description">Description</label>
-                <textarea
+              <textarea
                   id="project_description"
                   name="project_description"
                   value={formData.project_description || ''}
@@ -230,24 +230,24 @@ export default function ProjectEditForm() {
                   <option value="other">Other</option>
                 </select>
               </div>
+              </div>
             </div>
-          </div>
 
           {/* Add more sections as needed */}
           
           <div className="form-section">
             <div className="flex items-center justify-center w-full">
-              <button 
-                type="submit"
+        <button
+          type="submit"
                 disabled={saving}
                 className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 w-full md:w-auto"
-              >
+        >
                 {saving ? "Saving..." : "Save Project"}
-              </button>
+        </button>
             </div>
           </div>
-        </div>
-      </form>
+      </div>
+    </form>
     </div>
   )
 }
