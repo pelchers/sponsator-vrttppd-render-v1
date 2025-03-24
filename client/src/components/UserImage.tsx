@@ -1,3 +1,5 @@
+import { API_URL } from '@/config';
+
 interface UserImageProps {
   user: {
     profile_image_display?: 'url' | 'upload';
@@ -12,7 +14,7 @@ export function UserImage({ user, className, fallback }: UserImageProps) {
   const imageUrl = user.profile_image_display === 'url'
     ? user.profile_image_url
     : user.profile_image_upload
-      ? `${user.profile_image_upload}` // The path now includes /uploads/profiles/
+      ? `${API_URL.replace('/api', '')}/uploads/${user.profile_image_upload}`
       : null;
 
   if (!imageUrl) {

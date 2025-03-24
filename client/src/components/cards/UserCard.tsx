@@ -8,12 +8,16 @@ import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/l
 import { checkFollowStatus, getFollowCount } from '@/api/follows';
 import { checkWatchStatus, getWatchCount } from '@/api/watches';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { API_URL } from '@/config';
+import { UserImage } from '@/components/UserImage';
 
 interface UserCardProps {
   user: {
     id: string;
     username?: string;
-    profile_image?: string | null;
+    profile_image_url?: string | null;
+    profile_image_upload?: string | null;
+    profile_image_display?: 'url' | 'upload';
     bio?: string;
     user_type?: string;
     career_title?: string;
@@ -125,26 +129,15 @@ export default function UserCard({
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            {user.profile_image ? (
-              <img 
-                src={user.profile_image} 
-                alt={`${user.username}'s avatar`}
-                className="w-10 h-10 rounded-full object-cover mr-3"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    const avatar = document.createElement('div');
-                    avatar.className = 'mr-3';
-                    avatar.innerHTML = '<svg class="w-10 h-10 text-gray-300 bg-gray-100 rounded-full" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" /></svg>';
-                    parent.insertBefore(avatar, target);
-                  }
-                }}
-              />
-            ) : (
-              <DefaultAvatar className="w-10 h-10 mr-3" />
-            )}
+            <UserImage
+              user={user}
+              className="w-10 h-10 rounded-full object-cover mr-3"
+              fallback={
+                <div className="mr-3">
+                  <DefaultAvatar className="w-10 h-10" />
+                </div>
+              }
+            />
             <div>
               <h3 className="font-medium text-gray-900 group-hover:text-green-500 transition-colors duration-250">
                 {user.username}

@@ -38,9 +38,11 @@ export const searchUsers = async (
         id: true,
         username: true,
         bio: true,
-        profile_image: true,
         user_type: true,
-        created_at: true,
+        career_title: true,
+        profile_image_url: true,
+        profile_image_upload: true,
+        profile_image_display: true,
         likes_count: true,
         followers_count: true,
         watches_count: true
@@ -52,9 +54,12 @@ export const searchUsers = async (
       take: limit
     });
     
-    // Ensure all users have likes_count and followers_count (default to 0 if null)
+    // Transform results to ensure consistent format
     const processedUsers = users.map(user => ({
       ...user,
+      profile_image_url: user.profile_image_url || null,
+      profile_image_upload: user.profile_image_upload || null,
+      profile_image_display: user.profile_image_display || 'url',
       likes_count: user.likes_count || 0,
       followers_count: user.followers_count || 0,
       watches_count: user.watches_count || 0
