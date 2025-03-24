@@ -118,9 +118,14 @@ export default function ResultsGrid({
         ))}
         {showProjects && sortedResults.projects.map((project, index) => (
           <div key={`project-${project.id || index}`} className="col-span-1">
-            <ProjectCard 
-              project={project} 
-              userHasLiked={likeStatuses?.projects[project.id] || false}
+            <ProjectCard
+              key={project.id}
+              project={{
+                ...project,
+                user_profile_image_url: project.user_profile_image_url,
+                user_profile_image_upload: project.user_profile_image_upload,
+                user_profile_image_display: project.user_profile_image_display
+              }}
             />
           </div>
         ))}

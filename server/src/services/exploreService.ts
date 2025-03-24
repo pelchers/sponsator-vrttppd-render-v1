@@ -120,7 +120,10 @@ export const searchProjects = async (
         users: {
           select: {
             username: true,
-            user_type: true
+            user_type: true,
+            profile_image_url: true,
+            profile_image_upload: true,
+            profile_image_display: true
           }
         }
       },
@@ -143,6 +146,9 @@ export const searchProjects = async (
       user_id: project.user_id,
       username: project.users?.username,
       user_type: project.users?.user_type,
+      user_profile_image_url: project.users?.profile_image_url || null,
+      user_profile_image_upload: project.users?.profile_image_upload || null,
+      user_profile_image_display: project.users?.profile_image_display || 'url',
       likes_count: project.likes_count || 0,
       follows_count: project.follows_count || 0,
       watches_count: project.watches_count || 0
