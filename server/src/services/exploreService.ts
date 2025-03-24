@@ -206,7 +206,10 @@ export const searchArticles = async (
         users: {
           select: {
             username: true,
-            user_type: true
+            user_type: true,
+            profile_image_url: true,
+            profile_image_upload: true,
+            profile_image_display: true
           }
         },
         article_sections: true
@@ -236,6 +239,9 @@ export const searchArticles = async (
         username: article.users?.username,
         user_type: article.users?.user_type,
         excerpt,
+        user_profile_image_url: article.users?.profile_image_url || null,
+        user_profile_image_upload: article.users?.profile_image_upload || null,
+        user_profile_image_display: article.users?.profile_image_display || 'url',
         likes_count: article.likes_count || 0,
         follows_count: article.follows_count || 0,
         watches_count: article.watches_count || 0
@@ -296,7 +302,10 @@ export const searchPosts = async (
         users: {
           select: {
             username: true,
-            user_type: true
+            user_type: true,
+            profile_image_url: true,
+            profile_image_upload: true,
+            profile_image_display: true
           }
         }
       },
@@ -312,6 +321,9 @@ export const searchPosts = async (
       ...post,
       username: post.users?.username,
       user_type: post.users?.user_type,
+      user_profile_image_url: post.users?.profile_image_url || null,
+      user_profile_image_upload: post.users?.profile_image_upload || null,
+      user_profile_image_display: post.users?.profile_image_display || 'url',
       likes_count: post.likes_count || 0,
       follows_count: post.follows_count || 0,
       watches_count: post.watches_count || 0
