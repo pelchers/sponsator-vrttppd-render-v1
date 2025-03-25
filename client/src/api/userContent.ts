@@ -46,11 +46,14 @@ interface FetchUserInteractionsOptions {
   page: number;
   limit: number;
   userId: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 // Fetch user interactions (likes, follows, watches)
 export const fetchUserInteractions = async (options: FetchUserInteractionsOptions) => {
   try {
+    // First, get filtered interactions from the interactions endpoint
     const params = new URLSearchParams();
     
     if (options.contentTypes?.length > 0) {
@@ -65,11 +68,74 @@ export const fetchUserInteractions = async (options: FetchUserInteractionsOption
     params.append('limit', options.limit.toString());
     params.append('userId', options.userId);
     
-    const response = await axios.get(`${API_URL}/users/interactions?${params.toString()}`, {
+    // Get filtered interactions first
+    const interactionsResponse = await axios.get(`${API_URL}/users/interactions?${params.toString()}`, {
       headers: getAuthHeaders()
     });
 
-    return response.data;
+    // Then use explore API to get full data with images
+    const data = await searchAll('', {
+      contentTypes: options.contentTypes,
+      page: options.page,
+      limit: options.limit,
+      userId: options.userId,
+      sortBy: options.sortBy,
+      sortOrder: options.sortOrder
+    });
+
+    // Combine the interaction data with the explore data
+    const transformedResults = {
+      users: data.results.users?.map((user: any) => ({
+        ...user,
+        user_profile_image_url: user.profile_image_url || null,
+        user_profile_image_upload: user.profile_image_upload || null,
+        user_profile_image_display: user.profile_image_display || 'url',
+        // Get interaction data from the interactions response
+        userHasLiked: interactionsResponse.data.results.users?.find((u: any) => u.id === user.id)?.userHasLiked || false,
+        userIsFollowing: interactionsResponse.data.results.users?.find((u: any) => u.id === user.id)?.userIsFollowing || false,
+        userIsWatching: interactionsResponse.data.results.users?.find((u: any) => u.id === user.id)?.userIsWatching || false
+      })).filter((user: any) => 
+        interactionsResponse.data.results.users?.some((u: any) => u.id === user.id)
+      ) || [],
+      posts: data.results.posts?.map((post: any) => ({
+        ...post,
+        user_profile_image_url: post.user_profile_image_url || null,
+        user_profile_image_upload: post.user_profile_image_upload || null,
+        user_profile_image_display: post.user_profile_image_display || 'url',
+        userHasLiked: interactionsResponse.data.results.posts?.find((p: any) => p.id === post.id)?.userHasLiked || false,
+        userIsFollowing: interactionsResponse.data.results.posts?.find((p: any) => p.id === post.id)?.userIsFollowing || false,
+        userIsWatching: interactionsResponse.data.results.posts?.find((p: any) => p.id === post.id)?.userIsWatching || false
+      })).filter((post: any) => 
+        interactionsResponse.data.results.posts?.some((p: any) => p.id === post.id)
+      ) || [],
+      articles: data.results.articles?.map((article: any) => ({
+        ...article,
+        user_profile_image_url: article.user_profile_image_url || null,
+        user_profile_image_upload: article.user_profile_image_upload || null,
+        user_profile_image_display: article.user_profile_image_display || 'url',
+        userHasLiked: interactionsResponse.data.results.articles?.find((a: any) => a.id === article.id)?.userHasLiked || false,
+        userIsFollowing: interactionsResponse.data.results.articles?.find((a: any) => a.id === article.id)?.userIsFollowing || false,
+        userIsWatching: interactionsResponse.data.results.articles?.find((a: any) => a.id === article.id)?.userIsWatching || false
+      })).filter((article: any) => 
+        interactionsResponse.data.results.articles?.some((a: any) => a.id === article.id)
+      ) || [],
+      projects: data.results.projects?.map((project: any) => ({
+        ...project,
+        user_profile_image_url: project.user_profile_image_url || null,
+        user_profile_image_upload: project.user_profile_image_upload || null,
+        user_profile_image_display: project.user_profile_image_display || 'url',
+        userHasLiked: interactionsResponse.data.results.projects?.find((p: any) => p.id === project.id)?.userHasLiked || false,
+        userIsFollowing: interactionsResponse.data.results.projects?.find((p: any) => p.id === project.id)?.userIsFollowing || false,
+        userIsWatching: interactionsResponse.data.results.projects?.find((p: any) => p.id === project.id)?.userIsWatching || false
+      })).filter((project: any) => 
+        interactionsResponse.data.results.projects?.some((p: any) => p.id === project.id)
+      ) || []
+    };
+
+    return {
+      results: transformedResults,
+      totalPages: interactionsResponse.data.totalPages
+    };
   } catch (error) {
     console.error('Error fetching user interactions:', error);
     return {
@@ -84,92 +150,68 @@ export const fetchUserInteractions = async (options: FetchUserInteractionsOption
   }
 };
 
+// Update fetchUserPortfolio to use explore API
 export const fetchUserPortfolio = async (options: {
   contentTypes: string[];
   userId: string;
   page: number;
   limit: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }) => {
   try {
-    const params = new URLSearchParams();
-    
-    if (options.contentTypes && options.contentTypes.length > 0) {
-      params.append('contentTypes', options.contentTypes.join(','));
-    }
-    
-    if (options.page) {
-      params.append('page', options.page.toString());
-    }
-    
-    if (options.limit) {
-      params.append('limit', options.limit.toString());
-    }
-    
-    // Make sure we're using the correct API URL
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4100';
-    
-    // Determine the endpoint based on whether we're fetching for a specific user
-    let endpoint;
-    if (options.userId) {
-      endpoint = `${API_URL}/api/users/portfolio/${options.userId}?${params.toString()}`;
-    } else {
-      endpoint = `${API_URL}/api/users/portfolio?${params.toString()}`;
-    }
-    
-    console.log('Fetching from endpoint:', endpoint);
-    
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json'
-    };
-
-    const token = getAuthHeaders().Authorization;
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    console.log('Using headers:', headers);
-    
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers
+    // Use the explore API like fetchUserLikes does
+    const data = await searchAll('', {
+      contentTypes: options.contentTypes,
+      page: options.page,
+      limit: options.limit,
+      sortBy: options.sortBy,
+      sortOrder: options.sortOrder,
+      userId: options.userId // Pass userId to filter by user
     });
 
-    // Log the full response for debugging
-    console.log('Response status:', response.status);
-    console.log('Response headers:', response.headers);
+    // Transform results to ensure image fields are present
+    const transformedResults = {
+      users: data.results.users?.map((user: any) => ({
+        ...user,
+        user_profile_image_url: user.profile_image_url || null,
+        user_profile_image_upload: user.profile_image_upload || null,
+        user_profile_image_display: user.profile_image_display || 'url'
+      })) || [],
+      posts: data.results.posts?.map((post: any) => ({
+        ...post,
+        user_profile_image_url: post.user_profile_image_url || null,
+        user_profile_image_upload: post.user_profile_image_upload || null,
+        user_profile_image_display: post.user_profile_image_display || 'url'
+      })) || [],
+      articles: data.results.articles?.map((article: any) => ({
+        ...article,
+        user_profile_image_url: article.user_profile_image_url || null,
+        user_profile_image_upload: article.user_profile_image_upload || null,
+        user_profile_image_display: article.user_profile_image_display || 'url'
+      })) || [],
+      projects: data.results.projects?.map((project: any) => ({
+        ...project,
+        user_profile_image_url: project.user_profile_image_url || null,
+        user_profile_image_upload: project.user_profile_image_upload || null,
+        user_profile_image_display: project.user_profile_image_display || 'url'
+      })) || []
+    };
 
-    // Try to get the response text first to see what's coming back
-    const responseText = await response.text();
-    console.log('Response text:', responseText);
-
-    // Then parse it as JSON if it's valid
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (e) {
-      console.error('Failed to parse response as JSON:', e);
-      throw new Error('Invalid JSON response from server');
-    }
-
-    return data;
+    return {
+      results: transformedResults,
+      totalPages: data.totalPages
+    };
   } catch (error) {
     console.error('Error fetching user portfolio:', error);
-    
-    // Return empty results as fallback
     return {
       results: {
+        users: [],
         posts: [],
         articles: [],
         projects: []
       },
-      counts: {
-        posts: 0,
-        articles: 0,
-        projects: 0
-      },
-      page: options.page,
-      limit: options.limit,
-      totalPages: 0
+      totalPages: 1
     };
   }
 };

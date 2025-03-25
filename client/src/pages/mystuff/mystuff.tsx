@@ -116,16 +116,36 @@ export default function MyStuffPage() {
       // Deduplicate results by ID for each content type
       const deduplicatedResults = {
         users: Array.from(
-          new Map(data.results.users?.map(item => [item.id, item])).values()
+          new Map(data.results.users?.map(item => [item.id, {
+            ...item,
+            user_profile_image_url: item.profile_image_url || null,
+            user_profile_image_upload: item.profile_image_upload || null,
+            user_profile_image_display: item.profile_image_display || 'url'
+          }])).values()
         ) || [],
         posts: Array.from(
-          new Map(data.results.posts?.map(item => [item.id, item])).values()
+          new Map(data.results.posts?.map(item => [item.id, {
+            ...item,
+            user_profile_image_url: item.user_profile_image_url || null,
+            user_profile_image_upload: item.user_profile_image_upload || null,
+            user_profile_image_display: item.user_profile_image_display || 'url'
+          }])).values()
         ) || [],
         articles: Array.from(
-          new Map(data.results.articles?.map(item => [item.id, item])).values()
+          new Map(data.results.articles?.map(item => [item.id, {
+            ...item,
+            user_profile_image_url: item.user_profile_image_url || null,
+            user_profile_image_upload: item.user_profile_image_upload || null,
+            user_profile_image_display: item.user_profile_image_display || 'url'
+          }])).values()
         ) || [],
         projects: Array.from(
-          new Map(data.results.projects?.map(item => [item.id, item])).values()
+          new Map(data.results.projects?.map(item => [item.id, {
+            ...item,
+            user_profile_image_url: item.user_profile_image_url || null,
+            user_profile_image_upload: item.user_profile_image_upload || null,
+            user_profile_image_display: item.user_profile_image_display || 'url'
+          }])).values()
         ) || []
       };
 

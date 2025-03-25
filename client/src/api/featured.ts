@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_ROUTES } from './config';
+import { searchAll } from '@/api/explore';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4100/api';
 
@@ -10,16 +11,51 @@ interface FetchFeaturedContentOptions {
 export const fetchFeaturedContent = async (options: FetchFeaturedContentOptions = {}) => {
   try {
     const { featuredOnly = false } = options;
-    const params = featuredOnly ? '?featured=true' : '';
-    const response = await axios.get(`${API_URL}${API_ROUTES.FEATURED.GET}${params}`);
-    return response.data;
+    
+    // Use the explore API to get data with images
+    const data = await searchAll('', {
+      contentTypes: ['users', 'projects', 'articles', 'posts'],
+      featured: true // Always get featured items
+    });
+
+    // Filter results based on featuredOnly option
+    const transformedResults = {
+      users: data.results.users?.map((user: any) => ({
+        ...user,
+        user_profile_image_url: user.profile_image_url || null,
+        user_profile_image_upload: user.profile_image_upload || null,
+        user_profile_image_display: user.profile_image_display || 'url'
+      })).filter(user => !featuredOnly || user.featured) || [],
+      projects: data.results.projects?.map((project: any) => ({
+        ...project,
+        user_profile_image_url: project.user_profile_image_url || null,
+        user_profile_image_upload: project.user_profile_image_upload || null,
+        user_profile_image_display: project.user_profile_image_display || 'url'
+      })).filter(project => !featuredOnly || project.featured) || [],
+      articles: data.results.articles?.map((article: any) => ({
+        ...article,
+        user_profile_image_url: article.user_profile_image_url || null,
+        user_profile_image_upload: article.user_profile_image_upload || null,
+        user_profile_image_display: article.user_profile_image_display || 'url'
+      })).filter(article => !featuredOnly || article.featured) || [],
+      posts: data.results.posts?.map((post: any) => ({
+        ...post,
+        user_profile_image_url: post.user_profile_image_url || null,
+        user_profile_image_upload: post.user_profile_image_upload || null,
+        user_profile_image_display: post.user_profile_image_display || 'url'
+      })).filter(post => !featuredOnly || post.featured) || [],
+      comments: data.results.comments?.filter(comment => !featuredOnly || comment.featured) || []
+    };
+
+    return transformedResults;
   } catch (error) {
     console.error('Error fetching featured content:', error);
     return {
       users: [],
       projects: [],
       articles: [],
-      posts: []
+      posts: [],
+      comments: []
     };
   }
 }; 

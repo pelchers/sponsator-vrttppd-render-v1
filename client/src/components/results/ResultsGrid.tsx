@@ -110,7 +110,7 @@ export default function ResultsGrid({
       </div>
 
       {/* Results grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {showUsers && sortedResults.users.map((user, index) => (
           <div key={`user-${user.id || index}`} className="col-span-1">
             <UserCard user={user} />

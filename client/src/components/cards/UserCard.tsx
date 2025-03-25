@@ -122,7 +122,7 @@ export default function UserCard({
   };
 
   return (
-    <Card className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative transition-all duration-250 hover:scale-105 hover:shadow-lg">
+    <Card className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative transition-all duration-250 hover:scale-105 hover:shadow-lg min-w-[300px]">
       <Link 
         to={`/profile/${user.id}`}
         className="flex-grow p-4 flex flex-col group"
@@ -153,9 +153,7 @@ export default function UserCard({
       </Link>
       
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="text-sm text-gray-500">
-          {user.career_title || 'Member'}
-        </div>
+       
         <div className="flex items-center gap-2 ml-auto">
           <WatchButton 
             entityType="user"

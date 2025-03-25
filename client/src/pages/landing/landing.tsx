@@ -13,6 +13,8 @@ import UserCard from '@/components/cards/UserCard';
 import ProjectCard from '@/components/cards/ProjectCard';
 import ArticleCard from '@/components/cards/ArticleCard';
 import PostCard from '@/components/cards/PostCard';
+import { UserImage } from '@/components/UserImage';
+import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -51,8 +53,15 @@ export default function Landing() {
       fetchFeaturedContent({ featuredOnly: false })
     ])
       .then(([featured, all]) => {
-        setFeaturedContent(featured);
-        setAllContent(all);
+        setFeaturedContent(featured || { users: [], projects: [], articles: [], posts: [], comments: [] });
+        setAllContent(all || { users: [], projects: [], articles: [], posts: [], comments: [] });
+      })
+      .catch(error => {
+        console.error('Error fetching content:', error);
+        // Set empty arrays on error
+        const emptyContent = { users: [], projects: [], articles: [], posts: [], comments: [] };
+        setFeaturedContent(emptyContent);
+        setAllContent(emptyContent);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -191,10 +200,18 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {featuredContent.users.map((user) => (
+                    {featuredContent.users?.map((user) => (
                       <UserCard 
                         key={user.id}
-                        user={user}
+                        user={{
+                          ...user,
+                          profile_image: user.profile_image_url || user.profile_image_upload,
+                          bio: user.bio || '',
+                          career_title: user.career_title || '',
+                          likes_count: user.likes_count || 0,
+                          followers_count: user.followers_count || 0,
+                          watches_count: user.watches_count || 0
+                        }}
                       />
                     ))}
                   </div>
@@ -204,10 +221,17 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {featuredContent.projects.map((project) => (
+                    {featuredContent.projects?.map((project) => (
                       <ProjectCard 
                         key={project.id}
-                        project={project}
+                        project={{
+                          ...project,
+                          description: project.description || '',
+                          likes_count: project.likes_count || 0,
+                          follows_count: project.follows_count || 0,
+                          watches_count: project.watches_count || 0,
+                          mediaUrl: project.mediaUrl || project.project_image_url || project.project_image_upload
+                        }}
                       />
                     ))}
                   </div>
@@ -217,10 +241,17 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Featured Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {featuredContent.articles.map((article) => (
+                    {featuredContent.articles?.map((article) => (
                       <ArticleCard 
                         key={article.id}
-                        article={article}
+                        article={{
+                          ...article,
+                          description: article.description || '',
+                          likes_count: article.likes_count || 0,
+                          follows_count: article.follows_count || 0,
+                          watches_count: article.watches_count || 0,
+                          mediaUrl: article.mediaUrl || article.cover_image
+                        }}
                       />
                     ))}
                   </div>
@@ -230,10 +261,17 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Featured Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {featuredContent.posts.map((post) => (
+                    {featuredContent.posts?.map((post) => (
                       <PostCard 
                         key={post.id}
-                        post={post}
+                        post={{
+                          ...post,
+                          description: post.description || '',
+                          likes_count: post.likes_count || 0,
+                          follows_count: post.follows_count || 0,
+                          watches_count: post.watches_count || 0,
+                          mediaUrl: post.mediaUrl || post.image_url
+                        }}
                       />
                     ))}
                   </div>
@@ -294,10 +332,18 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Recent Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {allContent.users.map((user) => (
+                    {allContent.users?.map((user) => (
                       <UserCard 
                         key={user.id}
-                        user={user}
+                        user={{
+                          ...user,
+                          profile_image: user.profile_image_url || user.profile_image_upload,
+                          bio: user.bio || '',
+                          career_title: user.career_title || '',
+                          likes_count: user.likes_count || 0,
+                          followers_count: user.followers_count || 0,
+                          watches_count: user.watches_count || 0
+                        }}
                       />
                     ))}
                   </div>
@@ -307,10 +353,17 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {allContent.projects.map((project) => (
+                    {allContent.projects?.map((project) => (
                       <ProjectCard 
                         key={project.id}
-                        project={project}
+                        project={{
+                          ...project,
+                          description: project.description || '',
+                          likes_count: project.likes_count || 0,
+                          follows_count: project.follows_count || 0,
+                          watches_count: project.watches_count || 0,
+                          mediaUrl: project.mediaUrl || project.project_image_url || project.project_image_upload
+                        }}
                       />
                     ))}
                   </div>
@@ -320,10 +373,17 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {allContent.articles.map((article) => (
+                    {allContent.articles?.map((article) => (
                       <ArticleCard 
                         key={article.id}
-                        article={article}
+                        article={{
+                          ...article,
+                          description: article.description || '',
+                          likes_count: article.likes_count || 0,
+                          follows_count: article.follows_count || 0,
+                          watches_count: article.watches_count || 0,
+                          mediaUrl: article.mediaUrl || article.cover_image
+                        }}
                       />
                     ))}
                   </div>
@@ -333,54 +393,18 @@ export default function Landing() {
                 <div className="bg-gray-50 p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {allContent.posts.map((post) => (
+                    {allContent.posts?.map((post) => (
                       <PostCard 
                         key={post.id}
-                        post={post}
+                        post={{
+                          ...post,
+                          description: post.description || '',
+                          likes_count: post.likes_count || 0,
+                          follows_count: post.follows_count || 0,
+                          watches_count: post.watches_count || 0,
+                          mediaUrl: post.mediaUrl || post.image_url
+                        }}
                       />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Comments */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Comments</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {allContent.comments.map((comment) => (
-                      <div 
-                        key={comment.id}
-                        className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
-                      >
-                        <div className="flex items-center mb-3">
-                          <img 
-                            src={comment.users.profile_image || '/default-avatar.png'} 
-                            alt={comment.users.username}
-                            className="w-8 h-8 rounded-full mr-2"
-                          />
-                          <div>
-                            <Link 
-                              to={`/profile/${comment.users.id}`}
-                              className="font-medium text-gray-900 hover:text-blue-600"
-                            >
-                              {comment.users.username}
-                            </Link>
-                            <p className="text-xs text-gray-500">
-                              on {comment.entity_type} • {new Date(comment.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-gray-700 line-clamp-3">{comment.text}</p>
-                        <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-                          <span>❤️ {comment.likes_count}</span>
-                          <span>👁️ {comment.watches_count}</span>
-                          <Link 
-                            to={`/${comment.entity_type}/${comment.entity_id}`}
-                            className="ml-auto text-blue-600 hover:text-blue-800"
-                          >
-                            View {comment.entity_type}
-                          </Link>
-                        </div>
-                      </div>
                     ))}
                   </div>
                 </div>
