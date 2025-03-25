@@ -11,8 +11,9 @@ export interface Article {
   id: string;
   user_id: string;
   title: string;
-  article_image_url?: string;
-  article_image_upload?: string;
+  description?: string;
+  article_image_url?: string | null;
+  article_image_upload?: string | null;
   article_image_display?: 'url' | 'upload';
   sections: any[];
   citations: string[];
@@ -141,9 +142,14 @@ export const uploadArticleCoverImage = async (articleId: string, file: File) => 
       }
     );
 
+    // Expect response to include both URL and upload path
     console.log('Upload response:', response.data);
     
-    return response.data;
+    return {
+      article_image_url: response.data.url,
+      article_image_upload: response.data.uploadPath,
+      article_image_display: 'upload' // Default to upload for new images
+    };
   } catch (error) {
     console.error('Error uploading article cover image:', error);
     throw error;

@@ -71,14 +71,16 @@ export interface Project {
   id: string;
   user_id: string;
   project_name: string;
-  project_description: string;
+  project_description?: string;
   project_type: string;
   project_category?: string;
   project_timeline: string;
   project_status_tag: string;
   project_visibility: string;
   search_visibility: boolean;
-  project_image: string | null;
+  project_image_url?: string | null;
+  project_image_upload?: string | null;
+  project_image_display?: 'url' | 'upload';
   
   // Social links to match schema
   social_links_youtube?: string;

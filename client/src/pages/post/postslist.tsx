@@ -2,22 +2,22 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchPosts, deletePost } from '@/api/posts';
 import { Button } from '@/components/ui/button';
+import { PostImage } from '@/components/PostImage';
+import { PencilIcon } from '@/components/icons/PencilIcon';
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Post {
   id: string;
   title: string;
-  description: string;
-  mediaUrl?: string;
-  tags: string[];
-  likes: number;
-  comments: any[];
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-  username: string;
+  description?: string;
+  created_at?: string;
+  tags?: string[];
+  post_image_url?: string | null;
+  post_image_upload?: string | null;
+  post_image_display?: 'url' | 'upload';
 }
 
-export default function PostsPage() {
+export default function PostsListPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,6 @@ export default function PostsPage() {
       } catch (err) {
         console.error('Error loading posts:', err);
         setError('Failed to load posts. Please try again later.');
-        // Fallback to empty array if API fails
         setPosts([]);
       } finally {
         setLoading(false);
@@ -58,11 +57,19 @@ export default function PostsPage() {
   };
 
   if (loading && posts.length === 0) {
-    return <div className="container mx-auto px-4 py-8">Loading posts...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto px-4 py-8 text-red-500">{error}</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
   }
 
   return (
@@ -71,75 +78,67 @@ export default function PostsPage() {
         <h1 className="text-2xl font-bold">Posts</h1>
         <Link
           to="/post/edit/new"
-          className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200"
         >
           Create New Post
         </Link>
       </div>
 
       {posts.length === 0 ? (
-        <p>No posts found. Create your first post!</p>
+        <div className="text-center py-8">
+          <p className="text-gray-500">No posts found. Create your first post!</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
-            <div key={post.id} className="bg-white shadow rounded-lg overflow-hidden">
-              {post.mediaUrl && (
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={post.mediaUrl} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = 'https://via.placeholder.com/400x200?text=Image+Not+Found';
+            <div key={post.id} className="relative bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+              <Link to={`/post/${post.id}`} className="block">
+                <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                  <PostImage
+                    post={{
+                      post_image_url: post.post_image_url,
+                      post_image_upload: post.post_image_upload,
+                      post_image_display: post.post_image_display
                     }}
+                    className="w-full h-full object-cover"
+                    fallback={
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-gray-400">No post image</span>
+                      </div>
+                    }
                   />
                 </div>
-              )}
-              
-              <div className="p-4">
-                <Link to={`/post/${post.id}`} className="text-lg font-semibold text-blue-600 hover:underline">
-                  {post.title || 'Untitled Post'}
-                </Link>
-                
-                <p className="text-gray-500 text-sm mt-1">
-                  By {post.username} • {new Date(post.created_at).toLocaleDateString()}
-                </p>
-                
-                <p className="mt-2 text-gray-700 line-clamp-3">
-                  {post.description}
-                </p>
-                
-                {post.tags && post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {post.tags.map((tag, index) => (
-                      <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                
-                <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-                  <div className="flex space-x-2 text-sm">
-                    <span>{post.likes} likes</span>
-                    <span>•</span>
-                    <span>{post.comments.length} comments</span>
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <Link to={`/post/edit/${post.id}`} className="text-green-600 hover:underline text-sm">
-                      Edit
-                    </Link>
-                    <button 
-                      onClick={() => handleDelete(post.id)}
-                      className="text-red-600 hover:underline text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-500 transition-colors duration-200">
+                    {post.title || 'Untitled Post'}
+                  </h2>
+                  {post.description && (
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {post.description}
+                    </p>
+                  )}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {post.tags.slice(0, 3).map((tag, index) => (
+                        <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs">
+                          {tag}
+                        </span>
+                      ))}
+                      {post.tags.length > 3 && (
+                        <span className="text-xs text-gray-500">+{post.tags.length - 3} more</span>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Link>
+
+              {/* Edit button */}
+              <Link
+                to={`/post/edit/${post.id}`}
+                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:shadow-md transition-shadow"
+              >
+                <PencilIcon className="w-4 h-4 text-gray-600 hover:text-blue-500" />
+              </Link>
             </div>
           ))}
         </div>

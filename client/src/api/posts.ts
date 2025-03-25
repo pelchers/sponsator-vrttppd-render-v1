@@ -1,23 +1,29 @@
 import axios from 'axios';
 import { getToken } from '@/api/auth';
-import { API_URL } from '@/config';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4100/api';
+
+// Types
 export interface Post {
   id: string;
   user_id: string;
-  content: string;
-  post_image_url?: string;
-  post_image_upload?: string;
+  title: string;
+  description?: string;
+  post_image_url?: string | null;
+  post_image_upload?: string | null;
   post_image_display?: 'url' | 'upload';
-  // ... other fields
+  tags: string[];
+  created_at: string;
+  updated_at: string;
 }
 
-// Get all posts with pagination
+// Fetch all posts with pagination
 export const fetchPosts = async (page = 1, limit = 10) => {
   try {
+    const token = getToken();
     const response = await axios.get(`${API_URL}/posts`, {
       params: { page, limit },
-      headers: { Authorization: `Bearer ${getToken()}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   } catch (error) {
@@ -26,11 +32,12 @@ export const fetchPosts = async (page = 1, limit = 10) => {
   }
 };
 
-// Get a single post
+// Fetch a single post
 export const fetchPost = async (id: string) => {
   try {
+    const token = getToken();
     const response = await axios.get(`${API_URL}/posts/${id}`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   } catch (error) {
@@ -39,7 +46,49 @@ export const fetchPost = async (id: string) => {
   }
 };
 
-// Add new function for uploading post cover image
+// Create a new post
+export const createPost = async (data: any) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_URL}/posts`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating post:', error);
+    throw error;
+  }
+};
+
+// Update an existing post
+export const updatePost = async (id: string, data: any) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(`${API_URL}/posts/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating post ${id}:`, error);
+    throw error;
+  }
+};
+
+// Delete a post
+export const deletePost = async (id: string) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(`${API_URL}/posts/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting post ${id}:`, error);
+    throw error;
+  }
+};
+
+// Upload post cover image
 export const uploadPostCoverImage = async (postId: string, file: File) => {
   try {
     const token = getToken();
@@ -63,52 +112,14 @@ export const uploadPostCoverImage = async (postId: string, file: File) => {
       }
     );
 
-    console.log('Upload response:', response.data);
-    
-    return response.data;
+    // Return both URL and upload path
+    return {
+      post_image_url: response.data.url,
+      post_image_upload: response.data.uploadPath,
+      post_image_display: 'upload' // Default to upload for new images
+    };
   } catch (error) {
     console.error('Error uploading post cover image:', error);
-    throw error;
-  }
-};
-
-// Update createPost to handle image fields
-export const createPost = async (data: any) => {
-  try {
-    const token = getToken();
-    const response = await axios.post(`${API_URL}/posts`, data, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error creating post:', error);
-    throw error;
-  }
-};
-
-// Update updatePost to handle image fields
-export const updatePost = async (id: string, data: any) => {
-  try {
-    const token = getToken();
-    const response = await axios.put(`${API_URL}/posts/${id}`, data, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating post ${id}:`, error);
-    throw error;
-  }
-};
-
-// Delete a post
-export const deletePost = async (id: string) => {
-  try {
-    const response = await axios.delete(`${API_URL}/posts/${id}`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`Error deleting post ${id}:`, error);
     throw error;
   }
 };

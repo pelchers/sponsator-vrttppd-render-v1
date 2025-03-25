@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { fetchProjects } from '@/api/projects';
 import { Project } from '@/types/project';
 import Layout from '@/components/layout/layout';
+import { ProjectImage } from '@/components/ProjectImage';
+import { Button } from '@/components/ui/button';
+import { PencilIcon } from '@/components/icons/PencilIcon';
 
 export default function ProjectsListPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -57,37 +60,52 @@ export default function ProjectsListPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
-          <Link 
-            key={project.id}
-            to={`/projects/${project.id}`}
-            className="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            {project.project_image && (
-              <div className="relative w-full h-48 mb-4">
-                <img
-                  src={project.project_image}
-                  alt={project.project_name}
-                  className="w-full h-full object-cover rounded"
+          <div key={project.id} className="relative bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+            <Link 
+              to={`/projects/${project.id}`}
+              className="block p-6"
+            >
+              <div className="relative w-full h-48 mb-4 overflow-hidden rounded">
+                <ProjectImage
+                  project={{
+                    project_image_url: project.project_image_url,
+                    project_image_upload: project.project_image_upload,
+                    project_image_display: project.project_image_display
+                  }}
+                  className="w-full h-full object-cover"
+                  fallback={
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <span className="text-gray-400">No project image</span>
+                    </div>
+                  }
                 />
               </div>
-            )}
-            <h2 className="text-xl font-semibold mb-2">{project.project_name}</h2>
-            <p className="text-gray-600 mb-4 line-clamp-3">
-              {project.project_description}
-            </p>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">
-                {project.project_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </span>
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                project.project_status_tag === 'completed' ? 'bg-green-100 text-green-800' :
-                project.project_status_tag === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {project.project_status_tag.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </span>
-            </div>
-          </Link>
+              <h2 className="text-xl font-semibold mb-2">{project.project_name}</h2>
+              <p className="text-gray-600 mb-4 line-clamp-3">
+                {project.project_description}
+              </p>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-500">
+                  {project.project_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                  project.project_status_tag === 'completed' ? 'bg-green-100 text-green-800' :
+                  project.project_status_tag === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {project.project_status_tag?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+              </div>
+            </Link>
+            
+            {/* Edit button - positioned absolutely in the top-right corner */}
+            <Link
+              to={`/projects/${project.id}/edit`}
+              className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:shadow-md transition-shadow"
+            >
+              <PencilIcon className="w-4 h-4 text-gray-600 hover:text-blue-500" />
+            </Link>
+          </div>
         ))}
       </div>
     </div>
