@@ -3,9 +3,9 @@ import { API_URL } from '@/config';
 
 interface PostImageProps {
   post: {
-    post_image_display?: 'url' | 'upload';
     post_image_url?: string | null;
     post_image_upload?: string | null;
+    post_image_display?: 'url' | 'upload';
   };
   className?: string;
   fallback?: React.ReactNode;
@@ -30,7 +30,7 @@ export function PostImage({ post, className, fallback }: PostImageProps) {
   return (
     <img
       src={imageUrl}
-      alt="Post image"
+      alt="Post"
       className={className}
       onError={(e) => {
         console.error('Image failed to load:', imageUrl);

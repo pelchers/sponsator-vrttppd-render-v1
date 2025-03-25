@@ -10,6 +10,7 @@ import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
 import { UserImage } from '@/components/UserImage';
+import { ArticleImage } from '@/components/ArticleImage';
 
 interface ArticleCardProps {
   article: {
@@ -34,6 +35,9 @@ interface ArticleCardProps {
     user_profile_image_url?: string;
     user_profile_image_upload?: string;
     user_profile_image_display?: string;
+    article_image_url?: string | null;
+    article_image_upload?: string | null;
+    article_image_display?: 'url' | 'upload';
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -172,16 +176,20 @@ export default function ArticleCard({
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
       <Link to={`/article/${article.id}`} className="flex-grow group">
-        {mediaUrl && (
+        {(article.article_image_url || article.article_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
-            <img 
-              src={mediaUrl} 
-              alt={title} 
-              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = 'https://via.placeholder.com/300x200?text=Article+Image';
+            <ArticleImage
+              article={{
+                article_image_url: article.article_image_url,
+                article_image_upload: article.article_image_upload,
+                article_image_display: article.article_image_display
               }}
+              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
+              fallback={
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <span className="text-gray-400">No article image</span>
+                </div>
+              }
             />
           </div>
         )}

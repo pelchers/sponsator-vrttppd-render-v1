@@ -11,6 +11,7 @@ import LikeButton from "@/components/buttons/LikeButton";
 import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { UserImage } from '@/components/UserImage';
+import { PostImage } from '@/components/PostImage';
 
 interface PostCardProps {
   post: {
@@ -34,6 +35,9 @@ interface PostCardProps {
     user_profile_image_url?: string;
     user_profile_image_upload?: string;
     user_profile_image_display?: string;
+    post_image_url?: string | null;
+    post_image_upload?: string | null;
+    post_image_display?: 'url' | 'upload';
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -161,16 +165,20 @@ export default function PostCard({
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
       <Link to={`/post/${post.id}`} className="flex-grow group">
-        {post.mediaUrl && (
+        {(post.post_image_url || post.post_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
-            <img 
-              src={post.mediaUrl} 
-              alt={title} 
-              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+            <PostImage
+              post={{
+                post_image_url: post.post_image_url,
+                post_image_upload: post.post_image_upload,
+                post_image_display: post.post_image_display
               }}
+              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
+              fallback={
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <span className="text-gray-400">No post image</span>
+                </div>
+              }
             />
           </div>
         )}

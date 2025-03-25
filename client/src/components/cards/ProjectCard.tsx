@@ -10,6 +10,7 @@ import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
 import { checkFollowStatus, getFollowCount } from '@/api/follows';
 import { checkWatchStatus, getWatchCount } from '@/api/watches';
 import { UserImage } from '@/components/UserImage';
+import { ProjectImage } from '@/components/ProjectImage';
 
 interface ProjectCardProps {
   project: {
@@ -36,6 +37,9 @@ interface ProjectCardProps {
     user_profile_image_url?: string | null;
     user_profile_image_upload?: string | null;
     user_profile_image_display?: 'url' | 'upload';
+    project_image_url?: string | null;
+    project_image_upload?: string | null;
+    project_image_display?: 'url' | 'upload';
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -168,19 +172,30 @@ export default function ProjectCard({
     }
   };
 
+  console.log('ProjectCard image props:', {
+    url: project.project_image_url,
+    upload: project.project_image_upload,
+    display: project.project_image_display,
+    mediaUrl: project.mediaUrl // check if we have legacy data
+  });
+
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
       <Link to={`/projects/${project.id}`} className="flex-grow group">
-        {project.mediaUrl && (
+        {(project.project_image_url || project.project_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
-            <img 
-              src={project.mediaUrl} 
-              alt={title} 
-              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = 'https://via.placeholder.com/300x200?text=Project+Image';
+            <ProjectImage
+              project={{
+                project_image_url: project.project_image_url,
+                project_image_upload: project.project_image_upload,
+                project_image_display: project.project_image_display
               }}
+              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
+              fallback={
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <span className="text-gray-400">No project image</span>
+                </div>
+              }
             />
           </div>
         )}

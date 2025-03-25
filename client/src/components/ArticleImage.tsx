@@ -3,9 +3,9 @@ import { API_URL } from '@/config';
 
 interface ArticleImageProps {
   article: {
-    article_image_display?: 'url' | 'upload';
     article_image_url?: string | null;
     article_image_upload?: string | null;
+    article_image_display?: 'url' | 'upload';
   };
   className?: string;
   fallback?: React.ReactNode;
@@ -32,7 +32,7 @@ export function ArticleImage({ article, className, fallback }: ArticleImageProps
   return (
     <img
       src={imageUrl}
-      alt="Article cover"
+      alt="Article"
       className={className}
       onError={(e) => {
         console.error('Image failed to load:', imageUrl);

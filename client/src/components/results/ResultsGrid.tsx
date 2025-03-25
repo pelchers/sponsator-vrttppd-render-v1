@@ -116,23 +116,36 @@ export default function ResultsGrid({
             <UserCard user={user} />
           </div>
         ))}
-        {showProjects && sortedResults.projects.map((project, index) => (
-          <div key={`project-${project.id || index}`} className="col-span-1">
-            <ProjectCard
-              key={project.id}
-              project={{
-                ...project,
-                user_profile_image_url: project.user_profile_image_url,
-                user_profile_image_upload: project.user_profile_image_upload,
-                user_profile_image_display: project.user_profile_image_display
-              }}
-            />
-          </div>
-        ))}
+        {showProjects && sortedResults.projects.map((project, index) => {
+          console.log('Project in ResultsGrid:', {
+            id: project.id,
+            imageUrl: project.project_image_url,
+            imageUpload: project.project_image_upload,
+            imageDisplay: project.project_image_display
+          });
+          
+          return (
+            <div key={`project-${project.id || index}`} className="col-span-1">
+              <ProjectCard
+                project={{
+                  ...project,
+                  project_image_url: project.project_image_url,
+                  project_image_upload: project.project_image_upload,
+                  project_image_display: project.project_image_display
+                }}
+              />
+            </div>
+          );
+        })}
         {showArticles && sortedResults.articles.map((article, index) => (
           <div key={`article-${article.id || index}`} className="col-span-1">
-            <ArticleCard 
-              article={article} 
+            <ArticleCard
+              article={{
+                ...article,
+                article_image_url: article.article_image_url,
+                article_image_upload: article.article_image_upload,
+                article_image_display: article.article_image_display
+              }}
               userHasLiked={likeStatuses?.articles[article.id] || false}
               userIsFollowing={followStatuses?.articles[article.id] || false}
               userIsWatching={watchStatuses?.articles[article.id] || false}
@@ -141,8 +154,13 @@ export default function ResultsGrid({
         ))}
         {showPosts && sortedResults.posts.map((post, index) => (
           <div key={`post-${post.id || index}`} className="col-span-1">
-            <PostCard 
-              post={post} 
+            <PostCard
+              post={{
+                ...post,
+                post_image_url: post.post_image_url,
+                post_image_upload: post.post_image_upload,
+                post_image_display: post.post_image_display
+              }}
               userHasLiked={likeStatuses?.posts[post.id] || false}
             />
           </div>

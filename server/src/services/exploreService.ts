@@ -125,7 +125,10 @@ export const searchProjects = async (
             profile_image_upload: true,
             profile_image_display: true
           }
-        }
+        },
+        project_image_url: true,
+        project_image_upload: true,
+        project_image_display: true
       },
       orderBy: {
         [sortField]: sortOrder
@@ -136,19 +139,15 @@ export const searchProjects = async (
     
     // Transform results to include username and use consistent field names
     const transformedProjects = projects.map(project => ({
-      id: project.id,
-      title: project.project_name,
-      description: project.project_description,
-      project_image: project.project_image,
-      project_type: project.project_type,
-      tags: project.project_tags,
-      created_at: project.created_at,
-      user_id: project.user_id,
+      ...project,
       username: project.users?.username,
       user_type: project.users?.user_type,
       user_profile_image_url: project.users?.profile_image_url || null,
       user_profile_image_upload: project.users?.profile_image_upload || null,
       user_profile_image_display: project.users?.profile_image_display || 'url',
+      project_image_url: project.project_image_url || null,
+      project_image_upload: project.project_image_upload || null,
+      project_image_display: project.project_image_display || 'url',
       likes_count: project.likes_count || 0,
       follows_count: project.follows_count || 0,
       watches_count: project.watches_count || 0
@@ -212,7 +211,10 @@ export const searchArticles = async (
             profile_image_display: true
           }
         },
-        article_sections: true
+        article_sections: true,
+        article_image_url: true,
+        article_image_upload: true,
+        article_image_display: true
       },
       orderBy: {
         [sortField]: sortOrder
@@ -307,7 +309,10 @@ export const searchPosts = async (
             profile_image_upload: true,
             profile_image_display: true
           }
-        }
+        },
+        post_image_url: true,
+        post_image_upload: true,
+        post_image_display: true
       },
       orderBy: {
         [sortField]: sortOrder
