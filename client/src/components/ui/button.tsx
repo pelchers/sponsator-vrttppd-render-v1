@@ -1,52 +1,122 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'spring' | 'turquoise' | 'orange' | 'lemon' | 'red' | 'white' | 'black' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
+  isLoading?: boolean
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+const buttonStyles = {
+  base: `
+    relative
+    inline-flex
+    items-center
+    justify-center
+    rounded-full
+    border-2
+    border-black
+    px-4
+    py-2
+    text-sm
+    font-medium
+    text-black
+    transition-all
+    duration-200
+    transform
+    hover:-translate-y-0.5
+    active:translate-y-0
+    active:scale-95
+    focus:outline-none
+    focus:ring-2
+    focus:ring-offset-2
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+    hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+    active:shadow-none
+  `,
+  variants: {
+    spring: `
+      bg-spring
+      hover:bg-spring
+      active:bg-spring
+    `,
+    turquoise: `
+      bg-turquoise
+      hover:bg-turquoise
+      active:bg-turquoise
+    `,
+    orange: `
+      bg-orange
+      hover:bg-orange
+      active:bg-orange
+    `,
+    lemon: `
+      bg-lemon
+      hover:bg-lemon
+      active:bg-lemon
+    `,
+    red: `
+      bg-red
+      hover:bg-red
+      active:bg-red
+    `,
+    white: `
+      bg-neutral-white
+      hover:bg-neutral-white
+      active:bg-neutral-white
+    `,
+    black: `
+      bg-neutral-900
+      hover:bg-neutral-900
+      active:bg-neutral-900
+      text-white
+    `,
+    ghost: `
+      bg-transparent
+      border-transparent
+      shadow-none
+      hover:bg-transparent
+      hover:border-transparent
+      hover:shadow-none
+      active:bg-transparent
+      active:shadow-none
+    `
+  },
+  sizes: {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg"
+  }
+}
+
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = "spring", size = "md", isLoading, children, ...props }, ref) => {
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+      <button
+        className={cn(
+          buttonStyles.base,
+          buttonStyles.variants[variant],
+          buttonStyles.sizes[size],
+          "animate-bounce-on-click",
+          className
+        )}
         ref={ref}
+        disabled={isLoading || props.disabled}
         {...props}
-      />
+      >
+        {isLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : null}
+        <span className={cn(isLoading ? "opacity-0" : "opacity-100")}>
+          {children}
+        </span>
+      </button>
     )
   }
 )
-Button.displayName = "Button"
 
-export { Button, buttonVariants } 
+Button.displayName = "Button" 

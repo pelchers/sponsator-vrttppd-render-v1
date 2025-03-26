@@ -8,11 +8,24 @@ export default {
     extend: {
       fontFamily: {
         'honk': ['Honk', 'system-ui'],
+        'sans': ['Inter', 'sans-serif'],
+        'heading': ['Inter', 'sans-serif'],
       },
       fontSize: {
         'xs': '0.75rem',
         'sm': '0.875rem',
         'base': '1rem',
+        'lg': '1.125rem',
+        'xl': '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+      },
+      fontWeight: {
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
       },
       spacing: {
         '1': '0.25rem',
@@ -21,23 +34,71 @@ export default {
         '4': '1rem',
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        'none': '0',
+        'sm': '0.375rem',
+        'md': '0.5rem',
+        'lg': '0.75rem',
+        'full': '9999px',
+      },
+      borderWidth: {
+        DEFAULT: '1px',
+        '0': '0',
+        '2': '2px',
+        '4': '4px',
       },
       colors: {
-        gray: {
-          50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          // ... other grays
+        spring: {
+          light: '#4dff99',
+          DEFAULT: '#17FF7C',
+          dark: '#00cc5c',
         },
+        turquoise: {
+          light: '#4df7ea',
+          DEFAULT: '#16F5E4',
+          dark: '#00c4b5',
+        },
+        orange: {
+          light: '#ffad4d',
+          DEFAULT: '#FF900D',
+          dark: '#cc7000',
+        },
+        lemon: {
+          light: '#f7f44d',
+          DEFAULT: '#F5F111',
+          dark: '#c4c000',
+        },
+        red: {
+          light: '#ff704d',
+          DEFAULT: '#FF3E1C',
+          dark: '#cc2500',
+        },
+        // Replace existing gray scale with our neutral scale
+        neutral: {
+          white: '#FFFFFF',
+          100: '#F5F5F5',
+          200: '#E5E5E5',
+          300: '#D4D4D4',
+          400: '#A3A3A3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
+          black: '#000000',
+        },
+        // Keep these system colors for shadcn compatibility
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+      },
+      boxShadow: {
+        'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+        'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+        'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+        'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
@@ -48,12 +109,18 @@ export default {
         'fade-in-delay-2': 'fadeIn 0.6s ease-out 0.4s forwards',
         'fade-in-delay-3': 'fadeIn 0.6s ease-out 0.6s forwards',
         'bounce': 'bounce 2s infinite',
+        'bounce-on-click': 'bounceClick 0.2s ease-in-out',
         'carousel': 'carousel 30s linear infinite',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-20px)' },
+        },
+        bounceClick: {
+          '0%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-4px)' },
+          '100%': { transform: 'translateY(0)' },
         },
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
@@ -69,12 +136,19 @@ export default {
       },
       transitionProperty: {
         'scroll': 'opacity, transform',
+        'all': 'all',
+      },
+      transitionDuration: {
+        '200': '200ms',
+      },
+      transitionTimingFunction: {
+        'DEFAULT': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
     },
   },
   plugins: [
     require('@tailwindcss/forms')({
-      strategy: 'class', // only generate classes
+      strategy: 'class',
     }),
   ],
 }

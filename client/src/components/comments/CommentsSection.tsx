@@ -4,6 +4,8 @@ import CommentInput from './CommentInput';
 import CommentList from './CommentList';
 import { createComment, getComments, deleteComment } from '@/api/comments';
 import type { Comment } from '@/types/comments';
+import { sectionStyles, sectionHeaderStyles } from "@/styles/sections"
+import { cn } from "@/lib/utils"
 
 interface CommentsSectionProps {
   entityType: string;
@@ -74,8 +76,19 @@ export default function CommentsSection({ entityType, entityId }: CommentsSectio
   }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-4">Comments</h2>
+    <div className={cn(
+      sectionStyles.base,
+      sectionStyles.variants['white'],
+      "mt-8"
+    )}>
+      <div className={sectionHeaderStyles.base}>
+        <h2 className={cn(
+          "text-xl",
+          sectionHeaderStyles.title['white']
+        )}>
+          Comments
+        </h2>
+      </div>
       {user ? (
         <CommentInput
           entityType={entityType}

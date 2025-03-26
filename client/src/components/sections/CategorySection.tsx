@@ -1,15 +1,36 @@
 import type React from "react"
+import { cn } from "@/lib/utils"
+import { sectionStyles, sectionHeaderStyles } from "@/styles/sections"
 
 interface CategorySectionProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
+  variant?: 'spring' | 'turquoise' | 'orange' | 'lemon' | 'red' | 'white' | 'black' | 'ghost';
 }
 
-export default function CategorySection({ title, children, className = '' }: CategorySectionProps) {
+export default function CategorySection({ 
+  title, 
+  children, 
+  className = '', 
+  variant = 'white' 
+}: CategorySectionProps) {
   return (
-    <div className={`bg-white border border-gray-200 rounded p-3 ${className}`}>
-      {title && <h3 className="text-sm font-medium mb-2">{title}</h3>}
+    <div className={cn(
+      sectionStyles.base,
+      sectionStyles.variants[variant],
+      className
+    )}>
+      {title && (
+        <div className={sectionHeaderStyles.base}>
+          <h3 className={cn(
+            "text-lg",
+            sectionHeaderStyles.title[variant]
+          )}>
+            {title}
+          </h3>
+        </div>
+      )}
       <div className="w-full">{children}</div>
     </div>
   );

@@ -178,12 +178,12 @@ export default function Landing() {
               </Link>
               
               <Link 
-                to="/likes"
+                to="/mystuff"
                 className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 <div className="text-3xl mb-2">❤️</div>
-                <h3 className="font-semibold group-hover:text-blue-600">Likes</h3>
-                <p className="text-sm text-gray-600">View liked content</p>
+                <h3 className="font-semibold group-hover:text-blue-600">My Stuff</h3>
+                <p className="text-sm text-gray-600">View liked, watched, and followed content</p>
               </Link>
             </div>
           </div>

@@ -20,7 +20,7 @@ export default function Navbar() {
   };
 
   // Common button styles for nav items
-  const navButtonClass = "transition-all duration-250 hover:scale-105 hover:text-green-500 font-medium";
+  const navButtonClass = "transition-all duration-250 hover:scale-105 font-medium";
   const dropdownItemClass = "transition-all duration-250 hover:bg-green-50 hover:text-green-500 cursor-pointer";
 
   return (
@@ -42,49 +42,42 @@ export default function Navbar() {
             {/* Main Navigation */}
             <div className="hidden md:ml-6 md:flex md:space-x-1 items-center">
               <Button 
-                variant="ghost" 
+                variant="spring" 
                 onClick={() => navigate('/projects')}
                 className={navButtonClass}
               >
                 Projects
               </Button>
               <Button 
-                variant="ghost" 
+                variant="spring" 
                 onClick={() => navigate('/article')}
                 className={navButtonClass}
               >
                 Articles
               </Button>
               <Button 
-                variant="ghost" 
+                variant="spring" 
                 onClick={() => navigate('/post')}
                 className={navButtonClass}
               >
                 Posts
               </Button>
               <Button 
-                variant="ghost" 
+                variant="spring" 
                 onClick={() => navigate('/explore')}
                 className={navButtonClass}
               >
                 Explore
               </Button>
               <Button 
-                variant="ghost" 
-                onClick={() => navigate('/likes')}
-                className={navButtonClass}
-              >
-                Likes
-              </Button>
-              <Button 
-                variant="ghost" 
+                variant="spring" 
                 onClick={() => navigate('/mystuff')}
                 className={navButtonClass}
               >
                 My Stuff
               </Button>
               <Button 
-                variant="ghost" 
+                variant="spring" 
                 onClick={() => {
                   if (userId) {
                     navigate(`/portfolio/${userId}`);
@@ -104,7 +97,7 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant="ghost"
+                    variant="spring"
                     className={navButtonClass}
                   >
                     Menu
@@ -185,10 +178,10 @@ export default function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    onClick={() => navigate('/likes')}
+                    onClick={() => navigate('/mystuff')}
                     className={dropdownItemClass}
                   >
-                    My Likes
+                    My Stuff
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
@@ -202,15 +195,16 @@ export default function Navbar() {
             ) : (
               <div className="flex gap-2 items-center">
                 <Button 
-                  variant="ghost" 
+                  variant="spring" 
                   onClick={() => navigate('/login')}
                   className={navButtonClass}
                 >
                   Login
                 </Button>
                 <Button 
+                  variant="spring" 
                   onClick={() => navigate('/register')}
-                  className="bg-blue-500 hover:bg-green-500 text-white transition-all duration-200 hover:scale-105"
+                  className="transition-all duration-200 hover:scale-105"
                 >
                   Sign Up
                 </Button>

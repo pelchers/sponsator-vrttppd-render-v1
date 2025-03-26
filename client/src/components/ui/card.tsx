@@ -1,15 +1,18 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
+import { sectionStyles } from "@/styles/sections"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & {
+    variant?: 'spring' | 'turquoise' | 'orange' | 'lemon' | 'red' | 'white' | 'black' | 'ghost';
+  }
+>(({ className, variant = 'white', ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border border-gray-200 bg-white text-gray-950 shadow-sm",
+      sectionStyles.base,
+      sectionStyles.variants[variant],
       className
     )}
     {...props}
@@ -23,7 +26,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    className={cn(sectionHeaderStyles.base, className)}
     {...props}
   />
 ))
