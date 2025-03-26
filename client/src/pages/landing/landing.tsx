@@ -112,13 +112,13 @@ export default function Landing() {
   if (userId && isAuthenticated() && userStats) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <section className="bg-white shadow-sm py-8">
+        <section className="bg-white border-2 border-black shadow-sm py-8">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
               <h1 className="text-3xl font-bold">Welcome Back!</h1>
               <Button 
                 onClick={() => navigate('/explore')}
-                className="bg-blue-600 hover:bg-green-500 text-white"
+                variant="spring"
               >
                 Explore Content
               </Button>
@@ -146,13 +146,13 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-8">
+        <section className="py-8 bg-white border-2 border-black">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl font-semibold mb-6">Quick Access</h2>
+            <h2 className="text-2xl font-bold mb-6">Quick Access</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link 
                 to="/projects"
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 <div className="text-3xl mb-2">🚀</div>
                 <h3 className="font-semibold group-hover:text-blue-600">Projects</h3>
@@ -161,7 +161,7 @@ export default function Landing() {
               
               <Link 
                 to="/article"
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 <div className="text-3xl mb-2">📝</div>
                 <h3 className="font-semibold group-hover:text-blue-600">Articles</h3>
@@ -170,7 +170,7 @@ export default function Landing() {
               
               <Link 
                 to="/post"
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 <div className="text-3xl mb-2">📱</div>
                 <h3 className="font-semibold group-hover:text-blue-600">Posts</h3>
@@ -179,7 +179,7 @@ export default function Landing() {
               
               <Link 
                 to="/mystuff"
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 <div className="text-3xl mb-2">❤️</div>
                 <h3 className="font-semibold group-hover:text-blue-600">My Stuff</h3>
@@ -189,16 +189,16 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-8 bg-white">
+        <section className="py-8 bg-transparent">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl font-semibold mb-6">Featured Content</h2>
+            <h2 className="text-2xl font-bold mb-6">Featured Content</h2>
             {loading ? (
               <FeaturedContentSkeleton />
             ) : (
               <div className="space-y-6">
                 {/* Featured Users */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Featured Users</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.users?.map((user) => (
                       <UserCard 
@@ -212,14 +212,15 @@ export default function Landing() {
                           followers_count: user.followers_count || 0,
                           watches_count: user.watches_count || 0
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Featured Projects */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Featured Projects</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.projects?.map((project) => (
                       <ProjectCard 
@@ -232,14 +233,15 @@ export default function Landing() {
                           watches_count: project.watches_count || 0,
                           mediaUrl: project.mediaUrl || project.project_image_url || project.project_image_upload
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Featured Articles */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Featured Articles</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Featured Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.articles?.map((article) => (
                       <ArticleCard 
@@ -252,14 +254,15 @@ export default function Landing() {
                           watches_count: article.watches_count || 0,
                           mediaUrl: article.mediaUrl || article.cover_image
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Featured Posts */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Featured Posts</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Featured Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.posts?.map((post) => (
                       <PostCard 
@@ -272,14 +275,15 @@ export default function Landing() {
                           watches_count: post.watches_count || 0,
                           mediaUrl: post.mediaUrl || post.image_url
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Comments */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Featured Comments</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Featured Comments</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.comments.map((comment) => (
                       <div 
@@ -323,14 +327,14 @@ export default function Landing() {
             )}
 
             {/* Recent Content Section */}
-            <h2 className="text-2xl font-semibold mb-6 mt-12">Recent Content</h2>
+            <h2 className="text-2xl font-bold mb-6 mt-12">Recent Content</h2>
             {loading ? (
               <FeaturedContentSkeleton />
             ) : (
               <div className="space-y-6">
                 {/* Recent Users */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Users</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Recent Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.users?.map((user) => (
                       <UserCard 
@@ -344,14 +348,15 @@ export default function Landing() {
                           followers_count: user.followers_count || 0,
                           watches_count: user.watches_count || 0
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Recent Projects */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Projects</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Recent Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.projects?.map((project) => (
                       <ProjectCard 
@@ -364,14 +369,15 @@ export default function Landing() {
                           watches_count: project.watches_count || 0,
                           mediaUrl: project.mediaUrl || project.project_image_url || project.project_image_upload
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Recent Articles */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Articles</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Recent Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.articles?.map((article) => (
                       <ArticleCard 
@@ -384,14 +390,15 @@ export default function Landing() {
                           watches_count: article.watches_count || 0,
                           mediaUrl: article.mediaUrl || article.cover_image
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
                 </div>
 
                 {/* Recent Posts */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
+                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Recent Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.posts?.map((post) => (
                       <PostCard 
@@ -404,6 +411,7 @@ export default function Landing() {
                           watches_count: post.watches_count || 0,
                           mediaUrl: post.mediaUrl || post.image_url
                         }}
+                        variant="white"
                       />
                     ))}
                   </div>
@@ -435,17 +443,15 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-delay-2">
             <Button 
               onClick={() => navigate('/register')}
-              className="bg-blue-600 hover:bg-green-500 text-white text-lg px-8 py-6
-                transition-all duration-250 hover:scale-105 shadow-lg hover:shadow-xl"
+              variant="spring"
+              className="text-lg px-8 py-6 transition-all duration-250 hover:scale-105"
             >
               Join as Creator
             </Button>
             <Button 
-              variant="outline"
               onClick={() => navigate('/register')}
-              className="border-2 border-blue-600 text-blue-600 hover:bg-green-500 
-                hover:border-green-500 hover:text-white text-lg px-8 py-6
-                transition-all duration-250 hover:scale-105 shadow-lg hover:shadow-xl"
+              variant="turquoise"
+              className="text-lg px-8 py-6 transition-all duration-250 hover:scale-105"
             >
               Join as Brand
             </Button>
@@ -745,25 +751,25 @@ export default function Landing() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
             <div className="text-4xl mb-4">💬</div>
-            <h3 className="text-xl font-semibold mb-2">Secure Messaging</h3>
+            <h3 className="text-xl font-bold mb-2">Secure Messaging</h3>
             <p className="text-gray-600">End-to-end encrypted communication with built-in file sharing</p>
           </div>
           
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
             <div className="text-4xl mb-4">📊</div>
-            <h3 className="text-xl font-semibold mb-2">Real Analytics</h3>
+            <h3 className="text-xl font-bold mb-2">Real Analytics</h3>
             <p className="text-gray-600">Track performance metrics and campaign ROI in real-time</p>
           </div>
 
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
             <div className="text-4xl mb-4">📝</div>
-            <h3 className="text-xl font-semibold mb-2">Smart Contracts</h3>
+            <h3 className="text-xl font-bold mb-2">Smart Contracts</h3>
             <p className="text-gray-600">Automated agreements and payment processing system</p>
           </div>
 
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
             <div className="text-4xl mb-4">🎯</div>
-            <h3 className="text-xl font-semibold mb-2">AI Matching</h3>
+            <h3 className="text-xl font-bold mb-2">AI Matching</h3>
             <p className="text-gray-600">Advanced algorithms for perfect partnership matches</p>
           </div>
         </div>
@@ -778,19 +784,19 @@ export default function Landing() {
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 
             hover:scale-105 hover:shadow-xl">
             <div className="text-4xl mb-4 animate-bounce">🤝</div>
-            <h3 className="text-xl font-semibold mb-2">Smart Matching</h3>
+            <h3 className="text-xl font-bold mb-2">Smart Matching</h3>
             <p className="text-gray-600">AI-powered creator-brand matching based on authentic alignment</p>
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 
             hover:scale-105 hover:shadow-xl">
             <div className="text-4xl mb-4 animate-bounce delay-100">📈</div>
-            <h3 className="text-xl font-semibold mb-2">Real Analytics</h3>
+            <h3 className="text-xl font-bold mb-2">Real Analytics</h3>
             <p className="text-gray-600">Deep insights into campaign performance and audience engagement</p>
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 
             hover:scale-105 hover:shadow-xl">
             <div className="text-4xl mb-4 animate-bounce delay-200">🔒</div>
-            <h3 className="text-xl font-semibold mb-2">Secure Payments</h3>
+            <h3 className="text-xl font-bold mb-2">Secure Payments</h3>
             <p className="text-gray-600">Protected payments and clear contract management</p>
           </div>
         </div>
@@ -908,7 +914,7 @@ export default function Landing() {
         <h2 className="text-4xl font-semibold text-center mb-16">Our Commitment</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto px-4">
           <div className="bg-white p-8 rounded-2xl shadow-lg">
-            <h3 className="text-2xl font-semibold mb-6">Creator Code of Ethics</h3>
+            <h3 className="text-2xl font-bold mb-6">Creator Code of Ethics</h3>
             <ul className="space-y-4">
               <li className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
@@ -929,7 +935,7 @@ export default function Landing() {
             </ul>
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-lg">
-            <h3 className="text-2xl font-semibold mb-6">Brand Standards</h3>
+            <h3 className="text-2xl font-bold mb-6">Brand Standards</h3>
             <ul className="space-y-4">
               <li className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-blue-600 rounded-full"></span>

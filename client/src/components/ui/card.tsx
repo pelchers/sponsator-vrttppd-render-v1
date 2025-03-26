@@ -11,8 +11,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      sectionStyles.base,
-      sectionStyles.variants[variant],
+      "rounded-lg border-2 border-black bg-white text-gray-950 shadow-sm",
       className
     )}
     {...props}
@@ -26,7 +25,10 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(sectionHeaderStyles.base, className)}
+    className={cn(
+      "flex flex-col space-y-1.5 p-6 border-b-2 border-black",
+      className
+    )}
     {...props}
   />
 ))
@@ -73,7 +75,10 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn(
+      "flex items-center p-6 pt-0 border-t-2 border-black",
+      className
+    )}
     {...props}
   />
 ))

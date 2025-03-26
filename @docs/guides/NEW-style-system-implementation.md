@@ -151,6 +151,68 @@ const typography = {
 };
 ```
 
+## Typography Conventions
+
+### Text Hierarchy
+```typescript
+// Page Titles
+className="text-4xl font-bold tracking-tight"
+
+// Section Headers
+className="text-2xl font-bold"
+
+// Subsection Headers
+className="text-xl font-bold"
+
+// Card Titles
+className="text-lg font-bold"
+```
+
+### Body Text
+```typescript
+// Large Body Text
+className="text-lg font-normal"
+
+// Regular Body Text
+className="text-base font-normal"
+
+// Small Text
+className="text-sm font-normal"
+
+// Micro Text
+className="text-xs font-normal"
+```
+
+### Special Text Styles
+```typescript
+// Brand Text
+className="font-honk text-4xl tracking-wide"
+
+// Statistics
+className="text-2xl font-bold"
+
+// Navigation
+className="text-sm font-medium"
+
+// Labels
+className="text-xs font-medium uppercase"
+```
+
+### Semantic Text Colors
+```typescript
+// Error Messages
+className="text-red-DEFAULT"
+
+// Success Messages
+className="text-spring-DEFAULT"
+
+// Info Messages
+className="text-turquoise-DEFAULT"
+
+// Warning Messages
+className="text-orange-DEFAULT"
+```
+
 ## Component Styles
 
 ### Buttons
@@ -350,4 +412,165 @@ export const Button = ({ variant = 'primary', className = '', ...props }) => {
    - Clear focus states for accessibility
    - Smooth transitions for polish
 
-This implementation provides a cohesive, modern design system that's both playful and professional. 
+This implementation provides a cohesive, modern design system that's both playful and professional.
+
+## Color Usage Guidelines
+
+### Button Colors
+```typescript
+// Primary Actions (Links, Navigation, Checkout)
+variant="spring"  // Green for positive/forward actions
+
+// Secondary/Info Actions
+variant="turquoise" // Blue for informational/neutral actions
+
+// Destructive Actions
+variant="red"    // Red for negative/destructive actions
+```
+
+### Section Backgrounds
+```typescript
+// Content Sections
+className="bg-white border-2 border-black"  // White with black outline
+
+// Grid/Explore Sections
+variant="turquoise-light"  // Default for browse/explore areas
+                          // Can be overridden based on context
+
+// Cards
+className="bg-white border-2 border-black"  // White with black outline
+```
+
+### Interactive Elements
+1. **Buttons**
+   - `spring` - Primary actions (Continue, Save, Submit)
+   - `turquoise` - Information/Secondary actions (Learn More, Details)
+   - `red` - Destructive actions (Delete, Cancel, Logout)
+   - `ghost` - Subtle actions (Navigation items)
+
+2. **Social Interactions**
+   ```typescript
+   // Social Action Colors
+   const socialActionColors = {
+     watch: 'orange',    // Watch/Subscribe actions
+     follow: 'spring',   // Follow/Connect actions
+     like: 'red',       // Like/Heart actions
+     comment: 'turquoise' // Comment/Reply actions
+   }
+   
+   // Usage examples
+   <Button variant={socialActionColors.watch}>Watch</Button>
+   <Button variant={socialActionColors.follow}>Follow</Button>
+   <Icon className={`text-${socialActionColors.like}`} />
+   ```
+
+2. **Tags & Labels**
+   ```typescript
+   // Content Type Tags
+   const contentTypeColors = {
+     article: 'lemon',
+     project: 'orange',
+     post: 'turquoise',
+     portfolio: 'spring'
+   }
+
+   // User Role Tags
+   const userRoleColors = {
+     admin: 'red',
+     moderator: 'orange',
+     contributor: 'turquoise',
+     member: 'spring'
+   }
+
+   // Status Tags
+   const statusColors = {
+     active: 'spring',
+     pending: 'orange',
+     archived: 'neutral',
+     featured: 'lemon'
+   }
+   ```
+
+### Section Hierarchy
+```typescript
+// Page Layout
+<PageSection variant="spring-light">
+  // Main content wrapper
+  
+  // Browse/Explore Grid
+  <SectionFull variant="turquoise-light">
+    // Cards
+    <Card variant="white">
+      // Card content
+    </Card>
+  </SectionFull>
+  
+  // Featured Content
+  <CategorySection variant="lemon-light">
+    // Highlighted items
+  </CategorySection>
+</PageSection>
+```
+
+### Best Practices
+
+1. **Button Consistency**
+   - Use `spring` for primary actions
+   - Use `red` for destructive actions
+   - Use `turquoise` for informational actions
+   - Maintain consistent meaning across app
+
+2. **Section Colors**
+   - Use light variants for large areas
+   - Keep card backgrounds white by default
+   - Use consistent colors for similar content types
+
+3. **Tag System**
+   - Color based on content type or status
+   - Use consistent colors across similar tags
+   - Consider accessibility in color choices
+
+4. **Color Hierarchy**
+   - Main sections: Light variants
+   - Interactive elements: DEFAULT variants
+   - Accents/highlights: Dark variants
+
+5. **Contextual Usage**
+   ```typescript
+   // Example: Project Section
+   <PageSection variant="spring-light">
+     <CategorySection variant="turquoise-light">
+       {projects.map(project => (
+         <Card variant="white">
+           <Button variant="spring">View Project</Button>
+           <Button variant="red">Delete</Button>
+           <Tag variant={getContentTypeColor('project')}>
+             {project.type}
+           </Tag>
+         </Card>
+       ))}
+     </CategorySection>
+   </PageSection>
+   ```
+
+### Implementation Notes
+
+1. **Default Variants**
+   ```typescript
+   // Components should have sensible defaults
+   interface SectionProps {
+     variant?: ColorVariant;
+     // ... other props
+   }
+
+   // Default to white for cards
+   const Card = ({ variant = 'white' }) => // ...
+
+   // Default to spring for primary buttons
+   const Button = ({ variant = 'spring' }) => // ...
+   ```
+
+2. **Color Overrides**
+   - Allow variant overrides via props
+   - Document when to override defaults
+   - Maintain consistent patterns 

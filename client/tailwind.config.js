@@ -1,4 +1,92 @@
 /** @type {import('tailwindcss').Config} */
+
+/**
+ * Color System Reference
+ * 
+ * Button Colors:
+ * - spring (green)  : Primary actions (Links, Navigation, Checkout)
+ * - turquoise (blue): Information/Secondary actions
+ * - red            : Destructive actions (Delete, Cancel, Logout)
+ * 
+ * Section Backgrounds:
+ * - spring-light   : Default for main content areas
+ * - turquoise-light: Default for browse/explore areas
+ * - white          : Default for cards
+ * 
+ * Social Actions:
+ * - watch: orange  : Watch/Subscribe actions
+ * - follow: spring : Follow/Connect actions
+ * - like: red     : Like/Heart actions
+ * - comment: turquoise: Comment/Reply actions
+ * 
+ * Content Types:
+ * - article: lemon
+ * - project: orange
+ * - post: turquoise
+ * - portfolio: spring
+ * 
+ * User Roles:
+ * - admin: red
+ * - moderator: orange
+ * - contributor: turquoise
+ * - member: spring
+ * 
+ * Status Indicators:
+ * - active: spring
+ * - pending: orange
+ * - archived: neutral
+ * - featured: lemon
+ * 
+ * Usage Examples:
+ * 
+ * Buttons:
+ * <Button variant="spring">Primary Action</Button>
+ * <Button variant="red">Delete</Button>
+ * 
+ * Sections:
+ * <PageSection variant="spring-light">
+ *   <SectionFull variant="turquoise-light">
+ *     <Card variant="white">...</Card>
+ *   </SectionFull>
+ * </PageSection>
+ * 
+ * Social:
+ * <Button variant={socialActionColors.watch}>Watch</Button>
+ * <Icon className={`text-${socialActionColors.like}`} />
+ * 
+ * Best Practices:
+ * 1. Use light variants for large areas
+ * 2. Use DEFAULT variants for interactive elements
+ * 3. Use dark variants for emphasis/hover states
+ * 4. Keep consistent meaning across the app
+ * 5. Consider accessibility in color choices
+ */
+
+/**
+ * Typography System Reference
+ * 
+ * Text Hierarchy:
+ * - Page Titles: text-4xl font-bold
+ * - Section Headers: text-2xl font-bold
+ * - Subsection Headers: text-xl font-bold
+ * - Card Titles: text-lg font-bold
+ * - Body Text: text-base font-normal
+ * - Small Text: text-sm font-normal
+ * - Micro Text: text-xs font-normal
+ * 
+ * Font Weights:
+ * - Bold: Important headers, CTAs
+ * - Semibold: Secondary headers
+ * - Medium: Navigation, important body text
+ * - Normal: Body text, descriptions
+ * 
+ * Special Text:
+ * - Brand Text: font-honk text-4xl tracking-wide
+ * - Stats: text-2xl font-bold
+ * - Navigation: text-sm font-medium
+ * - Labels: text-xs font-medium uppercase
+ */
+
 export default {
   content: [
     "./index.html",
@@ -48,27 +136,27 @@ export default {
       },
       colors: {
         spring: {
-          light: '#4dff99',
+          light: '#E7FFF1',
           DEFAULT: '#17FF7C',
           dark: '#00cc5c',
         },
         turquoise: {
-          light: '#4df7ea',
+          light: '#E6FFFE',
           DEFAULT: '#16F5E4',
           dark: '#00c4b5',
         },
         orange: {
-          light: '#ffad4d',
+          light: '#FFF3E6',
           DEFAULT: '#FF900D',
           dark: '#cc7000',
         },
         lemon: {
-          light: '#f7f44d',
+          light: '#FFFEE6',
           DEFAULT: '#F5F111',
           dark: '#c4c000',
         },
         red: {
-          light: '#ff704d',
+          light: '#FFE6E6',
           DEFAULT: '#FF3E1C',
           dark: '#cc2500',
         },
@@ -143,6 +231,63 @@ export default {
       },
       transitionTimingFunction: {
         'DEFAULT': 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      // Add semantic color mappings
+      semantic: {
+        // Content types
+        contentTypes: {
+          article: 'lemon',
+          project: 'orange',
+          post: 'turquoise',
+          portfolio: 'spring'
+        },
+        // User roles
+        userRoles: {
+          admin: 'red',
+          moderator: 'orange',
+          contributor: 'turquoise',
+          member: 'spring'
+        },
+        // Status indicators
+        status: {
+          active: 'spring',
+          pending: 'orange',
+          archived: 'neutral',
+          featured: 'lemon'
+        },
+        // Social actions
+        social: {
+          watch: 'orange',
+          follow: 'spring',
+          like: 'red',
+          comment: 'turquoise'
+        }
+      },
+      typography: {
+        header: {
+          page: 'text-4xl font-bold tracking-tight',
+          section: 'text-2xl font-bold',
+          subsection: 'text-xl font-bold',
+          card: 'text-lg font-bold'
+        },
+        body: {
+          large: 'text-lg font-normal',
+          base: 'text-base font-normal',
+          small: 'text-sm font-normal',
+          micro: 'text-xs font-normal'
+        },
+        special: {
+          brand: 'font-honk text-4xl tracking-wide',
+          stats: 'text-2xl font-bold',
+          nav: 'text-sm font-medium',
+          label: 'text-xs font-medium uppercase'
+        },
+        semantic: {
+          error: 'text-red-DEFAULT',
+          success: 'text-spring-DEFAULT',
+          info: 'text-turquoise-DEFAULT',
+          warning: 'text-orange-DEFAULT'
+        }
       },
     },
   },
