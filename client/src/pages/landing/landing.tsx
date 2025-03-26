@@ -152,7 +152,7 @@ export default function Landing() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link 
                 to="/projects"
-                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white border border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 <div className="text-3xl mb-2">🚀</div>
                 <h3 className="font-semibold group-hover:text-blue-600">Projects</h3>
@@ -197,7 +197,7 @@ export default function Landing() {
             ) : (
               <div className="space-y-6">
                 {/* Featured Users */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white border border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.users?.map((user) => (
@@ -427,7 +427,8 @@ export default function Landing() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* 1. Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center px-4 py-16 bg-gradient-to-b from-white to-blue-50">
+      <section className="relative min-h-screen flex flex-col justify-center items-center px-4 py-16 
+        bg-gradient-to-b from-white to-turquoise-light">
         {/* Floating Emoji */}
         <span className="absolute top-[15%] right-[10%] text-4xl animate-float-delay-1">✨</span>
         
@@ -587,7 +588,7 @@ export default function Landing() {
       </section>
 
       {/* 4. For Creators/Brands Split Sections */}
-      <section className="relative py-16 bg-gray-50 scroll-fade invisible">
+      <section className="relative py-16 bg-turquoise-light scroll-fade invisible">
         <span className="absolute top-[10%] left-[10%] text-4xl animate-float">🚀</span>
         <span className="absolute top-[10%] right-[10%] text-4xl animate-float-delay-1">🎥</span>
         
@@ -746,7 +747,7 @@ export default function Landing() {
       </section>
 
       {/* 6. Platform Features */}
-      <section className="relative py-16 bg-gray-50 scroll-fade invisible">
+      <section className="relative py-16 bg-turquoise-light scroll-fade invisible">
         <h2 className="text-4xl font-semibold text-center mb-16">Platform Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
           <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
@@ -888,19 +889,19 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Platform Statistics</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
               <div className="text-2xl font-bold">{siteStats?.totalUsers || '...'}</div>
               <div className="text-gray-600">Community Members</div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
               <div className="text-2xl font-bold">{siteStats?.totalProjects || '...'}</div>
               <div className="text-gray-600">Total Projects</div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
               <div className="text-2xl font-bold">{siteStats?.totalArticles || '...'}</div>
               <div className="text-gray-600">Total Articles</div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
               <div className="text-2xl font-bold">{siteStats?.totalPosts || '...'}</div>
               <div className="text-gray-600">Total Posts</div>
             </div>

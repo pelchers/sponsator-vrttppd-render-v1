@@ -1,7 +1,51 @@
 /** @type {import('tailwindcss').Config} */
 
+
 /**
- * Color System Reference
+ * Typography System Reference
+ * 
+ * Text Hierarchy:
+ * - Page Titles: text-4xl font-bold
+ * - Section Headers: text-2xl font-bold
+ * - Subsection Headers: text-xl font-bold
+ * - Card Titles: text-lg font-bold
+ * - Body Text: text-base font-normal
+ * - Small Text: text-sm font-normal
+ * - Micro Text: text-xs font-normal
+ * 
+ * Font Weights:
+ * - Bold: Important headers, CTAs
+ * - Semibold: Secondary headers
+ * - Medium: Navigation, important body text
+ * - Normal: Body text, descriptions
+ * 
+ * Special Text:
+ * - Brand Text: font-honk text-4xl tracking-wide
+ * - Stats: text-2xl font-bold
+ * - Navigation: text-sm font-medium
+ * - Labels: text-xs font-medium uppercase
+ */
+
+/**
+ * Style System Reference
+ * 
+ * Page Background: #FFFEFF (Pure off-white)
+ * 
+ * Border Widths:
+ * - Cards & Containers: 1px black border
+ * - Buttons & Interactive: 2px black border
+ * 
+ * Color Distribution (60-30-10):
+ * - 60%: Background & Base Elements (#FFFEFF, light grays)
+ * - 30%: Secondary/Container Elements (light variants)
+ * - 10%: Interactive/Accent Elements (DEFAULT variants)
+ * 
+ * Light Variants:
+ * - spring: #BDFFD9
+ * - turquoise: #E7FEFC
+ * - orange: #FFEBE8
+ * - lemon: #FEFDE7
+ * - red: #FFEBE8
  * 
  * Button Colors:
  * - spring (green)  : Primary actions (Links, Navigation, Checkout)
@@ -9,9 +53,9 @@
  * - red            : Destructive actions (Delete, Cancel, Logout)
  * 
  * Section Backgrounds:
- * - spring-light   : Default for main content areas
- * - turquoise-light: Default for browse/explore areas
- * - white          : Default for cards
+ * - Background: #FFFEFF for page
+ * - Container: Light variants for sections
+ * - Cards: Pure white with 1px black border
  * 
  * Social Actions:
  * - watch: orange  : Watch/Subscribe actions
@@ -37,54 +81,28 @@
  * - archived: neutral
  * - featured: lemon
  * 
- * Usage Examples:
- * 
- * Buttons:
- * <Button variant="spring">Primary Action</Button>
- * <Button variant="red">Delete</Button>
- * 
- * Sections:
- * <PageSection variant="spring-light">
- *   <SectionFull variant="turquoise-light">
- *     <Card variant="white">...</Card>
- *   </SectionFull>
- * </PageSection>
- * 
- * Social:
- * <Button variant={socialActionColors.watch}>Watch</Button>
- * <Icon className={`text-${socialActionColors.like}`} />
- * 
  * Best Practices:
  * 1. Use light variants for large areas
  * 2. Use DEFAULT variants for interactive elements
  * 3. Use dark variants for emphasis/hover states
  * 4. Keep consistent meaning across the app
  * 5. Consider accessibility in color choices
- */
-
-/**
- * Typography System Reference
  * 
- * Text Hierarchy:
- * - Page Titles: text-4xl font-bold
- * - Section Headers: text-2xl font-bold
- * - Subsection Headers: text-xl font-bold
- * - Card Titles: text-lg font-bold
- * - Body Text: text-base font-normal
- * - Small Text: text-sm font-normal
- * - Micro Text: text-xs font-normal
+ * Usage Examples:
  * 
- * Font Weights:
- * - Bold: Important headers, CTAs
- * - Semibold: Secondary headers
- * - Medium: Navigation, important body text
- * - Normal: Body text, descriptions
+ * Buttons:
+ * <Button variant="spring" className="border-2 border-black">Primary Action</Button>
+ * <Button variant="red" className="border-2 border-black">Delete</Button>
  * 
- * Special Text:
- * - Brand Text: font-honk text-4xl tracking-wide
- * - Stats: text-2xl font-bold
- * - Navigation: text-sm font-medium
- * - Labels: text-xs font-medium uppercase
+ * Cards:
+ * <Card className="bg-white border border-black">...</Card>
+ * 
+ * Sections:
+ * <PageSection className="bg-[#FFFEFF]">
+ *   <SectionFull className="bg-turquoise-light">
+ *     <Card className="bg-white border border-black">...</Card>
+ *   </SectionFull>
+ * </PageSection>
  */
 
 export default {
@@ -136,27 +154,27 @@ export default {
       },
       colors: {
         spring: {
-          light: '#E7FFF1',
+          light: '#BDFFD9',
           DEFAULT: '#17FF7C',
           dark: '#00cc5c',
         },
         turquoise: {
-          light: '#E6FFFE',
+          light: '#E7FEFC',
           DEFAULT: '#16F5E4',
           dark: '#00c4b5',
         },
         orange: {
-          light: '#FFF3E6',
+          light: '#FFEBE8',
           DEFAULT: '#FF900D',
           dark: '#cc7000',
         },
         lemon: {
-          light: '#FFFEE6',
+          light: '#FEFDE7',
           DEFAULT: '#F5F111',
           dark: '#c4c000',
         },
         red: {
-          light: '#FFE6E6',
+          light: '#FFEBE8',
           DEFAULT: '#FF3E1C',
           dark: '#cc2500',
         },
