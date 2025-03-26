@@ -15,12 +15,14 @@ export default function SectionFull({
 }: SectionFullProps) {
   return (
     <section className={cn(
-      "w-full",
+      "w-full min-w-full",
       sectionStyles.base,
       sectionStyles.variants[variant],
       className
     )}>
-      {children}
+      <div className="max-w-7xl mx-auto px-4">
+        {children}
+      </div>
     </section>
   );
 } 

@@ -17,21 +17,24 @@ export default function CategorySection({
 }: CategorySectionProps) {
   return (
     <div className={cn(
+      "w-full min-w-full",
       sectionStyles.base,
       sectionStyles.variants[variant],
       className
     )}>
-      {title && (
-        <div className={sectionHeaderStyles.base}>
-          <h3 className={cn(
-            "text-lg",
-            sectionHeaderStyles.title[variant]
-          )}>
-            {title}
-          </h3>
-        </div>
-      )}
-      <div className="w-full">{children}</div>
+      <div className="max-w-7xl mx-auto px-4">
+        {title && (
+          <div className={sectionHeaderStyles.base}>
+            <h3 className={cn(
+              "text-lg",
+              sectionHeaderStyles.title[variant]
+            )}>
+              {title}
+            </h3>
+          </div>
+        )}
+        <div className="w-full">{children}</div>
+      </div>
     </div>
   );
 }

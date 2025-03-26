@@ -111,8 +111,8 @@ export default function Landing() {
 
   if (userId && isAuthenticated() && userStats) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <section className="bg-white border-2 border-black shadow-sm py-8">
+      <div className="min-h-screen w-full bg-gray-50">
+        <section className="w-full bg-white shadow-sm py-8">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
               <h1 className="text-3xl font-bold">Welcome Back!</h1>
@@ -126,19 +126,19 @@ export default function Landing() {
             
             {/* Platform Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
                 <div className="text-2xl font-bold">{siteStats?.totalUsers || '...'}</div>
                 <div className="text-gray-600">Community Members</div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
                 <div className="text-2xl font-bold">{siteStats?.totalProjects || '...'}</div>
                 <div className="text-gray-600">Total Projects</div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
                 <div className="text-2xl font-bold">{siteStats?.totalArticles || '...'}</div>
                 <div className="text-gray-600">Total Articles</div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
                 <div className="text-2xl font-bold">{siteStats?.totalPosts || '...'}</div>
                 <div className="text-gray-600">Total Posts</div>
               </div>
@@ -146,7 +146,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="py-8 bg-white border-2 border-black">
+        <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-2xl font-bold mb-6">Quick Access</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -197,7 +197,7 @@ export default function Landing() {
             ) : (
               <div className="space-y-6">
                 {/* Featured Users */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.users?.map((user) => (
@@ -219,7 +219,7 @@ export default function Landing() {
                 </div>
 
                 {/* Featured Projects */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.projects?.map((project) => (
@@ -240,7 +240,7 @@ export default function Landing() {
                 </div>
 
                 {/* Featured Articles */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Featured Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.articles?.map((article) => (
@@ -261,7 +261,7 @@ export default function Landing() {
                 </div>
 
                 {/* Featured Posts */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Featured Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.posts?.map((post) => (
@@ -282,7 +282,7 @@ export default function Landing() {
                 </div>
 
                 {/* Comments */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Featured Comments</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.comments.map((comment) => (
@@ -333,7 +333,7 @@ export default function Landing() {
             ) : (
               <div className="space-y-6">
                 {/* Recent Users */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Recent Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.users?.map((user) => (
@@ -355,7 +355,7 @@ export default function Landing() {
                 </div>
 
                 {/* Recent Projects */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Recent Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.projects?.map((project) => (
@@ -376,7 +376,7 @@ export default function Landing() {
                 </div>
 
                 {/* Recent Articles */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Recent Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.articles?.map((article) => (
@@ -397,7 +397,7 @@ export default function Landing() {
                 </div>
 
                 {/* Recent Posts */}
-                <div className="bg-white border-2 border-black p-6 rounded-xl">
+                <div className="bg-white border-black p-6 rounded-xl">
                   <h3 className="text-xl font-bold mb-4">Recent Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.posts?.map((post) => (

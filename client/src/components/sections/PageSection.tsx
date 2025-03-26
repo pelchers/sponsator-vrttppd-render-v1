@@ -18,22 +18,25 @@ export default function PageSection({
   return (
     <section 
       className={cn(
+        "w-full min-w-full", // Ensure full width
         sectionStyles.base,
         sectionStyles.variants[variant],
         className
       )}
     >
-      {title && (
-        <div className={sectionHeaderStyles.base}>
-          <h2 className={cn(
-            "text-lg",
-            sectionHeaderStyles.title[variant]
-          )}>
-            {title}
-          </h2>
-        </div>
-      )}
-      {children}
+      <div className="max-w-7xl mx-auto px-4">
+        {title && (
+          <div className={sectionHeaderStyles.base}>
+            <h2 className={cn(
+              "text-lg",
+              sectionHeaderStyles.title[variant]
+            )}>
+              {title}
+            </h2>
+          </div>
+        )}
+        {children}
+      </div>
     </section>
   );
 }
