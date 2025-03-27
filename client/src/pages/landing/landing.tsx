@@ -112,10 +112,10 @@ export default function Landing() {
   if (userId && isAuthenticated() && userStats) {
     return (
       <div className="min-h-screen w-full bg-gray-50">
-        <section className="w-full bg-white shadow-sm py-8">
+        <section className="w-full bg-[#2563EB] text-white shadow-sm py-8">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold">Welcome Back!</h1>
+              <h1 className="text-3xl font-bold text-white">Welcome Back!</h1>
               <Button 
                 onClick={() => navigate('/explore')}
                 variant="spring"
@@ -125,22 +125,30 @@ export default function Landing() {
             </div>
             
             {/* Platform Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
-                <div className="text-2xl font-bold">{siteStats?.totalUsers || '...'}</div>
-                <div className="text-gray-600">Community Members</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
+              <div className="text-center">
+                <div className="text-4xl mb-2 animate-bounce">👥</div>
+                <div className="font-honk text-5xl animate-float">{siteStats?.totalUsers || '...'}</div>
+                <div className="text-lg mt-2">Community Members</div>
+                <div className="text-sm text-blue-200">Growing Daily</div>
               </div>
-              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
-                <div className="text-2xl font-bold">{siteStats?.totalProjects || '...'}</div>
-                <div className="text-gray-600">Total Projects</div>
+              <div className="text-center">
+                <div className="text-4xl mb-2 animate-bounce delay-100">🚀</div>
+                <div className="font-honk text-5xl animate-float-delay-1">{siteStats?.totalProjects || '...'}</div>
+                <div className="text-lg mt-2">Total Projects</div>
+                <div className="text-sm text-blue-200">Active Campaigns</div>
               </div>
-              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
-                <div className="text-2xl font-bold">{siteStats?.totalArticles || '...'}</div>
-                <div className="text-gray-600">Total Articles</div>
+              <div className="text-center">
+                <div className="text-4xl mb-2 animate-bounce delay-200">📝</div>
+                <div className="font-honk text-5xl animate-float-delay-2">{siteStats?.totalArticles || '...'}</div>
+                <div className="text-lg mt-2">Total Articles</div>
+                <div className="text-sm text-blue-200">Published Content</div>
               </div>
-              <div className="bg-white p-4 rounded-lg border-2 border-black shadow-sm">
-                <div className="text-2xl font-bold">{siteStats?.totalPosts || '...'}</div>
-                <div className="text-gray-600">Total Posts</div>
+              <div className="text-center">
+                <div className="text-4xl mb-2 animate-bounce delay-300">📱</div>
+                <div className="font-honk text-5xl animate-float">{siteStats?.totalPosts || '...'}</div>
+                <div className="text-lg mt-2">Total Posts</div>
+                <div className="text-sm text-blue-200">Shared Updates</div>
               </div>
             </div>
           </div>
@@ -148,57 +156,57 @@ export default function Landing() {
 
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-6">Quick Access</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <h2 className="text-4xl font-semibold text-center mb-16">Quick Access</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
               <Link 
                 to="/projects"
-                className="bg-white border border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 group"
               >
-                <div className="text-3xl mb-2">🚀</div>
-                <h3 className="font-semibold group-hover:text-blue-600">Projects</h3>
+                <div className="text-4xl mb-4">🚀</div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600">Projects</h3>
                 <p className="text-sm text-gray-600">Manage your projects</p>
               </Link>
               
               <Link 
                 to="/article"
-                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 group"
               >
-                <div className="text-3xl mb-2">📝</div>
-                <h3 className="font-semibold group-hover:text-blue-600">Articles</h3>
+                <div className="text-4xl mb-4">📝</div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600">Articles</h3>
                 <p className="text-sm text-gray-600">Write and manage articles</p>
               </Link>
               
               <Link 
                 to="/post"
-                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 group"
               >
-                <div className="text-3xl mb-2">📱</div>
-                <h3 className="font-semibold group-hover:text-blue-600">Posts</h3>
+                <div className="text-4xl mb-4">📱</div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600">Posts</h3>
                 <p className="text-sm text-gray-600">Share updates</p>
               </Link>
               
               <Link 
                 to="/mystuff"
-                className="bg-white border-2 border-black p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+                className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 group"
               >
-                <div className="text-3xl mb-2">❤️</div>
-                <h3 className="font-semibold group-hover:text-blue-600">My Stuff</h3>
+                <div className="text-4xl mb-4">❤️</div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600">My Stuff</h3>
                 <p className="text-sm text-gray-600">View liked, watched, and followed content</p>
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="py-8 bg-transparent">
+        <section className="py-8 bg-[#FFFEFF]">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-6">Featured Content</h2>
+            <h2 className="text-4xl font-semibold text-center mb-16">Featured Content</h2>
             {loading ? (
               <FeaturedContentSkeleton />
             ) : (
               <div className="space-y-6">
                 {/* Featured Users */}
                 <div className="bg-white border border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Featured Users</h3>
+                  <h3 className="text-2xl font-bold mb-6">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.users?.map((user) => (
                       <UserCard 
@@ -220,7 +228,7 @@ export default function Landing() {
 
                 {/* Featured Projects */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Featured Projects</h3>
+                  <h3 className="text-2xl font-bold mb-6">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.projects?.map((project) => (
                       <ProjectCard 
@@ -241,7 +249,7 @@ export default function Landing() {
 
                 {/* Featured Articles */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Featured Articles</h3>
+                  <h3 className="text-2xl font-bold mb-6">Featured Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.articles?.map((article) => (
                       <ArticleCard 
@@ -262,7 +270,7 @@ export default function Landing() {
 
                 {/* Featured Posts */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Featured Posts</h3>
+                  <h3 className="text-2xl font-bold mb-6">Featured Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.posts?.map((post) => (
                       <PostCard 
@@ -283,7 +291,7 @@ export default function Landing() {
 
                 {/* Comments */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Featured Comments</h3>
+                  <h3 className="text-2xl font-bold mb-6">Featured Comments</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.comments.map((comment) => (
                       <div 
@@ -327,14 +335,14 @@ export default function Landing() {
             )}
 
             {/* Recent Content Section */}
-            <h2 className="text-2xl font-bold mb-6 mt-12">Recent Content</h2>
+            <h2 className="text-4xl font-semibold text-center mb-16 mt-12">Recent Content</h2>
             {loading ? (
               <FeaturedContentSkeleton />
             ) : (
               <div className="space-y-6">
                 {/* Recent Users */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Recent Users</h3>
+                  <h3 className="text-2xl font-bold mb-6">Recent Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.users?.map((user) => (
                       <UserCard 
@@ -356,7 +364,7 @@ export default function Landing() {
 
                 {/* Recent Projects */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Recent Projects</h3>
+                  <h3 className="text-2xl font-bold mb-6">Recent Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.projects?.map((project) => (
                       <ProjectCard 
@@ -377,7 +385,7 @@ export default function Landing() {
 
                 {/* Recent Articles */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Recent Articles</h3>
+                  <h3 className="text-2xl font-bold mb-6">Recent Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.articles?.map((article) => (
                       <ArticleCard 
@@ -398,7 +406,7 @@ export default function Landing() {
 
                 {/* Recent Posts */}
                 <div className="bg-white border-black p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-4">Recent Posts</h3>
+                  <h3 className="text-2xl font-bold mb-6">Recent Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.posts?.map((post) => (
                       <PostCard 
@@ -844,7 +852,7 @@ export default function Landing() {
       </section>
 
       {/* 9. About Platform */}
-      <section className="relative py-16 bg-gray-50 scroll-fade invisible">
+      <section className="relative py-16 bg-turquoise-light scroll-fade invisible">
         <span className="absolute top-[10%] right-[10%] text-4xl animate-float">🌟</span>
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-4xl font-semibold text-center mb-16">About Our Platform</h2>
@@ -885,25 +893,34 @@ export default function Landing() {
       </section>
 
       {/* Platform Statistics */}
-      <section className="bg-white shadow-sm py-12 scroll-fade invisible">
+      <section className="relative py-16 bg-[#2563EB] text-white scroll-fade invisible">
+        <span className="absolute top-[10%] right-[10%] text-4xl animate-float">📈</span>
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Platform Statistics</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
-              <div className="text-2xl font-bold">{siteStats?.totalUsers || '...'}</div>
-              <div className="text-gray-600">Community Members</div>
+          <h2 className="text-4xl font-semibold text-center mb-16">Platform Statistics</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
+            <div className="text-center">
+              <div className="text-4xl mb-2 animate-bounce">👥</div>
+              <div className="font-honk text-5xl animate-float">{siteStats?.totalUsers || '...'}</div>
+              <div className="text-lg mt-2">Community Members</div>
+              <div className="text-sm text-blue-200">Growing Daily</div>
             </div>
-            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
-              <div className="text-2xl font-bold">{siteStats?.totalProjects || '...'}</div>
-              <div className="text-gray-600">Total Projects</div>
+            <div className="text-center">
+              <div className="text-4xl mb-2 animate-bounce delay-100">🚀</div>
+              <div className="font-honk text-5xl animate-float-delay-1">{siteStats?.totalProjects || '...'}</div>
+              <div className="text-lg mt-2">Total Projects</div>
+              <div className="text-sm text-blue-200">Active Campaigns</div>
             </div>
-            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
-              <div className="text-2xl font-bold">{siteStats?.totalArticles || '...'}</div>
-              <div className="text-gray-600">Total Articles</div>
+            <div className="text-center">
+              <div className="text-4xl mb-2 animate-bounce delay-200">📝</div>
+              <div className="font-honk text-5xl animate-float-delay-2">{siteStats?.totalArticles || '...'}</div>
+              <div className="text-lg mt-2">Total Articles</div>
+              <div className="text-sm text-blue-200">Published Content</div>
             </div>
-            <div className="bg-white border border-black p-4 rounded-lg shadow-sm">
-              <div className="text-2xl font-bold">{siteStats?.totalPosts || '...'}</div>
-              <div className="text-gray-600">Total Posts</div>
+            <div className="text-center">
+              <div className="text-4xl mb-2 animate-bounce delay-300">📱</div>
+              <div className="font-honk text-5xl animate-float">{siteStats?.totalPosts || '...'}</div>
+              <div className="text-lg mt-2">Total Posts</div>
+              <div className="text-sm text-blue-200">Shared Updates</div>
             </div>
           </div>
         </div>

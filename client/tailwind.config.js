@@ -161,7 +161,7 @@ export default {
         turquoise: {
           light: '#E7FEFC',
           DEFAULT: '#16F5E4',
-          dark: '#00c4b5',
+          dark: '#2563EB',
         },
         orange: {
           light: '#FFEBE8',

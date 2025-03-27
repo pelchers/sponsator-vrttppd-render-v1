@@ -84,7 +84,7 @@ export default function LikeButton({
           filled={liked} 
           className={size === "lg" ? "w-5 h-5" : "w-4 h-4"} 
         />
-        <span>{likeCount}</span>
+        <span className="ml-1 text-sm">{likeCount}</span>
       </button>
   )
 } 

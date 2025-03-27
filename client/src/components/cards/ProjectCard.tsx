@@ -220,7 +220,7 @@ export default function ProjectCard({
               <p className="text-sm text-gray-500">{timeAgo}</p>
             </div>
           </div>
-          <h3 className="text-xl font-semibold mb-2 group-hover:text-green-500 transition-colors duration-250">
+          <h3 className="text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors duration-250">
             {title}
           </h3>
           {description && (
@@ -271,37 +271,42 @@ export default function ProjectCard({
           )}
         </CardContent>
       </Link>
-      <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="flex items-center gap-2 ml-auto">
-          <WatchButton 
-            entityType="project"
-            entityId={project.id}
-            initialWatching={watching}
-            initialCount={watchCount}
-            showCount={true}
-            size="sm"
-            variant="ghost"
-          />
-          <FollowButton 
-            entityType="project"
-            entityId={project.id}
-            initialFollowing={following}
-            initialCount={followCount}
-            showCount={true}
-            size="sm"
-            variant="ghost"
-          />
-          <button 
-            onClick={handleLikeToggle}
-            disabled={isLoading}
-            className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
-              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-            }`}
-            aria-label={liked ? "Unlike" : "Like"}
-          >
-            <HeartIcon filled={liked} className="w-4 h-4" />
-            <span>{likeCount}</span>
-          </button>
+      <CardFooter className="w-full px-4 pt-0 border-t border-black">
+        <div className="w-full flex items-center justify-between">
+          <span className="text-sm text-gray-600 capitalize">
+            Project
+          </span>
+          <div className="flex items-center gap-4">
+            <WatchButton 
+              entityType="project"
+              entityId={project.id}
+              initialWatching={watching}
+              initialCount={watchCount}
+              showCount={true}
+              size="sm"
+              variant="ghost"
+            />
+            <FollowButton 
+              entityType="project"
+              entityId={project.id}
+              initialFollowing={following}
+              initialCount={followCount}
+              showCount={true}
+              size="sm"
+              variant="ghost"
+            />
+            <button 
+              onClick={handleLikeToggle}
+              disabled={isLoading}
+              className={`flex items-center gap-1 text-sm transition-all duration-250 hover:scale-105 ${
+                liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+              }`}
+              aria-label={liked ? "Unlike" : "Like"}
+            >
+              <HeartIcon filled={liked} className="w-4 h-4" />
+              <span>{likeCount}</span>
+            </button>
+          </div>
         </div>
       </CardFooter>
     </Card>

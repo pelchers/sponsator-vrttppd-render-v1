@@ -90,17 +90,20 @@ export default function FollowButton({
   }[size];
 
   return (
-    <Button
-      variant={variant}
-      size="sm"
+    <button
       onClick={handleFollowToggle}
       disabled={isLoading}
-      className={`flex items-center gap-1 ${following ? 'text-blue-600' : ''} ${className}`}
+      className={`flex items-center gap-1 ${
+        following ? 'text-blue-600' : 'text-gray-500 hover:text-blue-500'
+      } transition-colors ${className}`}
       aria-label={following ? "Unfollow" : "Follow"}
+      title={following ? "Unfollow" : "Follow"}
     >
-      <FollowIcon filled={following} className="w-4 h-4" />
-      {showCount && <span>{followCount}</span>}
-      <span>{following ? 'Following' : 'Follow'}</span>
-    </Button>
+      <FollowIcon 
+        filled={following} 
+        className={`w-4 h-4 ${following ? 'text-blue-600' : 'text-current'}`} 
+      />
+      {showCount && <span className="ml-1 text-sm">{followCount}</span>}
+    </button>
   );
 } 

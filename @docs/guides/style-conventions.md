@@ -62,6 +62,7 @@ colors: {
    - Information displays
    - Secondary UI elements
    - Supporting content areas
+   - Informative sections: Rich blue (#2563EB)
 
 3. **10% - Accent & Interactive**
    - Primary buttons: Spring green
@@ -275,4 +276,23 @@ className="border border-black" // 1px black border
 
 // Buttons & Interactive Elements
 className="border-2 border-black" // 2px black border
+```
+
+### Informative Elements
+```typescript
+// Informative Cards & Sections
+className="bg-[#2563EB] text-white"  // Rich blue background with white text
+
+// Informative Stats
+className="text-[#2563EB]"  // Rich blue text for statistics
+
+// Usage Examples:
+<div className="bg-[#2563EB] text-white p-8 rounded-2xl">
+  <h3>Platform Features</h3>
+  {/* Informative content */}
+</div>
+
+<span className="text-[#2563EB] font-bold text-2xl">
+  {/* Statistical value */}
+</span>
 ``` 

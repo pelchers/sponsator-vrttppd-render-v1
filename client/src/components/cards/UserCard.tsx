@@ -122,39 +122,38 @@ export default function UserCard({
   };
 
   return (
-    <Card className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col relative transition-all duration-250 hover:scale-105 hover:shadow-lg min-w-[300px]">
-      <Link 
-        to={`/profile/${user.id}`}
-        className="flex-grow p-4 flex flex-col group"
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <UserImage
-              user={user}
-              className="w-10 h-10 rounded-full object-cover mr-3"
-              fallback={
-                <div className="mr-3">
-                  <DefaultAvatar className="w-10 h-10" />
-                </div>
-              }
-            />
-            <div>
-              <h3 className="font-medium text-gray-900 group-hover:text-green-500 transition-colors duration-250">
-                {user.username}
-              </h3>
-              <p className="text-sm text-gray-500 capitalize">{user.user_type || 'User'}</p>
-            </div>
-          </div>
-        </div>
-        
-        <p className="text-gray-700 line-clamp-3 mb-4 group-hover:text-gray-900 transition-colors duration-250">
+    <Card className="flex flex-col items-center text-center">
+      {/* Profile Image - Centered on its own line */}
+      <div className="w-full flex justify-center py-4">
+        <UserImage
+          user={user}
+          className="w-24 h-24 rounded-full object-cover border-2 border-black"
+          fallback={<DefaultAvatar className="w-24 h-24" />}
+        />
+      </div>
+
+      {/* Content Section */}
+      <div className="w-full text-center px-4">
+        {/* Username */}
+        <Link to={`/profile/${user.id}`}>
+          <h3 className="text-2xl font-bold hover:text-green-500 transition-colors duration-250">
+            {user.username}
+          </h3>
+        </Link>
+
+        {/* User Type */}
+        <span className="block text-sm text-gray-600 mt-1 mb-2 capitalize">
+          {user.user_type || 'User'}
+        </span>
+
+        {/* Bio */}
+        <p className="text-sm text-gray-700 mb-3 line-clamp-2">
           {user.bio || 'No bio available'}
         </p>
-      </Link>
-      
-      <CardFooter className="p-4 pt-0 flex justify-between items-center">
-       
-        <div className="flex items-center gap-2 ml-auto">
+      </div>
+
+      <CardFooter className="w-full px-4 pt-0 border-t border-black">
+        <div className="flex items-center justify-center gap-4 w-full">
           <WatchButton 
             entityType="user"
             entityId={user.id}
@@ -173,6 +172,19 @@ export default function UserCard({
             size="sm"
             variant="ghost"
           />
+          <button
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+            className={`flex items-center gap-1 ${
+              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+            } transition-colors`}
+          >
+            <HeartIcon 
+              filled={liked} 
+              className="w-4 h-4" 
+            />
+            <span className="text-sm">{likeCount}</span>
+          </button>
         </div>
       </CardFooter>
     </Card>

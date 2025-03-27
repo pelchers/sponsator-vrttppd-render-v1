@@ -90,17 +90,17 @@ export default function WatchButton({
   }[size];
 
   return (
-    <Button
-      variant={variant}
-      size="sm"
+    <button
       onClick={handleWatchToggle}
       disabled={isLoading}
-      className={`flex items-center gap-1 ${watching ? 'text-blue-600' : ''} ${className}`}
+      className={`flex items-center gap-1 ${
+        watching ? 'text-orange-500' : 'text-gray-500 hover:text-orange-400'
+      } transition-colors ${className}`}
       aria-label={watching ? "Unwatch" : "Watch"}
+      title={watching ? "Unwatch" : "Watch"}
     >
       <WatchIcon filled={watching} className="w-4 h-4" />
-      {showCount && <span>{watchCount}</span>}
-      <span>{watching ? 'Watching' : 'Watch'}</span>
-    </Button>
+      {showCount && <span className="ml-1 text-sm">{watchCount}</span>}
+    </button>
   );
 } 
