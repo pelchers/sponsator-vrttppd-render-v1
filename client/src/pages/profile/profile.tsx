@@ -173,13 +173,13 @@ export default function Profile() {
   if (!user) return <div className="container mx-auto px-4 py-8">User not found</div>;
 
   return (
-      <div className="w-full">
-        <div className="profile-container">
-          <div className="profile-sections-container">
+      <div className="min-h-screen w-full bg-[#FFFEFF]">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="space-y-6">
             {/* Basic Information */}
-            <div className="profile-section">
-              <div className="flex justify-between items-center">
-                <h1 className="profile-header">{user.username}'s Profile</h1>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-4xl font-semibold">{user.username}'s Profile</h1>
                 <div className="flex space-x-3">
                   <Button 
                     onClick={() => navigate(`/portfolio/${id}`)}
@@ -190,7 +190,7 @@ export default function Profile() {
                   <Button 
                     onClick={handleMessageUser}
                     disabled={isCreatingChat}
-                    variant="outline"
+                    className="bg-orange-500 text-white hover:bg-orange-600"
                   >
                     {isCreatingChat ? (
                       <>
@@ -205,7 +205,7 @@ export default function Profile() {
                   {localStorage.getItem('userId') === id && (
                     <Button 
                       onClick={() => navigate(`/profile/${id}/edit`)}
-                      className="bg-indigo-600 text-white hover:bg-indigo-700"
+                      className="bg-green-500 text-white hover:bg-green-600"
                     >
                       Edit Profile
                     </Button>
@@ -288,12 +288,12 @@ export default function Profile() {
             </div>
 
             {/* Professional Information */}
-            <div className="profile-section">
-              <h2 className="section-title">Professional Information</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Professional Information</h2>
               <div className="profile-grid">
                 {/* Career Details */}
                 <div>
-                  <h3 className="section-title">Career Details</h3>
+                  <h3 className="text-xl font-bold mb-4">Career Details</h3>
                   <div className="info-group">
                     <label className="info-label">Career Title</label>
                     <div className="info-value">{user.career_title}</div>
@@ -306,7 +306,7 @@ export default function Profile() {
 
                 {/* Social Media Details */}
                 <div>
-                  <h3 className="section-title">Social Media</h3>
+                  <h3 className="text-xl font-bold mb-4">Social Media</h3>
                   <div className="info-group">
                     <label className="info-label">Handle</label>
                     <div className="info-value">{user.social_media_handle}</div>
@@ -322,7 +322,7 @@ export default function Profile() {
               <div className="profile-grid mt-6">
                 {/* Professional Affiliation */}
                 <div>
-                  <h3 className="section-title">Professional Affiliation</h3>
+                  <h3 className="text-xl font-bold mb-4">Professional Affiliation</h3>
                   <div className="info-group">
                     <label className="info-label">Company</label>
                     <div className="info-value">{user.company || 'Not specified'}</div>
@@ -352,7 +352,7 @@ export default function Profile() {
 
                 {/* Contract Specifications */}
                 <div>
-                  <h3 className="section-title">Contract Specifications</h3>
+                  <h3 className="text-xl font-bold mb-4">Contract Specifications</h3>
                   <div className="info-group">
                     <label className="info-label">Contract Type</label>
                     <div className="info-value">{user.contract_type || 'Not specified'}</div>
@@ -370,12 +370,12 @@ export default function Profile() {
             </div>
 
             {/* Availability & Work Preferences */}
-            <div className="profile-section">
-              <h2 className="section-title">Availability & Work Preferences</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Availability & Work Preferences</h2>
               <div className="profile-grid">
                 {/* Availability */}
                 <div>
-                  <h3 className="section-title">Availability</h3>
+                  <h3 className="text-xl font-bold mb-4">Availability</h3>
                   <div className="info-group">
                     <label className="info-label">Status</label>
                     <div className="info-value">{user.availability_status}</div>
@@ -388,7 +388,7 @@ export default function Profile() {
 
                 {/* Compensation */}
                 <div>
-                  <h3 className="section-title">Compensation</h3>
+                  <h3 className="text-xl font-bold mb-4">Compensation</h3>
                   <div className="info-group">
                     <label className="info-label">Standard Rate</label>
                     <div className="info-value">{user.standard_service_rate}</div>
@@ -402,19 +402,21 @@ export default function Profile() {
             </div>
 
             {/* Focus */}
-            <div className="profile-section">
-              <h2 className="section-title">Focus</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Focus</h2>
               <div className="profile-grid">
                 <div>
-                  <h3 className="section-title">Target Audience</h3>
+                  <h3 className="text-xl font-bold mb-4">Target Audience</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.target_audience.map((tag: string, index: number) => (
-                      <PillTag key={index} text={tag} />
+                      <span key={index} className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <h3 className="section-title">Solutions Offered</h3>
+                  <h3 className="text-xl font-bold mb-4">Solutions Offered</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.solutions_offered.map((tag: string, index: number) => (
                       <PillTag key={index} text={tag} />
@@ -424,48 +426,66 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Tags & Categories (update the title and add missing tag sections) */}
-            <div className="profile-section">
-              <h2 className="section-title">Tags & Categories</h2>
-              <div className="profile-grid">
-                <div className="info-group">
-                  <label className="info-label">Skills</label>
-                  <div className="tag-container">
+            {/* Tags & Categories */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Tags & Categories</h2>
+              <div className="space-y-6">
+                {/* Skills */}
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Skills</h3>
+                  <div className="flex flex-wrap gap-2">
                     {user.skills.map((skill, index) => (
-                      <span key={index} className="tag">{skill}</span>
+                      <span key={index} className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105">
+                        {skill}
+                      </span>
                     ))}
                   </div>
                 </div>
-                <div className="info-group">
-                  <label className="info-label">Expertise</label>
-                  <div className="tag-container">
+
+                {/* Expertise */}
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Expertise</h3>
+                  <div className="flex flex-wrap gap-2">
                     {user.expertise.map((item, index) => (
-                      <span key={index} className="tag">{item}</span>
+                      <span key={index} className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105">
+                        {item}
+                      </span>
                     ))}
                   </div>
                 </div>
-                {/* Add missing tag sections */}
-                <div className="info-group">
-                  <label className="info-label">Interest Tags</label>
-                  <div className="tag-container">
+
+                {/* Interest Tags */}
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Interest Tags</h3>
+                  <div className="flex flex-wrap gap-2">
                     {user.interest_tags.map((tag, index) => (
-                      <span key={index} className="tag">{tag}</span>
+                      <span key={index} className="px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-black border border-black transition-all duration-250 hover:scale-105">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
-                <div className="info-group">
-                  <label className="info-label">Experience Tags</label>
-                  <div className="tag-container">
+
+                {/* Experience Tags */}
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Experience Tags</h3>
+                  <div className="flex flex-wrap gap-2">
                     {user.experience_tags.map((tag, index) => (
-                      <span key={index} className="tag">{tag}</span>
+                      <span key={index} className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-black border border-black transition-all duration-250 hover:scale-105">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
-                <div className="info-group">
-                  <label className="info-label">Education Tags</label>
-                  <div className="tag-container">
+
+                {/* Education Tags */}
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Education Tags</h3>
+                  <div className="flex flex-wrap gap-2">
                     {user.education_tags.map((tag, index) => (
-                      <span key={index} className="tag">{tag}</span>
+                      <span key={index} className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-black border border-black transition-all duration-250 hover:scale-105">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -473,18 +493,18 @@ export default function Profile() {
             </div>
 
             {/* Status */}
-            <div className="profile-section">
-              <h2 className="section-title">Status</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Status</h2>
               <div className="profile-grid">
                 <div>
-                  <h3 className="section-title">Work Status</h3>
+                  <h3 className="text-xl font-bold mb-4">Work Status</h3>
                   <div className="info-group">
                     <label className="info-label">Current Status</label>
                     <div className="info-value">{user.work_status}</div>
                   </div>
                 </div>
                 <div>
-                  <h3 className="section-title">Seeking</h3>
+                  <h3 className="text-xl font-bold mb-4">Seeking</h3>
                   <div className="info-group">
                     <label className="info-label">Looking For</label>
                     <div className="info-value">{user.seeking}</div>
@@ -494,11 +514,11 @@ export default function Profile() {
             </div>
 
             {/* Contact & Availability */}
-            <div className="profile-section">
-              <h2 className="section-title">Contact & Availability</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Contact & Availability</h2>
               <div className="profile-grid">
                 <div>
-                  <h3 className="section-title">Social Links</h3>
+                  <h3 className="text-xl font-bold mb-4">Social Links</h3>
                   {Object.entries(user.social_links).map(([platform, url]) => (
                     <div key={platform} className="info-group">
                       <label className="info-label capitalize">{platform}</label>
@@ -520,7 +540,7 @@ export default function Profile() {
                   ))}
                 </div>
                 <div>
-                  <h3 className="section-title">Website Links</h3>
+                  <h3 className="text-xl font-bold mb-4">Website Links</h3>
                   <div className="info-group">
                     <div className="tag-container">
                       {user.website_links.map((link, index) => (
@@ -541,15 +561,15 @@ export default function Profile() {
             </div>
 
             {/* Qualifications */}
-            <div className="profile-section">
-              <h2 className="section-title">Qualifications</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Qualifications</h2>
               <div className="space-y-8">
                 {/* Work Experience */}
                 <div className="info-group">
-                  <h3 className="section-title">Work Experience</h3>
+                  <h3 className="text-xl font-bold mb-4">Work Experience</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.work_experience.map((exp, index) => (
-                      <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                      <div key={index} className="bg-white p-4 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
                         <div className="space-y-2">
                           <div>
                             <label className="text-sm text-gray-500">Title</label>
@@ -571,7 +591,7 @@ export default function Profile() {
 
                 {/* Education */}
                 <div className="info-group">
-                  <h3 className="section-title">Education</h3>
+                  <h3 className="text-xl font-bold mb-4">Education</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.education.map((edu, index) => (
                       <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
@@ -596,7 +616,7 @@ export default function Profile() {
 
                 {/* Certifications */}
                 <div className="info-group">
-                  <h3 className="section-title">Certifications</h3>
+                  <h3 className="text-xl font-bold mb-4">Certifications</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.certifications.map((cert, index) => (
                       <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
@@ -621,7 +641,7 @@ export default function Profile() {
 
                 {/* Accolades */}
                 <div className="info-group">
-                  <h3 className="section-title">Accolades</h3>
+                  <h3 className="text-xl font-bold mb-4">Accolades</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.accolades.map((accolade, index) => (
                       <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
@@ -646,7 +666,7 @@ export default function Profile() {
 
                 {/* Endorsements */}
                 <div className="info-group">
-                  <h3 className="section-title">Endorsements</h3>
+                  <h3 className="text-xl font-bold mb-4">Endorsements</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.endorsements.map((endorsement, index) => (
                       <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
@@ -676,11 +696,11 @@ export default function Profile() {
             </div>
 
             {/* Collaboration & Goals */}
-            <div className="profile-section">
-              <h2 className="section-title">Collaboration & Goals</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Collaboration & Goals</h2>
               <div className="profile-grid">
                 <div>
-                  <h3 className="section-title">Short Term Goals</h3>
+                  <h3 className="text-xl font-bold mb-4">Short Term Goals</h3>
                   <div className="info-group">
                     <div className="info-value" style={{ minHeight: '100px' }}>
                       {user.short_term_goals}
@@ -688,7 +708,7 @@ export default function Profile() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="section-title">Long Term Goals</h3>
+                  <h3 className="text-xl font-bold mb-4">Long Term Goals</h3>
                   <div className="info-group">
                     <div className="info-value" style={{ minHeight: '100px' }}>
                       {user.long_term_goals}
@@ -699,11 +719,11 @@ export default function Profile() {
             </div>
 
             {/* Portfolio & Showcase */}
-            <div className="profile-section">
-              <h2 className="section-title">Portfolio & Showcase</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Portfolio & Showcase</h2>
               <div className="space-y-8">
                 <div>
-                  <h3 className="section-title">Featured Projects</h3>
+                  <h3 className="text-xl font-bold mb-4">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.featured_projects.map((project, index) => (
                       <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
@@ -733,7 +753,7 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <h3 className="section-title">Case Studies</h3>
+                  <h3 className="text-xl font-bold mb-4">Case Studies</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {user.case_studies.map((study, index) => (
                       <div key={index} className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
@@ -765,11 +785,11 @@ export default function Profile() {
             </div>
 
             {/* Privacy & Notifications */}
-            <div className="profile-section">
-              <h2 className="section-title">Privacy & Notifications</h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6">Privacy & Notifications</h2>
               <div className="profile-grid">
                 <div>
-                  <h3 className="section-title">Privacy Settings</h3>
+                  <h3 className="text-xl font-bold mb-4">Privacy Settings</h3>
                   <div className="info-group">
                     <label className="info-label">Profile Visibility</label>
                     <div className="info-value">{user.profile_visibility}</div>
@@ -780,7 +800,7 @@ export default function Profile() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="section-title">Notification Preferences</h3>
+                  <h3 className="text-xl font-bold mb-4">Notification Preferences</h3>
                   {Object.entries(user.notification_preferences).map(([key, value]) => (
                     <div key={key} className="info-group">
                       <label className="info-label capitalize">{key.replace('_', ' ')}</label>

@@ -211,16 +211,15 @@ export default function MyStuffPage() {
       <h1 className="text-3xl font-bold mb-8">My Stuff</h1>
       
       {/* Filters */}
-      <div className="mb-8 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <FilterGroup 
           title="Show Content" 
           options={contentTypes} 
           selected={selectedContentTypes} 
           onChange={handleContentTypeChange} 
         />
-        
         <FilterGroup 
-          title="Interaction Types" 
+          title="Interaction Type" 
           options={interactionTypes} 
           selected={selectedInteractionTypes} 
           onChange={handleInteractionTypeChange} 
@@ -254,21 +253,7 @@ export default function MyStuffPage() {
         </div>
       )}
       
-      {/* Add sort controls */}
-      {selectedContentTypes.length > 0 && (
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm text-gray-500">Sort by:</span>
-          <SortSelect 
-            value={sortBy} 
-            onValueChange={handleSortChange} 
-            className="w-40"
-          />
-          <SortOrder 
-            order={sortOrder} 
-            onChange={handleSortOrderChange}
-          />
-        </div>
-      )}
+     
       
       {/* Results */}
       {selectedContentTypes.length > 0 && selectedInteractionTypes.length > 0 && (
