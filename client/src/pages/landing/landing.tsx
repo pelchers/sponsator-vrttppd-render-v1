@@ -205,7 +205,7 @@ export default function Landing() {
             ) : (
               <div className="space-y-6">
                 {/* Featured Users */}
-                <div className="bg-white border border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Featured Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.users?.map((user) => (
@@ -227,7 +227,7 @@ export default function Landing() {
                 </div>
 
                 {/* Featured Projects */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Featured Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.projects?.map((project) => (
@@ -248,7 +248,7 @@ export default function Landing() {
                 </div>
 
                 {/* Featured Articles */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Featured Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.articles?.map((article) => (
@@ -269,7 +269,7 @@ export default function Landing() {
                 </div>
 
                 {/* Featured Posts */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Featured Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.posts?.map((post) => (
@@ -290,7 +290,7 @@ export default function Landing() {
                 </div>
 
                 {/* Comments */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Featured Comments</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {featuredContent.comments.map((comment) => (
@@ -341,7 +341,7 @@ export default function Landing() {
             ) : (
               <div className="space-y-6">
                 {/* Recent Users */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Recent Users</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.users?.map((user) => (
@@ -363,7 +363,7 @@ export default function Landing() {
                 </div>
 
                 {/* Recent Projects */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Recent Projects</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.projects?.map((project) => (
@@ -384,7 +384,7 @@ export default function Landing() {
                 </div>
 
                 {/* Recent Articles */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Recent Articles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.articles?.map((article) => (
@@ -405,7 +405,7 @@ export default function Landing() {
                 </div>
 
                 {/* Recent Posts */}
-                <div className="bg-white border-black p-6 rounded-xl">
+                <div className="bg-white p-6 rounded-2xl shadow-lg">
                   <h3 className="text-2xl font-bold mb-6">Recent Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {allContent.posts?.map((post) => (

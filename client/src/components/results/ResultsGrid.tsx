@@ -109,62 +109,73 @@ export default function ResultsGrid({
         />
       </div>
 
-      {/* Results grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {showUsers && sortedResults.users.map((user, index) => (
-          <div key={`user-${user.id || index}`} className="col-span-1">
-            <UserCard user={user} />
-          </div>
-        ))}
-        {showProjects && sortedResults.projects.map((project, index) => {
-          console.log('Project in ResultsGrid:', {
-            id: project.id,
-            imageUrl: project.project_image_url,
-            imageUpload: project.project_image_upload,
-            imageDisplay: project.project_image_display
-          });
-          
-          return (
-            <div key={`project-${project.id || index}`} className="col-span-1">
-              <ProjectCard
-                project={{
-                  ...project,
-                  project_image_url: project.project_image_url,
-                  project_image_upload: project.project_image_upload,
-                  project_image_display: project.project_image_display
-                }}
-              />
+      {/* Results sections */}
+      <div className="space-y-6">
+        {/* Users Section */}
+        {showUsers && sortedResults.users.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">Users</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {showUsers && sortedResults.users.map((user, index) => (
+                <UserCard key={`user-${user.id || index}`} user={user} />
+              ))}
             </div>
-          );
-        })}
-        {showArticles && sortedResults.articles.map((article, index) => (
-          <div key={`article-${article.id || index}`} className="col-span-1">
-            <ArticleCard
-              article={{
-                ...article,
-                article_image_url: article.article_image_url,
-                article_image_upload: article.article_image_upload,
-                article_image_display: article.article_image_display
-              }}
-              userHasLiked={likeStatuses?.articles[article.id] || false}
-              userIsFollowing={followStatuses?.articles[article.id] || false}
-              userIsWatching={watchStatuses?.articles[article.id] || false}
-            />
           </div>
-        ))}
-        {showPosts && sortedResults.posts.map((post, index) => (
-          <div key={`post-${post.id || index}`} className="col-span-1">
-            <PostCard
-              post={{
-                ...post,
-                post_image_url: post.post_image_url,
-                post_image_upload: post.post_image_upload,
-                post_image_display: post.post_image_display
-              }}
-              userHasLiked={likeStatuses?.posts[post.id] || false}
-            />
+        )}
+
+        {/* Projects Section */}
+        {showProjects && sortedResults.projects.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">Projects</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {showProjects && sortedResults.projects.map((project, index) => (
+                <ProjectCard
+                  key={`project-${project.id || index}`}
+                  project={{
+                    ...project,
+                    project_image_url: project.project_image_url,
+                    project_image_upload: project.project_image_upload,
+                    project_image_display: project.project_image_display
+                  }}
+                />
+              ))}
+            </div>
           </div>
-        ))}
+        )}
+
+        {/* Articles Section */}
+        {showArticles && sortedResults.articles.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">Articles</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {showArticles && sortedResults.articles.map((article, index) => (
+                <ArticleCard
+                  key={`article-${article.id || index}`}
+                  article={{...article}}
+                  userHasLiked={likeStatuses?.articles[article.id] || false}
+                  userIsFollowing={followStatuses?.articles[article.id] || false}
+                  userIsWatching={watchStatuses?.articles[article.id] || false}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Posts Section */}
+        {showPosts && sortedResults.posts.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">Posts</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {showPosts && sortedResults.posts.map((post, index) => (
+                <PostCard
+                  key={`post-${post.id || index}`}
+                  post={{...post}}
+                  userHasLiked={likeStatuses?.posts[post.id] || false}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

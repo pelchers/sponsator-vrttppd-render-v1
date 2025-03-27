@@ -88,13 +88,13 @@ colors: {
 2. **Section Backgrounds**
    ```typescript
    // Main content areas
-   className="bg-background"
+   className="bg-[#FFFEFF]"
    
    // Featured sections
-   className="bg-container"
+   className="bg-turquoise-light"
    
    // Call-to-action sections
-   className="bg-accent-light"
+   className="bg-[#2563EB] text-white"
    ```
 
 ### Color Variations
@@ -295,4 +295,49 @@ className="text-[#2563EB]"  // Rich blue text for statistics
 <span className="text-[#2563EB] font-bold text-2xl">
   {/* Statistical value */}
 </span>
-``` 
+```
+
+### Section Backgrounds
+```typescript
+// Main content areas
+className="bg-[#FFFEFF]"
+
+// Featured sections
+className="bg-turquoise-light"
+
+// Call-to-action sections
+className="bg-[#2563EB] text-white"
+```
+
+### Card-containing Subsections
+```typescript
+// Container for card subsections
+className="bg-white p-6 rounded-2xl shadow-lg"
+
+// Individual cards within subsections
+className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105"
+
+// Usage Example:
+<section className="bg-[#FFFEFF]">
+  <h2 className="text-4xl font-semibold text-center mb-16">Featured Content</h2>
+  <div className="space-y-6">
+    {/* Subsection */}
+    <div className="bg-white p-6 rounded-2xl shadow-lg">
+      <h3 className="text-2xl font-bold mb-6">Featured Projects</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Individual Cards */}
+        <Card className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105">
+          {/* Card content */}
+        </Card>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+This creates a visual hierarchy where:
+1. Page background provides the base layer
+2. Subsection containers float above with shadow
+3. Individual cards pop further with hover effects
+4. Maintains consistent rounded corners and shadows
+5. Helps organize and separate different content types 
