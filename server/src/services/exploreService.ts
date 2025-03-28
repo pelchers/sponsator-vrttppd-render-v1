@@ -45,7 +45,14 @@ export const searchUsers = async (
         profile_image_display: true,
         likes_count: true,
         followers_count: true,
-        watches_count: true
+        watches_count: true,
+        skills: true,
+        expertise: true,
+        interest_tags: true,
+        experience_tags: true,
+        education_tags: true,
+        target_audience: true,
+        solutions_offered: true
       },
       orderBy: {
         [sortField]: sortOrder
@@ -62,7 +69,14 @@ export const searchUsers = async (
       profile_image_display: user.profile_image_display || 'url',
       likes_count: user.likes_count || 0,
       followers_count: user.followers_count || 0,
-      watches_count: user.watches_count || 0
+      watches_count: user.watches_count || 0,
+      skills: user.skills || [],
+      expertise: user.expertise || [],
+      interest_tags: user.interest_tags || [],
+      experience_tags: user.experience_tags || [],
+      education_tags: user.education_tags || [],
+      target_audience: user.target_audience || [],
+      solutions_offered: user.solutions_offered || []
     }));
     
     return { users: processedUsers };

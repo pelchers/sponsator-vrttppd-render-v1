@@ -63,12 +63,19 @@ export default function TagInput({
       </div>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <PillTag 
-            key={tag} 
-            text={tag} 
-            onRemove={() => onRemoveTag(tag)}
+          <span 
+            key={tag}
             className={tagClassName}
-          />
+          >
+            {tag}
+            <button
+              onClick={() => onRemoveTag(tag)}
+              className="ml-2 hover:text-red-500"
+              aria-label="Remove tag"
+            >
+              ×
+            </button>
+          </span>
         ))}
       </div>
     </div>

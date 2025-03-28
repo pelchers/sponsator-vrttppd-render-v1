@@ -497,7 +497,7 @@ export default function ProfileEditForm() {
                     onAddTag={handleAddTag("target_audience")}
                     onRemoveTag={handleRemoveTag("target_audience")}
                     placeholder="Add target audience..."
-                    tagClassName="px-2 py-0.5 text-xs rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105"
+                    tagClassName="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800"
                     buttonClassName="relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none bg-spring text-black"
                   />
                 </div>
@@ -513,7 +513,7 @@ export default function ProfileEditForm() {
                     onAddTag={handleAddTag("solutions_offered")}
                     onRemoveTag={handleRemoveTag("solutions_offered")}
                     placeholder="Add a solution..."
-                    tagClassName="px-2 py-0.5 text-xs rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105"
+                    tagClassName="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800"
                     buttonClassName="relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none bg-spring text-black"
                   />
                 </div>

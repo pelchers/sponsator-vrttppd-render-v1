@@ -22,7 +22,14 @@ export async function fetchUserProfile(userId: string, token?: string) {
           'user_accolades',
           'user_endorsements',
           'user_featured_projects',
-          'user_case_studies'
+          'user_case_studies',
+          'skills',
+          'expertise',
+          'interest_tags',
+          'experience_tags',
+          'education_tags',
+          'target_audience',
+          'solutions_offered'
         ].join(',')
       }
     });
@@ -31,6 +38,14 @@ export async function fetchUserProfile(userId: string, token?: string) {
     const userData = response.data;
     return {
       ...userData,
+      // Ensure arrays are initialized even if empty
+      skills: userData.skills || [],
+      expertise: userData.expertise || [],
+      interest_tags: userData.interest_tags || [],
+      experience_tags: userData.experience_tags || [],
+      education_tags: userData.education_tags || [],
+      target_audience: userData.target_audience || [],
+      solutions_offered: userData.solutions_offered || [],
       // Don't set default values for these fields - let them be null if not present
       profile_image_url: userData.profile_image_url || null,
       profile_image_upload: userData.profile_image_upload || null,

@@ -117,7 +117,19 @@ export default function ResultsGrid({
             <h3 className="text-2xl font-bold mb-6">Users</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {showUsers && sortedResults.users.map((user, index) => (
-                <UserCard key={`user-${user.id || index}`} user={user} />
+                <UserCard 
+                  key={`user-${user.id || index}`} 
+                  user={{
+                    ...user,
+                    skills: user.skills || [],
+                    expertise: user.expertise || [],
+                    interest_tags: user.interest_tags || [],
+                    experience_tags: user.experience_tags || [],
+                    education_tags: user.education_tags || [],
+                    target_audience: user.target_audience || [],
+                    solutions_offered: user.solutions_offered || []
+                  }} 
+                />
               ))}
             </div>
           </div>

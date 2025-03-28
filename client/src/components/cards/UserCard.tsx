@@ -24,6 +24,13 @@ interface UserCardProps {
     likes_count?: number;
     follows_count?: number;
     watches_count?: number;
+    skills?: string[];
+    expertise?: string[];
+    interest_tags?: string[];
+    experience_tags?: string[];
+    education_tags?: string[];
+    target_audience?: string[];
+    solutions_offered?: string[];
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -36,6 +43,31 @@ export default function UserCard({
   userIsFollowing = false,
   userIsWatching = false
 }: UserCardProps) {
+  // Add this debug log
+  useEffect(() => {
+    console.log('UserCard received user data:', {
+      id: user.id,
+      skills: user.skills,
+      expertise: user.expertise,
+      interest_tags: user.interest_tags,
+      experience_tags: user.experience_tags,
+      education_tags: user.education_tags,
+      target_audience: user.target_audience,
+      solutions_offered: user.solutions_offered
+    });
+  }, [user]);
+
+  // Add this console log at the top of the component
+  console.log('UserCard user data:', {
+    skills: user.skills,
+    expertise: user.expertise,
+    interest_tags: user.interest_tags,
+    experience_tags: user.experience_tags,
+    education_tags: user.education_tags,
+    target_audience: user.target_audience,
+    solutions_offered: user.solutions_offered
+  });
+
   // Interaction states
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(user.likes_count || 0);
@@ -90,10 +122,6 @@ export default function UserCard({
     
     setIsLoading(true);
     
-    // Optimistic update
-    setLiked(!liked);
-    setLikeCount(prev => !liked ? prev + 1 : Math.max(0, prev - 1));
-    
     try {
       if (liked) {
         await unlikeEntity('user', user.id);
@@ -104,18 +132,8 @@ export default function UserCard({
         setLiked(true);
         setLikeCount(prev => prev + 1);
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error toggling like:', error);
-      if (error && 
-          typeof error === 'object' && 
-          'response' in error && 
-          error.response && 
-          typeof error.response === 'object' && 
-          'status' in error.response) {
-        if (error.response.status === 409) {
-          setLiked(true);
-        }
-      }
     } finally {
       setIsLoading(false);
     }
@@ -150,6 +168,79 @@ export default function UserCard({
         <p className="text-sm text-gray-700 mb-3 line-clamp-2">
           {user.bio || 'No bio available'}
         </p>
+
+        {/* All tags in a single flex container */}
+        <div className="flex flex-wrap gap-0.5 justify-center mb-3">
+          {/* Target Audience Tags */}
+          {user.target_audience?.map((tag) => (
+            <span 
+              key={`target-${tag}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-800 border border-black transition-all duration-250 hover:scale-105"
+            >
+              {tag}
+            </span>
+          ))}
+
+          {/* Solutions Offered Tags */}
+          {user.solutions_offered?.map((tag) => (
+            <span 
+              key={`solution-${tag}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-800 border border-black transition-all duration-250 hover:scale-105"
+            >
+              {tag}
+            </span>
+          ))}
+
+          {/* Skills Tags */}
+          {user.skills?.map((skill) => (
+            <span 
+              key={`skill-${skill}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105"
+            >
+              {skill}
+            </span>
+          ))}
+
+          {/* Expertise Tags */}
+          {user.expertise?.map((item) => (
+            <span 
+              key={`expertise-${item}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105"
+            >
+              {item}
+            </span>
+          ))}
+
+          {/* Interest Tags */}
+          {user.interest_tags?.map((tag) => (
+            <span 
+              key={`interest-${tag}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-yellow-100 text-black border border-black transition-all duration-250 hover:scale-105"
+            >
+              {tag}
+            </span>
+          ))}
+
+          {/* Experience Tags */}
+          {user.experience_tags?.map((tag) => (
+            <span 
+              key={`exp-${tag}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-blue-100 text-black border border-black transition-all duration-250 hover:scale-105"
+            >
+              {tag}
+            </span>
+          ))}
+
+          {/* Education Tags */}
+          {user.education_tags?.map((tag) => (
+            <span 
+              key={`edu-${tag}`}
+              className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-blue-100 text-black border border-black transition-all duration-250 hover:scale-105"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
 
       <CardFooter className="w-full px-4 pt-0 border-t border-black">
@@ -189,4 +280,4 @@ export default function UserCard({
       </CardFooter>
     </Card>
   );
-} 
+}
