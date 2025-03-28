@@ -270,19 +270,27 @@ export default function Profile() {
               <div className="profile-grid">
                 <div className="info-group">
                   <label className="info-label">Username</label>
-                  <div className="info-value">{user.username}</div>
+                  <div className="info-value border border-black p-2 rounded-lg bg-white">
+                    {user.username}
+                  </div>
                 </div>
                 <div className="info-group">
                   <label className="info-label">Email</label>
-                  <div className="info-value">{user.email}</div>
+                  <div className="info-value border border-black p-2 rounded-lg bg-white">
+                    {user.email}
+                  </div>
                 </div>
                 <div className="info-group">
                   <label className="info-label">Bio</label>
-                  <div className="info-value" style={{ minHeight: '100px' }}>{user.bio}</div>
+                  <div className="info-value border border-black p-2 rounded-lg bg-white" style={{ minHeight: '100px' }}>
+                    {user.bio}
+                  </div>
                 </div>
                 <div className="info-group">
                   <label className="info-label">User Type</label>
-                  <div className="info-value">{user.user_type}</div>
+                  <div className="info-value border border-black p-2 rounded-lg bg-white">
+                    {user.user_type}
+                  </div>
                 </div>
               </div>
             </div>
@@ -296,11 +304,15 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Career Details</h3>
                   <div className="info-group">
                     <label className="info-label">Career Title</label>
-                    <div className="info-value">{user.career_title}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.career_title}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Experience</label>
-                    <div className="info-value">{user.career_experience} years</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.career_experience} years
+                    </div>
                   </div>
                 </div>
 
@@ -309,11 +321,15 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Social Media</h3>
                   <div className="info-group">
                     <label className="info-label">Handle</label>
-                    <div className="info-value">{user.social_media_handle}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.social_media_handle}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Followers</label>
-                    <div className="info-value">{user.social_media_followers}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.social_media_followers}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -325,15 +341,17 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Professional Affiliation</h3>
                   <div className="info-group">
                     <label className="info-label">Company</label>
-                    <div className="info-value">{user.company || 'Not specified'}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.company || 'Not specified'}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Company Location</label>
-                    <div className="info-value">{user.company_location || 'Not specified'}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">{user.company_location || 'Not specified'}</div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Company Website</label>
-                    <div className="info-value">
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
                       {user.company_website ? (
                         <a 
                           href={user.company_website}
@@ -355,15 +373,21 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Contract Specifications</h3>
                   <div className="info-group">
                     <label className="info-label">Contract Type</label>
-                    <div className="info-value">{user.contract_type || 'Not specified'}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.contract_type || 'Not specified'}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Contract Duration</label>
-                    <div className="info-value">{user.contract_duration || 'Not specified'}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.contract_duration || 'Not specified'}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Contract Rate</label>
-                    <div className="info-value">{user.contract_rate || 'Not specified'}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.contract_rate || 'Not specified'}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -378,11 +402,15 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Availability</h3>
                   <div className="info-group">
                     <label className="info-label">Status</label>
-                    <div className="info-value">{user.availability_status}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.availability_status}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Preferred Work Type</label>
-                    <div className="info-value">{user.preferred_work_type}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.preferred_work_type}
+                    </div>
                   </div>
                 </div>
 
@@ -391,11 +419,15 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Compensation</h3>
                   <div className="info-group">
                     <label className="info-label">Standard Rate</label>
-                    <div className="info-value">{user.standard_service_rate}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.standard_service_rate}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Rate Range</label>
-                    <div className="info-value">{user.rate_range}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.rate_range}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -500,14 +532,18 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Work Status</h3>
                   <div className="info-group">
                     <label className="info-label">Current Status</label>
-                    <div className="info-value">{user.work_status}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.work_status}
+                    </div>
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-4">Seeking</h3>
                   <div className="info-group">
                     <label className="info-label">Looking For</label>
-                    <div className="info-value">{user.seeking}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.seeking}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -522,7 +558,7 @@ export default function Profile() {
                   {Object.entries(user.social_links).map(([platform, url]) => (
                     <div key={platform} className="info-group">
                       <label className="info-label capitalize">{platform}</label>
-                      <div className="info-value">
+                      <div className="info-value border border-black p-2 rounded-lg bg-white">
                         {url ? (
                           <a 
                             href={url} 
@@ -542,14 +578,14 @@ export default function Profile() {
                 <div>
                   <h3 className="text-xl font-bold mb-4">Website Links</h3>
                   <div className="info-group">
-                    <div className="tag-container">
+                    <div className="flex flex-wrap gap-2">
                       {user.website_links.map((link, index) => (
                         <a 
                           key={index} 
                           href={link} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="tag hover:bg-gray-300"
+                          className="px-2 py-0.5 text-xs rounded-full bg-white text-black border border-black transition-all duration-250 hover:scale-105"
                         >
                           {new URL(link).hostname}
                         </a>
@@ -702,7 +738,7 @@ export default function Profile() {
                 <div>
                   <h3 className="text-xl font-bold mb-4">Short Term Goals</h3>
                   <div className="info-group">
-                    <div className="info-value" style={{ minHeight: '100px' }}>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white" style={{ minHeight: '100px' }}>
                       {user.short_term_goals}
                     </div>
                   </div>
@@ -710,7 +746,7 @@ export default function Profile() {
                 <div>
                   <h3 className="text-xl font-bold mb-4">Long Term Goals</h3>
                   <div className="info-group">
-                    <div className="info-value" style={{ minHeight: '100px' }}>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white" style={{ minHeight: '100px' }}>
                       {user.long_term_goals}
                     </div>
                   </div>
@@ -792,11 +828,15 @@ export default function Profile() {
                   <h3 className="text-xl font-bold mb-4">Privacy Settings</h3>
                   <div className="info-group">
                     <label className="info-label">Profile Visibility</label>
-                    <div className="info-value">{user.profile_visibility}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.profile_visibility}
+                    </div>
                   </div>
                   <div className="info-group">
                     <label className="info-label">Search Visibility</label>
-                    <div className="info-value">{user.search_visibility ? 'Visible' : 'Hidden'}</div>
+                    <div className="info-value border border-black p-2 rounded-lg bg-white">
+                      {user.search_visibility ? 'Visible' : 'Hidden'}
+                    </div>
                   </div>
                 </div>
                 <div>
@@ -804,7 +844,9 @@ export default function Profile() {
                   {Object.entries(user.notification_preferences).map(([key, value]) => (
                     <div key={key} className="info-group">
                       <label className="info-label capitalize">{key.replace('_', ' ')}</label>
-                      <div className="info-value">{value ? 'Enabled' : 'Disabled'}</div>
+                      <div className="info-value border border-black p-2 rounded-lg bg-white">
+                        {value ? 'Enabled' : 'Disabled'}
+                      </div>
                     </div>
                   ))}
                 </div>

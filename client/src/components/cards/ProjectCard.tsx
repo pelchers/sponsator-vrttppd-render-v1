@@ -185,12 +185,8 @@ export default function ProjectCard({
         {(project.project_image_url || project.project_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
             <ProjectImage
-              project={{
-                project_image_url: project.project_image_url,
-                project_image_upload: project.project_image_upload,
-                project_image_display: project.project_image_display
-              }}
-              className="w-full h-full object-cover transition-transform duration-250 group-hover:scale-105"
+              project={project}
+              className="w-full h-full object-cover rounded-2xl"
               fallback={
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                   <span className="text-gray-400">No project image</span>

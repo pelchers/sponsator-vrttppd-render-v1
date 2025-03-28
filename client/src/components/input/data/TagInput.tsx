@@ -12,6 +12,8 @@ interface TagInputProps {
   onRemoveTag: (tag: string) => void
   addButtonText?: string
   placeholder?: string
+  buttonClassName?: string
+  tagClassName?: string
 }
 
 export default function TagInput({
@@ -21,6 +23,8 @@ export default function TagInput({
   onRemoveTag,
   addButtonText = "Add",
   placeholder = "Type and press Add...",
+  buttonClassName,
+  tagClassName,
 }: TagInputProps) {
   const [input, setInput] = useState("")
 
@@ -48,19 +52,24 @@ export default function TagInput({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="flex-1 border border-black p-2 rounded-lg bg-white"
         />
         <button
           type="button"
           onClick={handleAdd}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className={buttonClassName || "relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none bg-spring text-black"}
         >
           {addButtonText}
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <PillTag key={tag} text={tag} onRemove={() => onRemoveTag(tag)} />
+          <PillTag 
+            key={tag} 
+            text={tag} 
+            onRemove={() => onRemoveTag(tag)}
+            className={tagClassName}
+          />
         ))}
       </div>
     </div>
