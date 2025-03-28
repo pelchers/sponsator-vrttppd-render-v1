@@ -31,6 +31,41 @@ interface UserCardProps {
     education_tags?: string[];
     target_audience?: string[];
     solutions_offered?: string[];
+    career_experience?: number;
+    social_media_handle?: string;
+    social_media_followers?: number;
+    company?: string;
+    company_location?: string;
+    company_website?: string;
+    contract_type?: string;
+    contract_duration?: string;
+    contract_rate?: string;
+    availability_status?: string;
+    preferred_work_type?: string;
+    rate_range?: string;
+    currency?: string;
+    standard_service_rate?: string;
+    standard_rate_type?: string;
+    compensation_type?: string;
+    website_links?: string[];
+    short_term_goals?: string;
+    long_term_goals?: string;
+    profile_visibility?: string;
+    search_visibility?: boolean;
+    notification_preferences_email?: boolean;
+    notification_preferences_push?: boolean;
+    notification_preferences_digest?: boolean;
+    account_status?: string;
+    last_active?: Date;
+    created_at?: Date;
+    updated_at?: Date;
+    social_links_youtube?: string;
+    social_links_instagram?: string;
+    social_links_github?: string;
+    social_links_twitter?: string;
+    social_links_linkedin?: string;
+    work_status?: string;
+    seeking?: string;
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -47,6 +82,8 @@ export default function UserCard({
   useEffect(() => {
     console.log('UserCard received user data:', {
       id: user.id,
+      work_status: user.work_status,
+      seeking: user.seeking,
       skills: user.skills,
       expertise: user.expertise,
       interest_tags: user.interest_tags,
@@ -240,6 +277,22 @@ export default function UserCard({
               {tag}
             </span>
           ))}
+        </div>
+
+        {/* Work Status and Seeking Section */}
+        <div className="w-full grid grid-cols-2 gap-2 mt-2 mb-3 px-2">
+          <div className="text-center">
+            <span className="text-[10px] text-gray-600">Work Status</span>
+            <p className="text-xs font-medium">
+              {user.work_status || 'Not specified'}
+            </p>
+          </div>
+          <div className="text-center">
+            <span className="text-[10px] text-gray-600">Seeking</span>
+            <p className="text-xs font-medium">
+              {user.seeking || 'Not specified'}
+            </p>
+          </div>
         </div>
       </div>
 

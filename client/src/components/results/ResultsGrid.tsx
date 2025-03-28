@@ -121,13 +121,25 @@ export default function ResultsGrid({
                   key={`user-${user.id || index}`} 
                   user={{
                     ...user,
+                    work_status: user.work_status || null,
+                    seeking: user.seeking || null,
+                    website_links: user.website_links || [],
                     skills: user.skills || [],
                     expertise: user.expertise || [],
                     interest_tags: user.interest_tags || [],
                     experience_tags: user.experience_tags || [],
                     education_tags: user.education_tags || [],
                     target_audience: user.target_audience || [],
-                    solutions_offered: user.solutions_offered || []
+                    solutions_offered: user.solutions_offered || [],
+                    career_experience: user.career_experience || 0,
+                    social_media_followers: user.social_media_followers || 0,
+                    currency: user.currency || 'USD',
+                    profile_visibility: user.profile_visibility || 'public',
+                    search_visibility: user.search_visibility ?? true,
+                    notification_preferences_email: user.notification_preferences_email ?? true,
+                    notification_preferences_push: user.notification_preferences_push ?? true,
+                    notification_preferences_digest: user.notification_preferences_digest ?? true,
+                    account_status: user.account_status || 'active'
                   }} 
                 />
               ))}
