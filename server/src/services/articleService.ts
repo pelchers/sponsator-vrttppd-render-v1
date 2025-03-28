@@ -15,6 +15,15 @@ export const articleService = {
         take: limit,
         orderBy: { created_at: 'desc' },
         include: {
+          users: {
+            select: {
+              id: true,
+              username: true,
+              profile_image_url: true,
+              profile_image_upload: true,
+              profile_image_display: true
+            }
+          },
           article_sections: true
         }
       }),
@@ -34,6 +43,15 @@ export const articleService = {
     const article = await prisma.articles.findUnique({
       where: { id },
       include: {
+        users: {
+          select: {
+            id: true,
+            username: true,
+            profile_image_url: true,
+            profile_image_upload: true,
+            profile_image_display: true
+          }
+        },
         article_sections: {
           orderBy: {
             order: 'asc'
@@ -74,6 +92,15 @@ export const articleService = {
     const completeArticle = await prisma.articles.findUnique({
       where: { id: article.id },
       include: {
+        users: {
+          select: {
+            id: true,
+            username: true,
+            profile_image_url: true,
+            profile_image_upload: true,
+            profile_image_display: true
+          }
+        },
         article_sections: true
       }
     });
@@ -146,6 +173,15 @@ export const articleService = {
       const completeArticle = await prisma.articles.findUnique({
         where: { id },
         include: {
+          users: {
+            select: {
+              id: true,
+              username: true,
+              profile_image_url: true,
+              profile_image_upload: true,
+              profile_image_display: true
+            }
+          },
           article_sections: {
             orderBy: {
               order: 'asc'

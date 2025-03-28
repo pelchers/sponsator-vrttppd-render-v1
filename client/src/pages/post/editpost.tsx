@@ -134,37 +134,28 @@ export default function PostEditPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">{id === 'new' ? 'Create New Post' : 'Edit Post'}</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-              <input
-                id="title"
-                name="title"
-                type="text"
-                value={post.title}
-                onChange={handleInputChange}
-                placeholder="Enter post title"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                required
-              />
-            </div>
+    <div className="min-h-screen w-full bg-[#FFFEFF]">
+      <form onSubmit={handleSubmit}>
+        <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+          {/* Basic Information */}
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">{id === 'new' ? 'Create New Post' : 'Edit Post'}</h2>
             
-            <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700">Post Image</label>
-              
+            {/* Image section container */}
+            <div className="flex flex-col items-center space-y-4">
+              {/* Image Toggle Buttons */}
               <div className="flex items-center space-x-4">
                 <button
                   type="button"
-                  className={`px-4 py-2 rounded transition-colors ${
-                    post.post_image_display === "url" 
-                      ? "bg-blue-500 text-white" 
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
+                  className={`
+                    relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium
+                    transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none
+                    ${
+                      post.post_image_display === "url" 
+                        ? 'bg-spring text-black' 
+                        : 'bg-white text-black'
+                    }`}
                   onClick={() => setPost(prev => ({ 
                     ...prev, 
                     post_image_display: "url",
@@ -175,11 +166,15 @@ export default function PostEditPage() {
                 </button>
                 <button
                   type="button"
-                  className={`px-4 py-2 rounded transition-colors ${
-                    post.post_image_display === "upload" 
-                      ? "bg-blue-500 text-white" 
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
+                  className={`
+                    relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium
+                    transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none
+                    ${
+                      post.post_image_display === "upload" 
+                        ? 'bg-spring text-black' 
+                        : 'bg-white text-black'
+                    }`}
                   onClick={() => setPost(prev => ({ 
                     ...prev, 
                     post_image_display: "upload",
@@ -190,6 +185,7 @@ export default function PostEditPage() {
                 </button>
               </div>
 
+              {/* URL Input or Upload Component */}
               {post.post_image_display === "url" ? (
                 <div className="w-full max-w-md">
                   <label className="block text-sm font-medium text-gray-700">
@@ -200,22 +196,9 @@ export default function PostEditPage() {
                     name="post_image_url"
                     value={post.post_image_url || ''}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="border border-black p-2 rounded-lg bg-white w-full"
                     placeholder="https://example.com/image.jpg"
                   />
-                  {post.post_image_url && (
-                    <div className="mt-2">
-                      <img
-                        src={post.post_image_url}
-                        alt="Post preview"
-                        className="max-h-64 rounded-md object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://via.placeholder.com/640x360?text=Invalid+Image+URL';
-                        }}
-                      />
-                    </div>
-                  )}
                 </div>
               ) : (
                 <PostImageUpload 
@@ -229,40 +212,61 @@ export default function PostEditPage() {
                 />
               )}
             </div>
-            
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-              <textarea
-                id="description"
-                name="description"
-                value={post.description}
-                onChange={handleInputChange}
-                placeholder="Write your post description here..."
-                rows={6}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                required
-              />
+
+            {/* Post Content */}
+            <div className="space-y-4 mt-6">
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  id="title"
+                  name="title"
+                  type="text"
+                  value={post.title}
+                  onChange={handleInputChange}
+                  className="border border-black p-2 rounded-lg bg-white w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={post.description}
+                  onChange={handleInputChange}
+                  rows={6}
+                  className="border border-black p-2 rounded-lg bg-white w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <TagInput
+                  label="Tags"
+                  tags={post.tags}
+                  onAddTag={handleAddTag}
+                  onRemoveTag={handleRemoveTag}
+                  placeholder="Add a tag..."
+                  tagClassName="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-turquoise-light text-black border border-black transition-all duration-250 hover:scale-105"
+                />
+              </div>
             </div>
-            
-            <div>
-              <TagInput
-                label="Tags"
-                tags={post.tags}
-                onAddTag={handleAddTag}
-                onRemoveTag={handleRemoveTag}
-                placeholder="Add a tag..."
-              />
+          </div>
+
+          {/* Submit Button */}
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <div className="flex justify-end">
+              <Button 
+                type="submit" 
+                className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200" 
+                disabled={saving}
+              >
+                {saving ? 'Saving...' : (id === 'new' ? 'Create Post' : 'Update Post')}
+              </Button>
             </div>
           </div>
         </div>
-        
-        <Button 
-          type="submit" 
-          className="bg-blue-500 hover:bg-blue-600 text-white" 
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : (id === 'new' ? 'Create Post' : 'Update Post')}
-        </Button>
       </form>
     </div>
   );

@@ -124,140 +124,150 @@ export default function PostPage() {
   const isOwner = currentUser?.id === post.user_id;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Link to="/posts" className="text-blue-500 hover:underline">
-          &larr; Back to Posts
-        </Link>
-      </div>
-      
-      {/* Edit Button - Only visible to post owner */}
-      {isOwner && (
-        <div className="flex justify-end mb-4">
-          <Button
-            onClick={() => navigate(`/post/edit/${post.id}`)}
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-          >
-            Edit Post
-          </Button>
-        </div>
-      )}
-      
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        {/* Post Image - Updated to be adaptive with max dimensions */}
-        <div className="relative w-full max-h-[600px] min-h-[300px]">
-          <PostImage
-            post={post}
-            className="w-full h-full max-h-[600px] object-contain bg-gray-100"
-            fallback={
-              <div className="w-full h-full min-h-[300px] bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">No image available</span>
-              </div>
-            }
-          />
+    <div className="min-h-screen w-full bg-[#FFFEFF]">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        {/* Navigation */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <div className="flex justify-between items-center">
+            <Link to="/posts" className="text-black hover:text-turquoise transition-colors">
+              &larr; Back to Posts
+            </Link>
+            
+            {/* Edit Button - Only visible to post owner */}
+            {isOwner && (
+              <Button
+                onClick={() => navigate(`/post/edit/${post.id}`)}
+                className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+              >
+                Edit Post
+              </Button>
+            )}
+          </div>
         </div>
         
         {/* Post Content */}
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          {/* Post Image */}
+          <div className="relative w-full max-h-[600px] min-h-[300px] mb-6">
+            <PostImage
+              post={post}
+              className="w-full h-full max-h-[600px] object-contain bg-gray-100 rounded-lg"
+              fallback={
+                <div className="w-full h-full min-h-[300px] bg-gray-200 flex items-center justify-center rounded-lg">
+                  <span className="text-gray-500">No image available</span>
+                </div>
+              }
+            />
+          </div>
           
-          <div className="prose max-w-none">
-            <p className="text-gray-700 mb-4">{post.description}</p>
+          {/* Post Title & Description */}
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold">{post.title}</h1>
+            <div className="prose max-w-none">
+              <p className="text-gray-700">{post.description}</p>
+            </div>
           </div>
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-0.5 mt-4">
               {post.tags.map((tag: string, index: number) => (
                 <span
                   key={index}
-                  className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+                  className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-turquoise-light text-black border border-black transition-all duration-250 hover:scale-105"
                 >
-                  #{tag}
+                  {tag}
                 </span>
               ))}
             </div>
           )}
 
           {/* Post Metadata */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-500">
-            <div>Posted by: {post.username}</div>
-            <div>Posted on: {new Date(post.created_at).toLocaleDateString()}</div>
+          <div className="mt-6 pt-6 border-t border-black">
+            <div className="text-sm text-gray-700">Posted by: {post.username}</div>
+            <div className="text-sm text-gray-700">Posted on: {new Date(post.created_at).toLocaleDateString()}</div>
             {post.updated_at !== post.created_at && (
-              <div>Updated on: {new Date(post.updated_at).toLocaleDateString()}</div>
+              <div className="text-sm text-gray-700">Updated on: {new Date(post.updated_at).toLocaleDateString()}</div>
             )}
           </div>
         </div>
-      </div>
-      
-      <div className="flex items-center space-x-4 border-t pt-4">
-        <button 
-          onClick={handleLike}
-          className="flex items-center space-x-1 text-gray-500 hover:text-blue-500"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-          </svg>
-          <span>{post.likes} {post.likes === 1 ? 'Like' : 'Likes'}</span>
-        </button>
         
-        <div className="text-gray-500">
-          <span>{post.comments.length} {post.comments.length === 1 ? 'Comment' : 'Comments'}</span>
+        {/* Interactions */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={handleLike}
+              className="flex items-center space-x-2 text-gray-700 hover:text-turquoise transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+              </svg>
+              <span>{post.likes} {post.likes === 1 ? 'Like' : 'Likes'}</span>
+            </button>
+            
+            <div className="text-gray-700">
+              <span>{post.comments.length} {post.comments.length === 1 ? 'Comment' : 'Comments'}</span>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div className="bg-gray-50 p-6">
-        <h2 className="text-xl font-semibold mb-4">Comments</h2>
         
-        {post.comments.length > 0 ? (
-          <div className="space-y-4 mb-6">
-            {post.comments.map((comment) => (
-              <div key={comment.id} className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="flex justify-between">
-                  <div className="font-medium">{comment.username}</div>
-                  <div className="text-sm text-gray-500">
-                    {new Date(comment.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-                <div className="mt-2">{comment.content}</div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500 mb-6">No comments yet. Be the first to comment!</p>
-        )}
-        
-        <form onSubmit={handleCommentSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="comment" className="block text-sm font-medium text-gray-700">Add a comment</label>
-            <textarea
-              id="comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write your comment here..."
-              rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
+        {/* Comments Section */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <h2 className="text-2xl font-bold mb-6">Comments</h2>
           
-          <Button 
-            type="submit" 
-            className="bg-blue-500 hover:bg-blue-600 text-white" 
-            disabled={submittingComment || !comment.trim()}
-          >
-            {submittingComment ? 'Submitting...' : 'Submit Comment'}
-          </Button>
-        </form>
+          {/* Comments List */}
+          {post.comments.length > 0 ? (
+            <div className="space-y-4 mb-6">
+              {post.comments.map((comment) => (
+                <div key={comment.id} className="border border-black p-4 rounded-lg">
+                  <div className="flex justify-between">
+                    <div className="font-medium">{comment.username}</div>
+                    <div className="text-sm text-gray-700">
+                      {new Date(comment.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div className="mt-2">{comment.content}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-700 mb-6">No comments yet. Be the first to comment!</p>
+          )}
+          
+          {/* Comment Form */}
+          <form onSubmit={handleCommentSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="comment" className="block text-sm font-medium text-gray-700">Add a comment</label>
+              <textarea
+                id="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={3}
+                className="border border-black p-2 rounded-lg bg-white w-full"
+                required
+              />
+            </div>
+            
+            <div className="flex justify-end">
+              <Button 
+                type="submit" 
+                className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                disabled={submittingComment || !comment.trim()}
+              >
+                {submittingComment ? 'Submitting...' : 'Submit Comment'}
+              </Button>
+            </div>
+          </form>
+        </div>
+        
+        {/* Comments Component */}
+        {post && (
+          <CommentsSection 
+            entityType="post"
+            entityId={post.id}
+          />
+        )}
       </div>
-      
-      {/* Add comments section */}
-      {post && (
-        <CommentsSection 
-          entityType="post"
-          entityId={post.id}
-        />
-      )}
     </div>
   );
 }

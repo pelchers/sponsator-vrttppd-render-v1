@@ -11,6 +11,7 @@ import FollowButton from '@/components/buttons/FollowButton';
 import WatchButton from '@/components/buttons/WatchButton';
 import { likeEntity, unlikeEntity, checkLikeStatus, getLikeCount } from '@/api/likes';
 import CommentsSection from '@/components/comments/CommentsSection';
+import { Link } from 'react-router-dom';
 
 export default function ArticlePage() {
   const { id } = useParams();
@@ -110,198 +111,240 @@ export default function ArticlePage() {
   const isOwner = currentUser?.id === article.user_id;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Edit Button - Only visible to article owner */}
-      {isOwner && (
-        <div className="flex justify-end mb-4">
-          <Button
-            onClick={() => navigate(`/article/edit/${article.id}`)}
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-          >
-            Edit Article
-          </Button>
+    <div className="min-h-screen w-full bg-[#FFFEFF]">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        {/* Navigation & Edit Button */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <div className="flex justify-between items-center">
+            <Link to="/articles" className="text-black hover:text-lemon transition-colors">
+              &larr; Back to Articles
+            </Link>
+            
+            {isOwner && (
+              <Button
+                onClick={() => navigate(`/article/edit/${article.id}`)}
+                className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+              >
+                Edit Article
+              </Button>
+            )}
+          </div>
         </div>
-      )}
 
-      {/* Article Header with Image */}
-      <div className="relative mb-8">
-        <ArticleImage
-          article={article}
-          className="w-full h-[400px] object-cover rounded-lg"
-          fallback={
-            <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center rounded-lg">
-              <span className="text-gray-500">No cover image</span>
+        {/* Article Header with Image */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          {/* Article Image */}
+          <div className="mb-6">
+            <ArticleImage
+              article={article}
+              className="w-full h-[400px] object-cover rounded-2xl"
+              fallback={
+                <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center rounded-2xl">
+                  <span className="text-gray-500">No cover image</span>
+                </div>
+              }
+            />
+          </div>
+
+          {/* Article Title and Metadata */}
+          <div className="space-y-4">
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-black">{article.title}</h1>
+
+            {/* Article metadata */}
+            <div className="flex items-center text-sm text-gray-700">
+              <span>By </span>
+              <Link 
+                to={`/profile/${article.user_id}`} 
+                className="font-medium hover:text-lemon transition-colors ml-1"
+              >
+                {article.users?.username || 'Anonymous'}
+              </Link>
+              <span className="mx-2">•</span>
+              <span>{new Date(article.created_at).toLocaleDateString()}</span>
             </div>
-          }
-        />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-          <h1 className="text-4xl font-bold text-white">{article.title}</h1>
-        </div>
-      </div>
+            
+            {/* Tags */}
+            <div className="flex flex-wrap gap-0.5">
+              {article.tags && article.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-lemon-light text-black border border-black transition-all duration-250 hover:scale-105"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
 
-      <div className="flex justify-center items-center space-x-6 mt-4">
-        <div className="flex flex-col items-center">
-          <button 
-            onClick={handleLikeToggle}
-            disabled={isLoading}
-            className={`flex items-center gap-1 text-sm ${
-              liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-            } transition-colors`}
-            aria-label={liked ? "Unlike" : "Like"}
-          >
-            <HeartIcon filled={liked} className="w-6 h-6" />
-            <span className="font-medium">{likeCount}</span>
-          </button>
-          <span className="text-xs text-gray-500 mt-1">Likes</span>
+          {/* Interaction Buttons */}
+          <div className="flex justify-center items-center space-x-8 pt-6 border-t border-black">
+            <div className="flex flex-col items-center">
+              <button 
+                onClick={handleLikeToggle}
+                disabled={isLoading}
+                className={`flex items-center gap-1 text-sm ${
+                  liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                } transition-colors`}
+                aria-label={liked ? "Unlike" : "Like"}
+              >
+                <HeartIcon filled={liked} className="w-6 h-6" />
+                <span className="font-medium">{likeCount}</span>
+              </button>
+              <span className="text-xs text-gray-500 mt-1">Likes</span>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <WatchButton 
+                entityType="article"
+                entityId={article.id}
+                initialWatching={false}
+                initialCount={article.watches_count || 0}
+                showCount={true}
+                size="lg"
+                variant="ghost"
+              />
+              <span className="text-xs text-gray-500 mt-1">Watching</span>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <FollowButton 
+                entityType="article"
+                entityId={article.id}
+                initialFollowing={false}
+                initialCount={article.followers_count || 0}
+                showCount={true}
+                size="lg"
+                variant="ghost"
+              />
+              <span className="text-xs text-gray-500 mt-1">Followers</span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <WatchButton 
-            entityType="article"
-            entityId={article.id}
-            initialWatching={false}
-            initialCount={article.watches_count || 0}
-            showCount={true}
-            size="lg"
-            variant="ghost"
-          />
-          <span className="text-xs text-gray-500 mt-1">Watching</span>
-        </div>
-
-        <div className="flex flex-col items-center">
-          <FollowButton 
-            entityType="article"
-            entityId={article.id}
-            initialFollowing={false}
-            initialCount={article.followers_count || 0}
-            showCount={true}
-            size="lg"
-            variant="ghost"
-          />
-          <span className="text-xs text-gray-500 mt-1">Followers</span>
-        </div>
-      </div>
-
-      <div className="article-tags">
-        {article.tags && article.tags.map((tag) => (
-          <span
-            key={tag}
-            className="article-tag"
-          >
-            #{tag}
-          </span>
+        {/* Article Sections */}
+        {article.sections && article.sections.map((section, index) => (
+          <div key={index} className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">{section.title}</h2>
+            
+            {section.type === "full-width-text" && (
+              <div className="space-y-4 article-adaptive-container">
+                <h3 className="article-section-subtitle">{section.subtitle}</h3>
+                <p className="article-section-text">{section.text}</p>
+              </div>
+            )}
+            
+            {section.type === "full-width-media" && (
+              <div className="space-y-2 article-adaptive-container">
+                <div className="article-media-container">
+                  <img 
+                    src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
+                    alt={section.title || "Article media"} 
+                    className="article-media"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                      e.currentTarget.alt = "Image failed to load";
+                    }}
+                  />
+                </div>
+                <p className="article-media-subtext">{section.mediaSubtext}</p>
+              </div>
+            )}
+            
+            {section.type === "left-media-right-text" && (
+              <div className="article-mixed-layout article-adaptive-container">
+                <div className="article-mixed-layout-column article-adaptive-container">
+                  <div className="article-media-container">
+                    <img
+                      src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
+                      alt={section.title || "Article media"}
+                      className="article-media"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                        e.currentTarget.alt = "Image failed to load";
+                      }}
+                    />
+                  </div>
+                  <p className="article-media-subtext">{section.mediaSubtext}</p>
+                </div>
+                <div className="article-mixed-layout-column article-adaptive-container">
+                  <h3 className="article-section-subtitle">{section.subtitle}</h3>
+                  <p className="article-section-text">{section.text}</p>
+                </div>
+              </div>
+            )}
+            
+            {section.type === "left-text-right-media" && (
+              <div className="article-mixed-layout article-adaptive-container">
+                <div className="article-mixed-layout-column article-adaptive-container">
+                  <h3 className="article-section-subtitle">{section.subtitle}</h3>
+                  <p className="article-section-text">{section.text}</p>
+                </div>
+                <div className="article-mixed-layout-column article-adaptive-container">
+                  <div className="article-media-container">
+                    <img
+                      src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
+                      alt={section.title || "Article media"}
+                      className="article-media"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                        e.currentTarget.alt = "Image failed to load";
+                      }}
+                    />
+                  </div>
+                  <p className="article-media-subtext">{section.mediaSubtext}</p>
+                </div>
+              </div>
+            )}
+          </div>
         ))}
+
+        {/* Citations */}
+        {article.citations && article.citations.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">Citations</h2>
+            <ul className="space-y-2">
+              {article.citations.map((citation, index) => (
+                <li key={index} className="border border-black p-2 rounded-lg bg-white">
+                  {citation}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Contributors */}
+        {article.contributors && article.contributors.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">Contributors</h2>
+            <div className="border border-black p-2 rounded-lg bg-white">
+              {article.contributors.join(', ')}
+            </div>
+          </div>
+        )}
+
+        {/* Related Media */}
+        {article.related_media && article.related_media.length > 0 && (
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">Related Media</h2>
+            <ul className="space-y-2">
+              {article.related_media.map((media, index) => (
+                <li key={index} className="border border-black p-2 rounded-lg bg-white">
+                  {media}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Comments Section */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <CommentsSection 
+            entityType="article"
+            entityId={article.id}
+          />
+        </div>
       </div>
-
-      {article.sections && article.sections.map((section, index) => (
-        <div key={index} className="article-section p-6 mb-8">
-          <h2 className="article-section-title">{section.title}</h2>
-          
-          {section.type === "full-width-text" && (
-            <div className="space-y-4 article-adaptive-container">
-              <h3 className="article-section-subtitle">{section.subtitle}</h3>
-              <p className="article-section-text">{section.text}</p>
-            </div>
-          )}
-          
-          {section.type === "full-width-media" && (
-            <div className="space-y-2 article-adaptive-container">
-              <div className="article-media-container">
-                <img 
-                  src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
-                  alt={section.title || "Article media"} 
-                  className="article-media"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
-                    e.currentTarget.alt = "Image failed to load";
-                  }}
-                />
-              </div>
-              <p className="article-media-subtext">{section.mediaSubtext}</p>
-            </div>
-          )}
-          
-          {section.type === "left-media-right-text" && (
-            <div className="article-mixed-layout article-adaptive-container">
-              <div className="article-mixed-layout-column article-adaptive-container">
-                <div className="article-media-container">
-                  <img
-                    src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
-                    alt={section.title || "Article media"}
-                    className="article-media"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
-                      e.currentTarget.alt = "Image failed to load";
-                    }}
-                  />
-                </div>
-                <p className="article-media-subtext">{section.mediaSubtext}</p>
-              </div>
-              <div className="article-mixed-layout-column article-adaptive-container">
-                <h3 className="article-section-subtitle">{section.subtitle}</h3>
-                <p className="article-section-text">{section.text}</p>
-              </div>
-            </div>
-          )}
-          
-          {section.type === "left-text-right-media" && (
-            <div className="article-mixed-layout article-adaptive-container">
-              <div className="article-mixed-layout-column article-adaptive-container">
-                <h3 className="article-section-subtitle">{section.subtitle}</h3>
-                <p className="article-section-text">{section.text}</p>
-              </div>
-              <div className="article-mixed-layout-column article-adaptive-container">
-                <div className="article-media-container">
-                  <img
-                    src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
-                    alt={section.title || "Article media"}
-                    className="article-media"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
-                      e.currentTarget.alt = "Image failed to load";
-                    }}
-                  />
-                </div>
-                <p className="article-media-subtext">{section.mediaSubtext}</p>
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
-
-      {article.citations && article.citations.length > 0 && (
-        <div className="article-section p-6 mb-8">
-          <h2 className="article-section-title">Citations</h2>
-          <ul className="article-list">
-            {article.citations.map((citation, index) => (
-              <li key={index}>{citation}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {article.contributors && article.contributors.length > 0 && (
-        <div className="article-section p-6 mb-8">
-          <h2 className="article-section-title">Contributors</h2>
-          <p className="article-section-text">{article.contributors.join(', ')}</p>
-        </div>
-      )}
-
-      {article.related_media && article.related_media.length > 0 && (
-        <div className="article-section p-6 mb-8">
-          <h2 className="article-section-title">Related Media</h2>
-          <ul className="article-list">
-            {article.related_media.map((media, index) => (
-              <li key={index}>{media}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <CommentsSection 
-        entityType="article"
-        entityId={article.id}
-      />
     </div>
   );
 }

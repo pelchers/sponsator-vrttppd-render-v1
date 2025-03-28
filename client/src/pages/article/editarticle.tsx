@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { createArticle, updateArticle, fetchArticle, uploadArticleCoverImage } from "@/api/articles"
 import ArticleImageUpload from "@/components/input/forms/ArticleImageUpload"
 import { API_URL } from '@/config'
+import TagInput from "@/components/input/forms/TagInput"
 
 type SectionType = "full-width-text" | "full-width-media" | "left-media-right-text" | "left-text-right-media"
 
@@ -321,11 +322,6 @@ export default function ArticleEditPage() {
     setRelatedMedia(newRelatedMedia)
   };
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTags = e.target.value.split(",").map((tag) => tag.trim())
-    setTags(newTags)
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -356,34 +352,28 @@ export default function ArticleEditPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Edit Article</h1>
-
+    <div className="min-h-screen w-full bg-[#FFFEFF]">
       <form onSubmit={handleSubmit}>
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <PageSection title="Article Title">
-            <input
-              type="text"
-              placeholder="Enter article title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded mb-4"
-            />
-          </PageSection>
-        </div>
-
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <PageSection title="Cover Image">
+        <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+          {/* Basic Information */}
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">{id === 'new' ? 'Create New Article' : 'Edit Article'}</h2>
+            
+            {/* Image section container */}
             <div className="flex flex-col items-center space-y-4">
               {/* Image Toggle Buttons */}
               <div className="flex items-center space-x-4">
                 <button
                   type="button"
-                  className={`px-4 py-2 rounded transition-colors ${
-                    formData.article_image_display === "url" 
-                      ? "bg-blue-500 text-white" 
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
+                  className={`
+                    relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium
+                    transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none
+                    ${
+                      formData.article_image_display === "url" 
+                        ? 'bg-spring text-black' 
+                        : 'bg-white text-black'
+                    }`}
                   onClick={() => setFormData(prev => ({ 
                     ...prev, 
                     article_image_display: "url",
@@ -394,11 +384,15 @@ export default function ArticleEditPage() {
                 </button>
                 <button
                   type="button"
-                  className={`px-4 py-2 rounded transition-colors ${
-                    formData.article_image_display === "upload" 
-                      ? "bg-blue-500 text-white" 
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
+                  className={`
+                    relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium
+                    transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95
+                    shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none
+                    ${
+                      formData.article_image_display === "upload" 
+                        ? 'bg-spring text-black' 
+                        : 'bg-white text-black'
+                    }`}
                   onClick={() => setFormData(prev => ({ 
                     ...prev, 
                     article_image_display: "upload",
@@ -420,7 +414,7 @@ export default function ArticleEditPage() {
                     name="article_image_url"
                     value={formData.article_image_url || ''}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="border border-black p-2 rounded-lg bg-white w-full"
                     placeholder="https://example.com/image.jpg"
                   />
                 </div>
@@ -435,176 +429,184 @@ export default function ArticleEditPage() {
                   showPreview={true}
                 />
               )}
-
-              {/* Preview for URL mode */}
-              {formData.article_image_display === "url" && formData.article_image_url && (
-                <div className="mt-4 flex justify-center">
-                  <img
-                    src={formData.article_image_url}
-                    alt="Article preview"
-                    className="w-full max-w-2xl object-cover rounded-lg border-2 border-gray-200"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = 'https://via.placeholder.com/1200x630?text=Invalid+Image+URL';
-                    }}
-                  />
-                </div>
-              )}
             </div>
-          </PageSection>
-        </div>
 
-        <PageSection title="Article Sections">
-          {sections.map((section, index) => (
-            <div key={index} className="bg-white shadow rounded-lg p-6 mb-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Section {index + 1}</h3>
-                <div className="flex space-x-2">
-                  <Button 
-                    onClick={() => moveSection(index, 'up')} 
-                    disabled={index === 0}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                  >
-                    Move Up
-                  </Button>
-                  <Button 
-                    onClick={() => moveSection(index, 'down')} 
-                    disabled={index === sections.length - 1}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                  >
-                    Move Down
-                  </Button>
-                </div>
+            {/* Article Content */}
+            <div className="space-y-4 mt-6">
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  type="text"
+                  placeholder="Enter article title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="border border-black p-2 rounded-lg bg-white w-full"
+                />
               </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <input
-                    type="text"
-                    placeholder="Section title"
-                    value={section.title}
-                    onChange={(e) => updateSection(index, { title: e.target.value })}
-                    className="w-2/3 p-2 border rounded"
-                  />
-                  <select
-                    value={section.type}
-                    onChange={(e) => updateSection(index, { type: e.target.value as SectionType })}
-                    className="w-1/3 p-2 border rounded ml-2"
-                    aria-label="Section type"
-                  >
-                    <option value="full-width-text">Full Width Text</option>
-                    <option value="full-width-media">Full Width Media</option>
-                    <option value="left-media-right-text">Left Media - Right Text</option>
-                    <option value="left-text-right-media">Left Text - Right Media</option>
-                  </select>
-                </div>
-                {renderSectionFields(section, index)}
-                <Button variant="destructive" onClick={() => removeSection(index)} type="button">
-                  Remove Section
-                </Button>
+
+              <div>
+                <TagInput
+                  label="Tags"
+                  tags={tags}
+                  onAddTag={(tag) => setTags([...tags, tag])}
+                  onRemoveTag={(tagToRemove) => setTags(tags.filter(tag => tag !== tagToRemove))}
+                  placeholder="Add a tag..."
+                  tagClassName="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-lemon-light text-black border border-black transition-all duration-250 hover:scale-105"
+                />
               </div>
             </div>
-          ))}
-          
-          <Button 
-            onClick={addSection} 
-            className="my-4 bg-green-500 hover:bg-green-600 text-white" 
-            type="button"
-          >
-            Add Section
-          </Button>
-        </PageSection>
+          </div>
 
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <PageSection title="Tags">
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
-            <input
-              id="tags"
-              type="text"
-              placeholder="Enter tags, separated by commas"
-              value={tags.join(", ")}
-              onChange={handleTagsChange}
-              className="w-full p-2 border rounded mt-1"
-            />
-          </PageSection>
-        </div>
-
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <PageSection title="Citations">
-            {citations.map((citation, index) => (
-              <div key={index} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Enter citation"
-                  value={citation}
-                  onChange={(e) => updateCitation(index, e.target.value)}
-                  className="flex-grow p-2 border rounded"
-                />
-                <Button variant="destructive" onClick={() => removeCitation(index)} type="button">
-                  Remove
-                </Button>
+          {/* Article Sections */}
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold mb-6">Article Sections</h2>
+            {sections.map((section, index) => (
+              <div key={index} className="border border-black p-4 rounded-lg mb-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">Section {index + 1}</h3>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={() => moveSection(index, 'up')} 
+                      disabled={index === 0}
+                      type="button"
+                      className="bg-turquoise hover:bg-turquoise-dark text-black px-4 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                    >
+                      Move Up
+                    </Button>
+                    <Button 
+                      onClick={() => moveSection(index, 'down')} 
+                      disabled={index === sections.length - 1}
+                      type="button"
+                      className="bg-turquoise hover:bg-turquoise-dark text-black px-4 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                    >
+                      Move Down
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <input
+                      type="text"
+                      placeholder="Section title"
+                      value={section.title}
+                      onChange={(e) => updateSection(index, { title: e.target.value })}
+                      className="w-2/3 p-2 border rounded"
+                    />
+                    <select
+                      value={section.type}
+                      onChange={(e) => updateSection(index, { type: e.target.value as SectionType })}
+                      className="w-1/3 p-2 border rounded ml-2"
+                      aria-label="Section type"
+                    >
+                      <option value="full-width-text">Full Width Text</option>
+                      <option value="full-width-media">Full Width Media</option>
+                      <option value="left-media-right-text">Left Media - Right Text</option>
+                      <option value="left-text-right-media">Left Text - Right Media</option>
+                    </select>
+                  </div>
+                  {renderSectionFields(section, index)}
+                  <Button 
+                    onClick={() => removeSection(index)} 
+                    type="button"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                  >
+                    Remove Section
+                  </Button>
+                </div>
               </div>
             ))}
-            <Button onClick={addCitation} className="mt-2" type="button">
-              Add New Citation
+            
+            <Button 
+              onClick={addSection} 
+              className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+              type="button"
+            >
+              Add Section
             </Button>
-          </PageSection>
-        </div>
+          </div>
 
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <PageSection title="Contributors">
-            {contributors.map((contributor, index) => (
-              <div key={index} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Enter contributor"
-                  value={contributor}
-                  onChange={(e) => updateContributor(index, e.target.value)}
-                  className="flex-grow p-2 border rounded"
-                />
-                <Button variant="destructive" onClick={() => removeContributor(index)} type="button">
-                  Remove
+          {/* Citations, Contributors, Related Media */}
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <div className="bg-white shadow rounded-lg p-6 mb-6">
+              <PageSection title="Citations">
+                {citations.map((citation, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Enter citation"
+                      value={citation}
+                      onChange={(e) => updateCitation(index, e.target.value)}
+                      className="flex-grow p-2 border rounded"
+                    />
+                    <Button variant="destructive" onClick={() => removeCitation(index)} type="button">
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button onClick={addCitation} className="mt-2" type="button">
+                  Add New Citation
                 </Button>
-              </div>
-            ))}
-            <Button onClick={addContributor} className="mt-2" type="button">
-              Add New Contributor
-            </Button>
-          </PageSection>
-        </div>
+              </PageSection>
+            </div>
 
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <PageSection title="Related Media">
-            {relatedMedia.map((media, index) => (
-              <div key={index} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Enter related media"
-                  value={media}
-                  onChange={(e) => updateRelatedMedia(index, e.target.value)}
-                  className="flex-grow p-2 border rounded"
-                />
-                <Button variant="destructive" onClick={() => removeRelatedMedia(index)} type="button">
-                  Remove
+            <div className="bg-white shadow rounded-lg p-6 mb-6">
+              <PageSection title="Contributors">
+                {contributors.map((contributor, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Enter contributor"
+                      value={contributor}
+                      onChange={(e) => updateContributor(index, e.target.value)}
+                      className="flex-grow p-2 border rounded"
+                    />
+                    <Button variant="destructive" onClick={() => removeContributor(index)} type="button">
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button onClick={addContributor} className="mt-2" type="button">
+                  Add New Contributor
                 </Button>
-              </div>
-            ))}
-            <Button onClick={addRelatedMedia} className="mt-2" type="button">
-              Add New Related Media
-            </Button>
-          </PageSection>
-        </div>
+              </PageSection>
+            </div>
 
-        <Button 
-          type="submit" 
-          className="mt-6 bg-blue-500 hover:bg-blue-600 text-white" 
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : (id === 'new' ? 'Create Article' : 'Update Article')}
-        </Button>
+            <div className="bg-white shadow rounded-lg p-6 mb-6">
+              <PageSection title="Related Media">
+                {relatedMedia.map((media, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Enter related media"
+                      value={media}
+                      onChange={(e) => updateRelatedMedia(index, e.target.value)}
+                      className="flex-grow p-2 border rounded"
+                    />
+                    <Button variant="destructive" onClick={() => removeRelatedMedia(index)} type="button">
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button onClick={addRelatedMedia} className="mt-2" type="button">
+                  Add New Related Media
+                </Button>
+              </PageSection>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="bg-white p-6 rounded-2xl shadow-lg">
+            <div className="flex justify-end">
+              <Button 
+                type="submit" 
+                className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                disabled={saving}
+              >
+                {saving ? 'Saving...' : (id === 'new' ? 'Create Article' : 'Update Article')}
+              </Button>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   );
