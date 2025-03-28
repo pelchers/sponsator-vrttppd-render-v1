@@ -37,6 +37,50 @@ export default function Landing() {
     comments: []
   });
   const [loading, setLoading] = useState(true);
+  const [currentStep, setCurrentStep] = useState(0);
+  const steps = [
+    {
+      number: 1,
+      emoji: "🎯",
+      title: "Create Profile",
+      description: "Set up your verified profile as a creator or brand",
+      points: ["Portfolio showcase", "Metrics verification", "Audience analytics"]
+    },
+    {
+      number: 2,
+      emoji: "🤖",
+      title: "Smart Match",
+      description: "Our AI matches you with perfect partners",
+      points: ["Interest alignment", "Audience fit", "Value matching"]
+    },
+    {
+      number: 3,
+      emoji: "🤝",
+      title: "Collaborate",
+      description: "Connect, negotiate, and create together",
+      points: ["Secure messaging", "Contract tools", "Project management"]
+    }
+  ];
+
+  // Add state for success stories slider
+  const [currentStory, setCurrentStory] = useState(0);
+  const successStories = [
+    {
+      title: "Beauty Brand Collab",
+      stats: "500K+ Reach • 25% Engagement",
+      image: "https://picsum.photos/800/600?random=1"
+    },
+    {
+      title: "Tech Launch Campaign",
+      stats: "1M+ Impressions • 40K Conversions",
+      image: "https://picsum.photos/800/600?random=2"
+    },
+    {
+      title: "Fashion Collection",
+      stats: "300K+ Sales • 15% Attribution",
+      image: "https://picsum.photos/800/600?random=3"
+    }
+  ];
 
   useEffect(() => {
     if (userId && isAuthenticated()) {
@@ -64,6 +108,21 @@ export default function Landing() {
         setAllContent(emptyContent);
       })
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentStep((prev) => (prev + 1) % steps.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto-advance success stories
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentStory((prev) => (prev + 1) % successStories.length);
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
 
   const testimonials = [
@@ -99,13 +158,12 @@ export default function Landing() {
     }
   ];
 
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   useScrollAnimation(); // Initialize scroll animations
 
@@ -434,151 +492,165 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* 1. Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center px-4 py-16 
-        bg-gradient-to-b from-white to-turquoise-light">
+      {/* 1. Hero Section with How It Works */}
+      <section className="relative flex flex-col px-4 py-16 
+        bg-gradient-to-b from-white to-turquoise-light
+        min-h-[calc(100vh-64px)]">
         {/* Floating Emoji */}
         <span className="absolute top-[15%] right-[10%] text-4xl animate-float-delay-1">✨</span>
         
         {/* Hero Content */}
-        <div className="max-w-3xl mx-auto text-center mb-16 animate-fade-in">
-          <h1 className="font-honk text-5xl md:text-6xl text-blue-600 mb-6 animate-float tracking-wide
-            text-shadow-lg transform transition-all duration-250">
-            Where Brands & Creators Unite
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 animate-fade-in-delay-1">
-            Connect authentically. Create meaningfully. Grow together.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-delay-2">
-            <Button 
-              onClick={() => navigate('/register')}
-              variant="spring"
-              className="text-lg px-8 py-6 transition-all duration-250 hover:scale-105"
-            >
-              Join as Creator
-            </Button>
-            <Button 
-              onClick={() => navigate('/register')}
-              variant="turquoise"
-              className="text-lg px-8 py-6 transition-all duration-250 hover:scale-105"
-            >
-              Join as Brand
-            </Button>
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <div className="max-w-3xl mx-auto text-center mb-16 animate-fade-in">
+            <h1 className="font-honk text-5xl md:text-6xl text-blue-600 mb-6 animate-float tracking-wide
+              text-shadow-lg transform transition-all duration-250">
+              Where Brands & Creators Unite
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 animate-fade-in-delay-1">
+              Connect authentically. Create meaningfully. Grow together.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-delay-2">
+              <Button 
+                onClick={() => navigate('/register')}
+                variant="spring"
+                className="text-lg px-8 py-6 transition-all duration-250 hover:scale-105"
+              >
+                Join as Creator
+              </Button>
+              <Button 
+                onClick={() => navigate('/register')}
+                variant="turquoise"
+                className="text-lg px-8 py-6 transition-all duration-250 hover:scale-105"
+              >
+                Join as Brand
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats Section - Increase bottom margin */}
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16 animate-fade-in-delay-3 mb-24">
+            <div className="group p-4 rounded-xl transition-all duration-250 hover:bg-white/10 hover:-translate-y-1">
+              <span className="font-honk text-5xl text-blue-600 block animate-float group-hover:scale-110
+                transition-all duration-250">2.5K+</span>
+              <span className="text-gray-600 text-lg">Creators</span>
+            </div>
+            <div className="group p-4 rounded-xl transition-all duration-250 hover:bg-white/10 hover:-translate-y-1">
+              <span className="font-honk text-5xl text-blue-600 block animate-float-delay-1 group-hover:scale-110
+                transition-all duration-250">500+</span>
+              <span className="text-gray-600 text-lg">Brands</span>
+            </div>
+            <div className="group p-4 rounded-xl transition-all duration-250 hover:bg-white/10 hover:-translate-y-1">
+              <span className="font-honk text-5xl text-blue-600 block animate-float-delay-2 group-hover:scale-110
+                transition-all duration-250">10K+</span>
+              <span className="text-gray-600 text-lg">Collaborations</span>
+            </div>
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 animate-fade-in-delay-3">
-          <div className="group p-4 rounded-xl transition-all duration-250 hover:bg-white/10 hover:-translate-y-1">
-            <span className="font-honk text-5xl text-blue-600 block animate-float group-hover:scale-110
-              transition-all duration-250">2.5K+</span>
-            <span className="text-gray-600 text-lg">Creators</span>
-          </div>
-          <div className="group p-4 rounded-xl transition-all duration-250 hover:bg-white/10 hover:-translate-y-1">
-            <span className="font-honk text-5xl text-blue-600 block animate-float-delay-1 group-hover:scale-110
-              transition-all duration-250">500+</span>
-            <span className="text-gray-600 text-lg">Brands</span>
-          </div>
-          <div className="group p-4 rounded-xl transition-all duration-250 hover:bg-white/10 hover:-translate-y-1">
-            <span className="font-honk text-5xl text-blue-600 block animate-float-delay-2 group-hover:scale-110
-              transition-all duration-250">10K+</span>
-            <span className="text-gray-600 text-lg">Collaborations</span>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. How It Works */}
-      <section className="relative py-16 bg-white scroll-fade invisible 
-        transition-all duration-700 transform translate-y-10 opacity-0">
-        <span className="absolute bottom-[10%] right-[10%] text-4xl animate-float-delay-2">⚡</span>
-        <h2 className="text-4xl font-semibold text-center mb-16">How It Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-          <div className="relative p-8 rounded-2xl bg-white shadow-lg transition-all duration-250 hover:scale-105">
-            <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">1</div>
-            <div className="text-4xl mb-4">🎯</div>
-            <h3 className="text-xl font-semibold mb-4">Create Profile</h3>
-            <p className="text-gray-600 mb-4">Set up your verified profile as a creator or brand</p>
-            <ul className="text-sm text-gray-500 space-y-2">
-              <li>Portfolio showcase</li>
-              <li>Metrics verification</li>
-              <li>Audience analytics</li>
-            </ul>
-          </div>
-
-          <div className="relative p-8 rounded-2xl bg-white shadow-lg transition-all duration-250 hover:scale-105">
-            <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">2</div>
-            <div className="text-4xl mb-4">🤖</div>
-            <h3 className="text-xl font-semibold mb-4">Smart Match</h3>
-            <p className="text-gray-600 mb-4">Our AI matches you with perfect partners</p>
-            <ul className="text-sm text-gray-500 space-y-2">
-              <li>Interest alignment</li>
-              <li>Audience fit</li>
-              <li>Value matching</li>
-            </ul>
-          </div>
-
-          <div className="relative p-8 rounded-2xl bg-white shadow-lg transition-all duration-250 hover:scale-105">
-            <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">3</div>
-            <div className="text-4xl mb-4">🤝</div>
-            <h3 className="text-xl font-semibold mb-4">Collaborate</h3>
-            <p className="text-gray-600 mb-4">Connect, negotiate, and create together</p>
-            <ul className="text-sm text-gray-500 space-y-2">
-              <li>Secure messaging</li>
-              <li>Contract tools</li>
-              <li>Project management</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Success Stories Testimonials */}
-      <section className="relative py-16 bg-blue-600 text-white scroll-fade invisible 
-        transition-all duration-700 transform translate-y-10 opacity-0">
-        <h2 className="text-4xl font-semibold text-center mb-16">Success Stories</h2>
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="relative">
-            {/* Arrow Buttons */}
-            <button 
-              onClick={prevTestimonial}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12
-                text-white/80 hover:text-white transition-colors duration-250
-                hidden md:flex items-center justify-center w-10 h-10
-                rounded-full bg-white/10 hover:bg-white/20"
-            >
-              ←
-            </button>
-            <button 
-              onClick={nextTestimonial}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12
-                text-white/80 hover:text-white transition-colors duration-250
-                hidden md:flex items-center justify-center w-10 h-10
-                rounded-full bg-white/10 hover:bg-white/20"
-            >
-              →
-            </button>
-
-            {/* Testimonial Card */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 transition-all duration-500">
-              <div className="flex items-center gap-4 mb-6">
-                <img 
-                  src={testimonials[currentTestimonial].image} 
-                  alt={testimonials[currentTestimonial].name}
-                  className="w-16 h-16 rounded-full object-cover" 
-                />
-                <div>
-                  <h3 className="font-semibold">{testimonials[currentTestimonial].name}</h3>
-                  <span className="text-sm text-blue-200">{testimonials[currentTestimonial].role}</span>
+        {/* How It Works - Desktop - Add top margin */}
+        <div className="hidden md:block w-full max-w-6xl mx-auto mt-auto space-y-12">
+          <h2 className="text-4xl font-semibold text-center">How It Works</h2>
+          <div className="grid grid-cols-3 gap-8">
+            {steps.map((step, index) => (
+              <div key={index} className="relative p-8 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-250 hover:scale-105">
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">
+                  {step.number}
                 </div>
+                <div className="text-4xl mb-4">{step.emoji}</div>
+                <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
+                <p className="text-gray-600 mb-4">{step.description}</p>
+                <ul className="text-sm text-gray-500 space-y-2">
+                  {step.points.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-lg mb-6">"{testimonials[currentTestimonial].quote}"</p>
-              <div className="flex justify-between text-sm text-blue-200">
-                <span>{testimonials[currentTestimonial].stats.deals}</span>
-                <span>{testimonials[currentTestimonial].stats.rate}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* How It Works - Mobile Carousel - Add top margin */}
+        <div className="md:hidden w-full max-w-6xl mx-auto mt-auto space-y-12">
+          <h2 className="text-4xl font-semibold text-center">How It Works</h2>
+          <div className="relative pt-8">
+            <div className="overflow-hidden">
+              <div className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentStep * 100}%)` }}>
+                {steps.map((step, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4 pb-4 mt-4">
+                    <div className="relative p-8 rounded-2xl bg-white/80 backdrop-blur shadow-lg">
+                      <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">
+                        {step.number}
+                      </div>
+                      <div className="text-4xl mb-4">{step.emoji}</div>
+                      <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
+                      <p className="text-gray-600 mb-4">{step.description}</p>
+                      <ul className="text-sm text-gray-500 space-y-2">
+                        {step.points.map((point, i) => (
+                          <li key={i}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            
-            {/* Dots Navigation */}
-            <div className="flex justify-center gap-2 mt-6">
+
+            {/* Mobile Navigation Dots */}
+            <div className="flex justify-center gap-2 mt-4">
+              {steps.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStep(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-250 
+                    ${currentStep === index 
+                      ? 'bg-blue-600 w-6' 
+                      : 'bg-blue-600/50 hover:bg-blue-600/80'}`}
+                  aria-label={`Go to step ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Success Stories Testimonials */}
+      <section className="relative py-16 bg-blue-600 text-white scroll-fade invisible">
+        <h2 className="text-4xl font-semibold text-center mb-8">Success Stories</h2>
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="relative pt-8">
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
+              >
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4 pb-4 mt-4">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8">
+                      <div className="flex items-center gap-4 mb-6">
+                        <img 
+                          src={testimonial.image} 
+                          alt={testimonial.name}
+                          className="w-16 h-16 rounded-full object-cover" 
+                        />
+                        <div>
+                          <h3 className="font-semibold">{testimonial.name}</h3>
+                          <span className="text-sm text-blue-200">{testimonial.role}</span>
+                        </div>
+                      </div>
+                      <p className="text-lg mb-6">"{testimonial.quote}"</p>
+                      <div className="flex justify-between text-sm text-blue-200">
+                        <span>{testimonial.stats.deals}</span>
+                        <span>{testimonial.stats.rate}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation Dots - Exactly like How It Works */}
+            <div className="flex justify-center gap-2 mt-4">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
@@ -813,39 +885,46 @@ export default function Landing() {
 
       {/* 8. Success Stories Gallery */}
       <section className="relative py-16 px-4 bg-white scroll-fade invisible">
-        <h2 className="text-4xl font-semibold text-center mb-16">Success Stories</h2>
-        <div className="max-w-6xl mx-auto overflow-hidden">
-          <div className="flex gap-8 overflow-hidden">
-            <div className="flex animate-carousel">
-              <div className="min-w-[800px] relative rounded-2xl overflow-hidden shadow-lg 
-                transition-all duration-250 hover:scale-105 flex-shrink-0">
-                <img src="https://picsum.photos/800/600?random=1" alt="Success Story 1" 
-                  className="w-full h-[400px] object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                  <h3 className="text-2xl font-semibold mb-2">Beauty Brand Collab</h3>
-                  <p>500K+ Reach • 25% Engagement</p>
-                </div>
+        <h2 className="text-4xl font-semibold text-center mb-8">Success Stories</h2>
+        <div className="max-w-6xl mx-auto">
+          <div className="relative pt-8">
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentStory * 100}%)` }}
+              >
+                {successStories.map((story, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4 pb-4 mt-4">
+                    <div className="relative rounded-2xl overflow-hidden shadow-lg 
+                      transition-all duration-250 hover:scale-105">
+                      <img 
+                        src={story.image} 
+                        alt={story.title} 
+                        className="w-full h-[400px] object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
+                        <h3 className="text-2xl font-semibold mb-2">{story.title}</h3>
+                        <p>{story.stats}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              
-              <div className="min-w-[800px] relative rounded-2xl overflow-hidden shadow-lg 
-                transition-all duration-250 hover:scale-105 flex-shrink-0">
-                <img src="https://picsum.photos/800/600?random=2" alt="Success Story 2" 
-                  className="w-full h-[400px] object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                  <h3 className="text-2xl font-semibold mb-2">Tech Launch Campaign</h3>
-                  <p>1M+ Impressions • 40K Conversions</p>
-                </div>
-              </div>
-              
-              <div className="min-w-[800px] relative rounded-2xl overflow-hidden shadow-lg 
-                transition-all duration-250 hover:scale-105 flex-shrink-0">
-                <img src="https://picsum.photos/800/600?random=3" alt="Success Story 3" 
-                  className="w-full h-[400px] object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                  <h3 className="text-2xl font-semibold mb-2">Fashion Collection</h3>
-                  <p>300K+ Sales • 15% Attribution</p>
-                </div>
-              </div>
+            </div>
+
+            {/* Navigation Dots - Same as other carousels */}
+            <div className="flex justify-center gap-2 mt-4">
+              {successStories.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStory(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-250 
+                    ${currentStory === index 
+                      ? 'bg-blue-600 w-6' 
+                      : 'bg-blue-600/50 hover:bg-blue-600/80'}`}
+                  aria-label={`Go to story ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>

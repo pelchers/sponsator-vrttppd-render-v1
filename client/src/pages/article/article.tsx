@@ -116,7 +116,7 @@ export default function ArticlePage() {
         {/* Navigation & Edit Button */}
         <div className="bg-white p-6 rounded-2xl shadow-lg">
           <div className="flex justify-between items-center">
-            <Link to="/articles" className="text-black hover:text-lemon transition-colors">
+            <Link to="/article" className="text-black hover:text-spring transition-colors">
               &larr; Back to Articles
             </Link>
             
