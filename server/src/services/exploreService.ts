@@ -125,16 +125,72 @@ export const searchProjects = async (
       where,
       select: {
         id: true,
+        user_id: true,
         project_name: true,
         project_description: true,
-        project_image: true,
         project_type: true,
+        project_category: true,
+        project_image: true,
+        project_image_url: true,
+        project_image_upload: true,
+        project_image_display: true,
+        project_title: true,
+        project_duration: true,
+        project_handle: true,
+        project_followers: true,
+        client: true,
+        client_location: true,
+        client_website: true,
+        contract_type: true,
+        contract_duration: true,
+        contract_value: true,
+        project_timeline: true,
+        budget: true,
+        project_status: true,
+        preferred_collaboration_type: true,
+        budget_range: true,
+        currency: true,
+        standard_rate: true,
+        rate_type: true,
+        compensation_type: true,
+        skills_required: true,
+        expertise_needed: true,
+        target_audience: true,
+        solutions_offered: true,
         project_tags: true,
-        created_at: true,
-        user_id: true,
+        industry_tags: true,
+        technology_tags: true,
+        project_status_tag: true,
+        seeking_creator: true,
+        seeking_brand: true,
+        seeking_freelancer: true,
+        seeking_contractor: true,
+        social_links_youtube: true,
+        social_links_instagram: true,
+        social_links_github: true,
+        social_links_twitter: true,
+        social_links_linkedin: true,
+        website_links: true,
+        short_term_goals: true,
+        long_term_goals: true,
+        project_visibility: true,
+        search_visibility: true,
+        notification_preferences_email: true,
+        notification_preferences_push: true,
+        notification_preferences_digest: true,
+        deliverables: true,
+        milestones: true,
+        team_members: true,
+        collaborators: true,
+        advisors: true,
+        partners: true,
+        testimonials: true,
         likes_count: true,
         follows_count: true,
         watches_count: true,
+        featured: true,
+        created_at: true,
+        updated_at: true,
         users: {
           select: {
             username: true,
@@ -143,10 +199,7 @@ export const searchProjects = async (
             profile_image_upload: true,
             profile_image_display: true
           }
-        },
-        project_image_url: true,
-        project_image_upload: true,
-        project_image_display: true
+        }
       },
       orderBy: {
         [sortField]: sortOrder
@@ -158,17 +211,36 @@ export const searchProjects = async (
     // Transform results to include username and use consistent field names
     const transformedProjects = projects.map(project => ({
       ...project,
+      project_image_url: project.project_image_url || null,
+      project_image_upload: project.project_image_upload || null,
+      project_image_display: project.project_image_display || 'url',
+      project_tags: project.project_tags || [],
+      industry_tags: project.industry_tags || [],
+      technology_tags: project.technology_tags || [],
+      skills_required: project.skills_required || [],
+      expertise_needed: project.expertise_needed || [],
+      target_audience: project.target_audience || [],
+      solutions_offered: project.solutions_offered || [],
+      website_links: project.website_links || [],
+      likes_count: project.likes_count || 0,
+      follows_count: project.follows_count || 0,
+      watches_count: project.watches_count || 0,
+      featured: project.featured || false,
+      seeking_creator: project.seeking_creator || false,
+      seeking_brand: project.seeking_brand || false,
+      seeking_freelancer: project.seeking_freelancer || false,
+      seeking_contractor: project.seeking_contractor || false,
+      project_visibility: project.project_visibility || 'public',
+      search_visibility: project.search_visibility ?? true,
+      notification_preferences_email: project.notification_preferences_email ?? true,
+      notification_preferences_push: project.notification_preferences_push ?? true,
+      notification_preferences_digest: project.notification_preferences_digest ?? true,
+      currency: project.currency || 'USD',
       username: project.users?.username,
       user_type: project.users?.user_type,
       user_profile_image_url: project.users?.profile_image_url || null,
       user_profile_image_upload: project.users?.profile_image_upload || null,
-      user_profile_image_display: project.users?.profile_image_display || 'url',
-      project_image_url: project.project_image_url || null,
-      project_image_upload: project.project_image_upload || null,
-      project_image_display: project.project_image_display || 'url',
-      likes_count: project.likes_count || 0,
-      follows_count: project.follows_count || 0,
-      watches_count: project.watches_count || 0
+      user_profile_image_display: project.users?.profile_image_display || 'url'
     }));
     
     console.log(`[PROJECTS] Found ${transformedProjects.length} projects`);
@@ -214,12 +286,20 @@ export const searchArticles = async (
       select: {
         id: true,
         title: true,
+        article_image_url: true,
+        article_image_upload: true,
+        article_image_display: true,
         tags: true,
+        citations: true,
+        contributors: true,
+        related_media: true,
         created_at: true,
-        user_id: true,
+        updated_at: true,
         likes_count: true,
         follows_count: true,
         watches_count: true,
+        featured: true,
+        user_id: true,
         users: {
           select: {
             username: true,
@@ -229,10 +309,18 @@ export const searchArticles = async (
             profile_image_display: true
           }
         },
-        article_sections: true,
-        article_image_url: true,
-        article_image_upload: true,
-        article_image_display: true
+        article_sections: {
+          select: {
+            id: true,
+            type: true,
+            title: true,
+            subtitle: true,
+            text: true,
+            media_url: true,
+            media_subtext: true,
+            order: true
+          }
+        }
       },
       orderBy: {
         [sortField]: sortOrder
@@ -256,15 +344,24 @@ export const searchArticles = async (
       
       return {
         ...article,
+        article_image_url: article.article_image_url || null,
+        article_image_upload: article.article_image_upload || null,
+        article_image_display: article.article_image_display || 'url',
+        tags: article.tags || [],
+        citations: article.citations || [],
+        contributors: article.contributors || [],
+        related_media: article.related_media || [],
+        likes_count: article.likes_count || 0,
+        follows_count: article.follows_count || 0,
+        watches_count: article.watches_count || 0,
+        featured: article.featured || false,
         username: article.users?.username,
         user_type: article.users?.user_type,
         excerpt,
         user_profile_image_url: article.users?.profile_image_url || null,
         user_profile_image_upload: article.users?.profile_image_upload || null,
         user_profile_image_display: article.users?.profile_image_display || 'url',
-        likes_count: article.likes_count || 0,
-        follows_count: article.follows_count || 0,
-        watches_count: article.watches_count || 0
+        updated_at: article.updated_at || null
       };
     });
     
@@ -310,15 +407,22 @@ export const searchPosts = async (
       where,
       select: {
         id: true,
+        user_id: true,
         title: true,
-        description: true,
         mediaUrl: true,
+        post_image_url: true,
+        post_image_upload: true,
+        post_image_display: true,
         tags: true,
+        description: true,
+        likes: true,
+        comments: true,
         likes_count: true,
         follows_count: true,
         watches_count: true,
+        featured: true,
         created_at: true,
-        user_id: true,
+        updated_at: true,
         users: {
           select: {
             username: true,
@@ -327,10 +431,7 @@ export const searchPosts = async (
             profile_image_upload: true,
             profile_image_display: true
           }
-        },
-        post_image_url: true,
-        post_image_upload: true,
-        post_image_display: true
+        }
       },
       orderBy: {
         [sortField]: sortOrder
@@ -342,14 +443,20 @@ export const searchPosts = async (
     // Transform results and ensure likes_count and follows_count exist
     const transformedPosts = posts.map(post => ({
       ...post,
+      post_image_url: post.post_image_url || null,
+      post_image_upload: post.post_image_upload || null,
+      post_image_display: post.post_image_display || 'url',
+      tags: post.tags || [],
+      likes_count: post.likes_count || 0,
+      follows_count: post.follows_count || 0,
+      watches_count: post.watches_count || 0,
+      comments: post.comments || 0,
+      featured: post.featured || false,
       username: post.users?.username,
       user_type: post.users?.user_type,
       user_profile_image_url: post.users?.profile_image_url || null,
       user_profile_image_upload: post.users?.profile_image_upload || null,
-      user_profile_image_display: post.users?.profile_image_display || 'url',
-      likes_count: post.likes_count || 0,
-      follows_count: post.follows_count || 0,
-      watches_count: post.watches_count || 0
+      user_profile_image_display: post.users?.profile_image_display || 'url'
     }));
     
     return { posts: transformedPosts };

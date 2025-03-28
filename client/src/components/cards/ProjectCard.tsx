@@ -15,31 +15,78 @@ import { ProjectImage } from '@/components/ProjectImage';
 interface ProjectCardProps {
   project: {
     id: string;
-    title?: string;
-    description?: string;
-    created_at?: string;
-    user?: {
-      id?: string;
-      username?: string;
-      profile_image?: string | null;
-    };
-    mediaUrl?: string;
-    tags?: string[];
-    likes_count?: number;
-    user_id?: string;
-    username?: string;
-    skills?: string[];
+    user_id: string;
+    project_name?: string;
+    project_description?: string;
+    project_type?: string;
+    project_category?: string;
+    project_image?: string;
+    project_image_url?: string;
+    project_image_upload?: string;
+    project_image_display?: string;
+    project_title?: string;
+    project_duration?: string;
+    project_handle?: string;
+    project_followers?: number;
+    client?: string;
+    client_location?: string;
+    client_website?: string;
+    contract_type?: string;
+    contract_duration?: string;
+    contract_value?: string;
+    project_timeline?: string;
     budget?: string;
-    timeline?: string;
-    project_followers: number;
+    project_status?: string;
+    preferred_collaboration_type?: string;
+    budget_range?: string;
+    currency?: string;
+    standard_rate?: string;
+    rate_type?: string;
+    compensation_type?: string;
+    skills_required?: string[];
+    expertise_needed?: string[];
+    target_audience?: string[];
+    solutions_offered?: string[];
+    project_tags?: string[];
+    industry_tags?: string[];
+    technology_tags?: string[];
+    project_status_tag?: string;
+    seeking_creator?: boolean;
+    seeking_brand?: boolean;
+    seeking_freelancer?: boolean;
+    seeking_contractor?: boolean;
+    social_links_youtube?: string;
+    social_links_instagram?: string;
+    social_links_github?: string;
+    social_links_twitter?: string;
+    social_links_linkedin?: string;
+    website_links?: string[];
+    short_term_goals?: string;
+    long_term_goals?: string;
+    project_visibility?: string;
+    search_visibility?: boolean;
+    notification_preferences_email?: boolean;
+    notification_preferences_push?: boolean;
+    notification_preferences_digest?: boolean;
+    deliverables?: any;
+    milestones?: any;
+    team_members?: any;
+    collaborators?: any;
+    advisors?: any;
+    partners?: any;
+    testimonials?: any;
+    likes_count?: number;
     follows_count?: number;
     watches_count?: number;
-    user_profile_image_url?: string | null;
-    user_profile_image_upload?: string | null;
-    user_profile_image_display?: 'url' | 'upload';
-    project_image_url?: string | null;
-    project_image_upload?: string | null;
-    project_image_display?: 'url' | 'upload';
+    featured?: boolean;
+    created_at?: Date;
+    updated_at?: Date;
+    // User fields
+    username?: string;
+    user_type?: string;
+    user_profile_image_url?: string;
+    user_profile_image_upload?: string;
+    user_profile_image_display?: string;
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -64,14 +111,14 @@ export default function ProjectCard({
   const [isLoading, setIsLoading] = useState(false);
 
   // Add safe fallbacks for all properties
-  const title = project?.title || 'Untitled Project';
-  const description = project?.description || '';
+  const title = project?.project_title || 'Untitled Project';
+  const description = project?.project_description || '';
   const createdAt = project?.created_at ? new Date(project.created_at) : new Date();
-  const userId = project?.user?.id || project?.user_id || '';
-  const username = project?.user?.username || project?.username || 'Anonymous';
-  const profileImage = project?.user?.profile_image || '/placeholder-avatar.png';
-  const tags = project?.tags || [];
-  const skills = project?.skills || [];
+  const userId = project?.user_id || '';
+  const username = project?.username || 'Anonymous';
+  const profileImage = project?.user_profile_image_url || '/placeholder-avatar.png';
+  const tags = project?.project_tags || [];
+  const skills = project?.skills_required || [];
   
   // Safely truncate description
   const truncatedDescription = description && description.length > 150 
@@ -176,7 +223,7 @@ export default function ProjectCard({
     url: project.project_image_url,
     upload: project.project_image_upload,
     display: project.project_image_display,
-    mediaUrl: project.mediaUrl // check if we have legacy data
+    mediaUrl: project.project_image // check if we have legacy data
   });
 
   return (
@@ -231,9 +278,9 @@ export default function ProjectCard({
             </div>
           )}
           
-          {project.timeline && (
+          {project.project_timeline && (
             <div className="text-sm text-gray-600 mb-2">
-              <span className="font-medium">Timeline:</span> {project.timeline}
+              <span className="font-medium">Timeline:</span> {project.project_timeline}
             </div>
           )}
           

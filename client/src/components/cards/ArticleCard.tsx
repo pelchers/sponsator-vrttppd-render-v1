@@ -26,6 +26,11 @@ interface ArticleCardProps {
     description?: string;
     mediaUrl?: string;
     tags?: string[];
+    citations?: string[];
+    contributors?: string[];
+    related_media?: string[];
+    created_at?: Date;
+    updated_at?: Date;
     likes_count?: number;
     user_id?: string;
     username?: string;
@@ -38,6 +43,17 @@ interface ArticleCardProps {
     article_image_url?: string | null;
     article_image_upload?: string | null;
     article_image_display?: 'url' | 'upload';
+    article_sections?: {
+      id: string;
+      type?: string;
+      title?: string;
+      subtitle?: string;
+      text?: string;
+      media_url?: string;
+      media_subtext?: string;
+      order?: number;
+    }[];
+    featured?: boolean;
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;

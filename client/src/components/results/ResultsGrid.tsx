@@ -157,10 +157,35 @@ export default function ResultsGrid({
                   key={`project-${project.id || index}`}
                   project={{
                     ...project,
-                    project_image_url: project.project_image_url,
-                    project_image_upload: project.project_image_upload,
-                    project_image_display: project.project_image_display
+                    project_image_url: project.project_image_url || null,
+                    project_image_upload: project.project_image_upload || null,
+                    project_image_display: project.project_image_display || 'url',
+                    project_tags: project.project_tags || [],
+                    industry_tags: project.industry_tags || [],
+                    technology_tags: project.technology_tags || [],
+                    skills_required: project.skills_required || [],
+                    expertise_needed: project.expertise_needed || [],
+                    target_audience: project.target_audience || [],
+                    solutions_offered: project.solutions_offered || [],
+                    website_links: project.website_links || [],
+                    likes_count: project.likes_count || 0,
+                    follows_count: project.follows_count || 0,
+                    watches_count: project.watches_count || 0,
+                    featured: project.featured || false,
+                    seeking_creator: project.seeking_creator || false,
+                    seeking_brand: project.seeking_brand || false,
+                    seeking_freelancer: project.seeking_freelancer || false,
+                    seeking_contractor: project.seeking_contractor || false,
+                    project_visibility: project.project_visibility || 'public',
+                    search_visibility: project.search_visibility ?? true,
+                    notification_preferences_email: project.notification_preferences_email ?? true,
+                    notification_preferences_push: project.notification_preferences_push ?? true,
+                    notification_preferences_digest: project.notification_preferences_digest ?? true,
+                    currency: project.currency || 'USD'
                   }}
+                  userHasLiked={likeStatuses?.projects[project.id] || false}
+                  userIsFollowing={followStatuses?.projects[project.id] || false}
+                  userIsWatching={watchStatuses?.projects[project.id] || false}
                 />
               ))}
             </div>
@@ -175,7 +200,21 @@ export default function ResultsGrid({
               {showArticles && sortedResults.articles.map((article, index) => (
                 <ArticleCard
                   key={`article-${article.id || index}`}
-                  article={{...article}}
+                  article={{
+                    ...article,
+                    article_image_url: article.article_image_url || null,
+                    article_image_upload: article.article_image_upload || null,
+                    article_image_display: article.article_image_display || 'url',
+                    tags: article.tags || [],
+                    citations: article.citations || [],
+                    contributors: article.contributors || [],
+                    related_media: article.related_media || [],
+                    likes_count: article.likes_count || 0,
+                    follows_count: article.follows_count || 0,
+                    watches_count: article.watches_count || 0,
+                    featured: article.featured || false,
+                    article_sections: article.article_sections || []
+                  }}
                   userHasLiked={likeStatuses?.articles[article.id] || false}
                   userIsFollowing={followStatuses?.articles[article.id] || false}
                   userIsWatching={watchStatuses?.articles[article.id] || false}
@@ -193,8 +232,21 @@ export default function ResultsGrid({
               {showPosts && sortedResults.posts.map((post, index) => (
                 <PostCard
                   key={`post-${post.id || index}`}
-                  post={{...post}}
+                  post={{
+                    ...post,
+                    post_image_url: post.post_image_url || null,
+                    post_image_upload: post.post_image_upload || null,
+                    post_image_display: post.post_image_display || 'url',
+                    tags: post.tags || [],
+                    likes_count: post.likes_count || 0,
+                    follows_count: post.follows_count || 0,
+                    watches_count: post.watches_count || 0,
+                    comments: post.comments || 0,
+                    featured: post.featured || false
+                  }}
                   userHasLiked={likeStatuses?.posts[post.id] || false}
+                  userIsFollowing={followStatuses?.posts[post.id] || false}
+                  userIsWatching={watchStatuses?.posts[post.id] || false}
                 />
               ))}
             </div>

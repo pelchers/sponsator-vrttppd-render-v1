@@ -16,28 +16,28 @@ import { PostImage } from '@/components/PostImage';
 interface PostCardProps {
   post: {
     id: string;
+    user_id: string;
     title?: string;
-    content?: string;
-    created_at?: string;
-    user?: {
-      id?: string;
-      username?: string;
-      profile_image?: string | null;
-    };
-    description?: string;
     mediaUrl?: string;
+    post_image_url?: string;
+    post_image_upload?: string;
+    post_image_display?: string;
     tags?: string[];
+    description?: string;
+    likes?: number;
+    comments?: number;
     likes_count?: number;
     follows_count?: number;
     watches_count?: number;
-    user_id?: string;
+    featured?: boolean;
+    created_at?: Date;
+    updated_at?: Date;
+    // User fields
     username?: string;
+    user_type?: string;
     user_profile_image_url?: string;
     user_profile_image_upload?: string;
     user_profile_image_display?: string;
-    post_image_url?: string | null;
-    post_image_upload?: string | null;
-    post_image_display?: 'url' | 'upload';
   };
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
@@ -63,11 +63,11 @@ export default function PostCard({
 
   // Add safe fallbacks for all properties
   const title = post?.title || 'Untitled Post';
-  const content = post?.content || '';
+  const content = post?.description || '';
   const createdAt = post?.created_at ? new Date(post.created_at) : new Date();
-  const userId = post?.user?.id || post?.user_id || '';
-  const username = post?.user?.username || post?.username || 'Anonymous';
-  const profileImage = post?.user?.profile_image || '/placeholder-avatar.png';
+  const userId = post?.user_id || '';
+  const username = post?.username || 'Anonymous';
+  const profileImage = post?.user_profile_image_url || '/placeholder-avatar.png';
   const tags = post?.tags || [];
   
   // Safely truncate content
