@@ -287,29 +287,29 @@ export default function ProjectCard({
           {skills.length > 0 && (
             <div className="mb-3">
               <h4 className="text-sm font-medium mb-1">Skills needed:</h4>
-              <div className="flex flex-wrap gap-1">
-                {skills.slice(0, 3).map((skill, index) => (
-                  <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+              <div className="flex flex-wrap gap-0.5 justify-start">
+                {skills.map((skill, index) => (
+                  <span 
+                    key={index}
+                    className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-orange-light text-black border border-black transition-all duration-250 hover:scale-105"
+                  >
                     {skill}
                   </span>
                 ))}
-                {skills.length > 3 && (
-                  <span className="text-xs text-gray-500">+{skills.length - 3} more</span>
-                )}
               </div>
             </div>
           )}
           
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-2">
-              {tags.slice(0, 3).map((tag, index) => (
-                <span key={index} className="bg-gray-100 text-xs px-2 py-1 rounded">
+            <div className="flex flex-wrap gap-0.5 justify-start mb-3">
+              {tags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-orange-light text-black border border-black transition-all duration-250 hover:scale-105"
+                >
                   {tag}
                 </span>
               ))}
-              {tags.length > 3 && (
-                <span className="text-xs text-gray-500">+{tags.length - 3} more</span>
-              )}
             </div>
           )}
         </CardContent>

@@ -52,14 +52,17 @@ export default function ImageUpload({ onImageSelect, className, currentImage }: 
         className="hidden"
         aria-label="Upload profile image"
       />
-      <Button 
-        type="button" 
+      <button
         onClick={handleButtonClick}
-        variant="outline"
-        size="sm"
+        className={`
+          relative inline-flex items-center justify-center rounded-full border-2 border-black px-4 py-2 text-sm font-medium
+          transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95
+          shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none
+          bg-spring text-black
+        `}
       >
-        {preview ? "Change Image" : "Upload Image"}
-      </Button>
+        Select Image
+      </button>
     </div>
   )
 } 

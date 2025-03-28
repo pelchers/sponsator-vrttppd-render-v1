@@ -62,10 +62,10 @@ export default function TagInput({
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
+        {tags.map((tag, index) => (
           <span 
-            key={tag}
-            className={tagClassName}
+            key={index}
+            className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-orange-light text-black border border-black transition-all duration-250 hover:scale-105"
           >
             {tag}
             <button

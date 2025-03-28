@@ -210,15 +210,15 @@ export default function PostCard({
             {truncatedContent}
           </p>
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-2">
-              {tags.slice(0, 3).map((tag, index) => (
-                <span key={index} className="bg-gray-100 text-xs px-2 py-1 rounded">
+            <div className="flex flex-wrap gap-0.5 justify-start mb-3">
+              {tags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-turquoise-light text-black border border-black transition-all duration-250 hover:scale-105"
+                >
                   {tag}
                 </span>
               ))}
-              {tags.length > 3 && (
-                <span className="text-xs text-gray-500">+{tags.length - 3} more</span>
-              )}
             </div>
           )}
         </CardContent>
