@@ -16,6 +16,8 @@ import PostCard from '@/components/cards/PostCard';
 import { UserImage } from '@/components/UserImage';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
 
+const SHOW_WAITLIST = false;  // Toggle this when ready to show waitlist
+
 export default function Landing() {
   const navigate = useNavigate();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -1055,52 +1057,74 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 11. Join Waitlist */}
+      {/* 11. Join Waitlist - Toggle visibility based on pre-signup vs launch phase */}
+      {SHOW_WAITLIST && (
+        <section className="relative py-16 bg-blue-600 text-white scroll-fade invisible">
+          <span className="absolute bottom-[10%] right-[10%] text-4xl animate-float">✉️</span>
+          <div className="max-w-2xl mx-auto px-4 text-center">
+            <h2 className="text-4xl font-semibold mb-4">Join the Waitlist</h2>
+            <p className="text-xl mb-8 text-blue-100">
+              Be among the first to experience the future of creator partnerships
+            </p>
+            <form className="space-y-4">
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60
+                  focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+              <input
+                type="email"
+                placeholder="Your Email"
+                className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60
+                  focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+              <select
+                aria-label="Select your role"
+                className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white
+                  focus:outline-none focus:ring-2 focus:ring-white/50"
+              >
+                <option value="">I am a...</option>
+                <option value="creator">Creator</option>
+                <option value="brand">Brand</option>
+              </select>
+              <textarea
+                placeholder="Tell us about yourself (Optional)"
+                className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60
+                  focus:outline-none focus:ring-2 focus:ring-white/50 h-32"
+              ></textarea>
+              <Button
+                className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
+                  transition-all duration-250 hover:scale-105 text-lg py-6"
+              >
+                Join Waitlist
+              </Button>
+            </form>
+          </div>
+        </section>
+      )}
+
+      {/* 12. Sign Up Section */}
       <section className="relative py-16 bg-blue-600 text-white scroll-fade invisible">
-        <span className="absolute bottom-[10%] right-[10%] text-4xl animate-float">✉️</span>
+        <span className="absolute bottom-[10%] right-[10%] text-4xl animate-float">🚀</span>
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-semibold mb-4">Join the Waitlist</h2>
+          <h2 className="text-4xl font-semibold mb-4">Join Now</h2>
           <p className="text-xl mb-8 text-blue-100">
-            Be among the first to experience the future of creator partnerships
+            Connect with top brands, streamline collaborations, and grow your influence. 
+            Our AI-powered platform matches you with perfect partners while our secure 
+            tools handle contracts and payments.
           </p>
-          <form className="space-y-4">
-            <input
-              type="text"
-              placeholder="Your Name"
-              className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60
-                focus:outline-none focus:ring-2 focus:ring-white/50"
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60
-                focus:outline-none focus:ring-2 focus:ring-white/50"
-            />
-            <select
-              aria-label="Select your role"
-              className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white
-                focus:outline-none focus:ring-2 focus:ring-white/50"
-            >
-              <option value="">I am a...</option>
-              <option value="creator">Creator</option>
-              <option value="brand">Brand</option>
-            </select>
-            <textarea
-              placeholder="Tell us about yourself (Optional)"
-              className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60
-                focus:outline-none focus:ring-2 focus:ring-white/50 h-32"
-            ></textarea>
-            <Button
-              className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
-                transition-all duration-250 hover:scale-105 text-lg py-6"
-            >
-              Join Waitlist
-            </Button>
-          </form>
+          <Button
+            onClick={() => navigate('/register')}
+            className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
+              transition-all duration-250 hover:scale-105 text-lg py-6"
+          >
+            Create Your Account
+          </Button>
         </div>
       </section>
 
-      {/* 12. Footer */}
+      {/* 13. Footer */}
       <footer className="bg-gray-800 text-white py-6">
         <div className="container mx-auto px-4 text-center">
           <p>&copy; 2024 Our Platform. All rights reserved.</p>
