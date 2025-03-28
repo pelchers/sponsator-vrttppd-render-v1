@@ -149,7 +149,7 @@ export default function ArticlePage() {
           {/* Article Title and Metadata */}
           <div className="space-y-4">
             {/* Title */}
-            <h1 className="text-3xl font-bold text-black">{article.title}</h1>
+            <h1 className="text-4xl font-bold text-black">{article.title}</h1>
 
             {/* Article metadata */}
             <div className="flex items-center text-sm text-gray-700">
@@ -165,7 +165,7 @@ export default function ArticlePage() {
             </div>
             
             {/* Tags */}
-            <div className="flex flex-wrap gap-0.5">
+            <div className="flex flex-wrap gap-0.5 pb-6">
               {article.tags && article.tags.map((tag) => (
                 <span
                   key={tag}
@@ -222,82 +222,117 @@ export default function ArticlePage() {
           </div>
         </div>
 
-        {/* Article Sections */}
-        {article.sections && article.sections.map((section, index) => (
-          <div key={index} className="bg-white p-6 rounded-2xl shadow-lg">
-            <h2 className="text-2xl font-bold mb-6">{section.title}</h2>
-            
-            {section.type === "full-width-text" && (
-              <div className="space-y-4 article-adaptive-container">
-                <h3 className="article-section-subtitle">{section.subtitle}</h3>
-                <p className="article-section-text">{section.text}</p>
-              </div>
-            )}
-            
-            {section.type === "full-width-media" && (
-              <div className="space-y-2 article-adaptive-container">
-                <div className="article-media-container">
-                  <img 
-                    src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
-                    alt={section.title || "Article media"} 
-                    className="article-media"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
-                      e.currentTarget.alt = "Image failed to load";
-                    }}
-                  />
-                </div>
-                <p className="article-media-subtext">{section.mediaSubtext}</p>
-              </div>
-            )}
-            
-            {section.type === "left-media-right-text" && (
-              <div className="article-mixed-layout article-adaptive-container">
-                <div className="article-mixed-layout-column article-adaptive-container">
-                  <div className="article-media-container">
-                    <img
-                      src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
-                      alt={section.title || "Article media"}
-                      className="article-media"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
-                        e.currentTarget.alt = "Image failed to load";
-                      }}
-                    />
+        {/* Article Content */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          {/* Article Sections */}
+          <div className="prose max-w-none">
+            {article.sections && article.sections.map((section, index) => (
+              <div key={index} className="mb-8">
+                {/* Section Title (if exists) */}
+                {section.title && (
+                  <h2 className="text-3xl font-bold mb-4">{section.title}</h2>
+                )}
+                
+                {section.type === "full-width-text" && (
+                  <div className="space-y-4">
+                    {section.subtitle && (
+                      <h3 className="text-xl font-semibold mb-2">{section.subtitle}</h3>
+                    )}
+                    <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                      <p className="text-gray-700 leading-relaxed">{section.text}</p>
+                    </div>
                   </div>
-                  <p className="article-media-subtext">{section.mediaSubtext}</p>
-                </div>
-                <div className="article-mixed-layout-column article-adaptive-container">
-                  <h3 className="article-section-subtitle">{section.subtitle}</h3>
-                  <p className="article-section-text">{section.text}</p>
-                </div>
-              </div>
-            )}
-            
-            {section.type === "left-text-right-media" && (
-              <div className="article-mixed-layout article-adaptive-container">
-                <div className="article-mixed-layout-column article-adaptive-container">
-                  <h3 className="article-section-subtitle">{section.subtitle}</h3>
-                  <p className="article-section-text">{section.text}</p>
-                </div>
-                <div className="article-mixed-layout-column article-adaptive-container">
-                  <div className="article-media-container">
-                    <img
-                      src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
-                      alt={section.title || "Article media"}
-                      className="article-media"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
-                        e.currentTarget.alt = "Image failed to load";
-                      }}
-                    />
+                )}
+                
+                {section.type === "full-width-media" && (
+                  <div className="my-6">
+                    <div className="rounded-lg overflow-hidden">
+                      <img 
+                        src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
+                        alt={section.title || "Article media"} 
+                        className="w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                          e.currentTarget.alt = "Image failed to load";
+                        }}
+                      />
+                      {section.mediaSubtext && (
+                        <div className="p-3">
+                          <p className="text-sm text-gray-600 italic">{section.mediaSubtext}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <p className="article-media-subtext">{section.mediaSubtext}</p>
-                </div>
+                )}
+                
+                {(section.type === "left-media-right-text" || section.type === "left-text-right-media") && (
+                  <div className="grid md:grid-cols-2 gap-6 my-6">
+                    {section.type === "left-media-right-text" ? (
+                      <>
+                        <div className="rounded-lg overflow-hidden">
+                          <img
+                            src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
+                            alt={section.title || "Article media"}
+                            className="w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                              e.currentTarget.alt = "Image failed to load";
+                            }}
+                          />
+                          {section.mediaSubtext && (
+                            <div className="p-3">
+                              <p className="text-sm text-gray-600 italic">{section.mediaSubtext}</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="space-y-4">
+                          {section.subtitle && (
+                            <h3 className="text-3xl font-bold mb-4">{section.subtitle}</h3>
+                          )}
+                          <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                            <p className="text-gray-700 leading-relaxed">{section.text}</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="space-y-4">
+                          {section.subtitle && (
+                            <h3 className="text-3xl font-bold mb-4">{section.subtitle}</h3>
+                          )}
+                          <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                            <p className="text-gray-700 leading-relaxed">{section.text}</p>
+                          </div>
+                        </div>
+                        <div className="rounded-lg overflow-hidden">
+                          <img
+                            src={section.mediaUrl || "https://via.placeholder.com/800x400?text=No+Image+Available"}
+                            alt={section.title || "Article media"}
+                            className="w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://via.placeholder.com/800x400?text=Image+Failed+to+Load";
+                              e.currentTarget.alt = "Image failed to load";
+                            }}
+                          />
+                          {section.mediaSubtext && (
+                            <div className="p-3">
+                              <p className="text-sm text-gray-600 italic">{section.mediaSubtext}</p>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+                
+                {/* Subtle section divider (except for last section) */}
+                {index < article.sections.length - 1 && (
+                  <div className="border-b border-gray-200 my-8" />
+                )}
               </div>
-            )}
+            ))}
           </div>
-        ))}
+        </div>
 
         {/* Citations */}
         {article.citations && article.citations.length > 0 && (
