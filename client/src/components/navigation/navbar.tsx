@@ -19,9 +19,11 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  // Common button styles for nav items
+  // Updated button and dropdown styles
   const navButtonClass = "transition-all duration-250 hover:scale-105 font-medium";
-  const dropdownItemClass = "transition-all duration-250 hover:bg-green-50 hover:text-green-500 cursor-pointer";
+  const dropdownItemClass = "transition-all duration-250 hover:bg-spring-light text-black rounded-md";
+  const dropdownLabelClass = "text-lg font-bold text-black";
+  const dropdownSeparatorClass = "bg-gray-200";
 
   return (
     <nav className="bg-white shadow-sm">
@@ -98,22 +100,28 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="spring"
-                    className={navButtonClass}
+                    className={`${navButtonClass} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
                   >
                     Menu
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel className="font-semibold">Navigation</DropdownMenuLabel>
+                <DropdownMenuContent 
+                  className="w-64 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2"
+                >
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Navigation
+                  </DropdownMenuLabel>
                   <DropdownMenuItem 
                     onClick={() => navigate('/')}
                     className={dropdownItemClass}
                   >
                     Landing Page
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="font-semibold">My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    My Account
+                  </DropdownMenuLabel>
                   <DropdownMenuItem 
                     onClick={() => navigate(`/profile/${userId}`)}
                     className={dropdownItemClass}
@@ -126,16 +134,22 @@ export default function Navbar() {
                   >
                     Edit Profile
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="font-semibold">Messages</DropdownMenuLabel>
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Messages
+                  </DropdownMenuLabel>
                   <DropdownMenuItem 
                     onClick={() => navigate('/messages')}
                     className={dropdownItemClass}
                   >
                     My Messages
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="font-semibold">Projects</DropdownMenuLabel>
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Projects
+                  </DropdownMenuLabel>
                   <DropdownMenuItem 
                     onClick={() => navigate('/projects')}
                     className={dropdownItemClass}
@@ -148,8 +162,11 @@ export default function Navbar() {
                   >
                     Create Project
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="font-semibold">Articles</DropdownMenuLabel>
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Articles
+                  </DropdownMenuLabel>
                   <DropdownMenuItem 
                     onClick={() => navigate('/article')}
                     className={dropdownItemClass}
@@ -162,8 +179,11 @@ export default function Navbar() {
                   >
                     Create Article
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="font-semibold">Posts</DropdownMenuLabel>
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Posts
+                  </DropdownMenuLabel>
                   <DropdownMenuItem 
                     onClick={() => navigate('/post')}
                     className={dropdownItemClass}
@@ -176,17 +196,51 @@ export default function Navbar() {
                   >
                     Create Post
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Content
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/explore')}
+                    className={dropdownItemClass}
+                  >
+                    Explore
+                  </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => navigate('/mystuff')}
                     className={dropdownItemClass}
                   >
                     My Stuff
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => navigate(`/portfolio/${userId}`)}
+                    className={dropdownItemClass}
+                  >
+                    Portfolio
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
+                  <DropdownMenuLabel className={dropdownLabelClass}>
+                    Account
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/login')}
+                    className={dropdownItemClass}
+                  >
+                    Sign In
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/register')}
+                    className={dropdownItemClass}
+                  >
+                    Sign Up
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className={dropdownSeparatorClass} />
+                  
                   <DropdownMenuItem 
                     onClick={handleLogout}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 cursor-pointer"
+                    className="text-red-600 hover:bg-red-100 rounded-md transition-all duration-250"
                   >
                     Logout
                   </DropdownMenuItem>
