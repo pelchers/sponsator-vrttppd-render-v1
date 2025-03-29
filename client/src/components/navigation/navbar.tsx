@@ -52,6 +52,13 @@ export default function Navbar() {
               </Button>
               <Button 
                 variant="spring" 
+                onClick={() => navigate('/about')}
+                className={navButtonClass}
+              >
+                About
+              </Button>
+              <Button 
+                variant="spring" 
                 onClick={() => navigate('/article')}
                 className={navButtonClass}
               >
@@ -91,6 +98,13 @@ export default function Navbar() {
               >
                 Portfolio
               </Button>
+              <Button 
+                variant="spring" 
+                onClick={() => navigate('/testimonials')}
+                className={navButtonClass}
+              >
+                Testimonials
+              </Button>
             </div>
           </div>
 
@@ -116,6 +130,18 @@ export default function Navbar() {
                     className={dropdownItemClass}
                   >
                     Landing Page
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/about')}
+                    className={dropdownItemClass}
+                  >
+                    About
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/testimonials')}
+                    className={dropdownItemClass}
+                  >
+                    Testimonials
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className={dropdownSeparatorClass} />
                   

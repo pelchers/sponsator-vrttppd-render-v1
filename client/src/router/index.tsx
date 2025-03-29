@@ -25,6 +25,8 @@ import LikesPage from '@/pages/likes/Likes'
 import MyStuffPage from '@/pages/mystuff/mystuff'
 import PortfolioPage from '@/pages/portfolio/portfolio'
 import Landing from '../pages/landing/Landing'
+import About from '@/pages/about/about'
+import Testimonials from '@/pages/testimonials/testimonials'
 
 export const router = createBrowserRouter([
   {
@@ -133,6 +135,14 @@ export const router = createBrowserRouter([
   {
     path: '/portfolio/:userId',
     element: <Layout><PortfolioPage /></Layout>,
+  },
+  {
+    path: '/about',
+    element: <Layout><About /></Layout>,
+  },
+  {
+    path: '/testimonials',
+    element: <Layout><Testimonials /></Layout>,
   }
 ])
 
