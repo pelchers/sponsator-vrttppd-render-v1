@@ -178,19 +178,25 @@ export default function Profile() {
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="bg-white p-6 rounded-2xl shadow-lg">
-              <div className="flex justify-between items-center mb-8">
-                <h1 className="text-4xl font-semibold">{user.username}'s Profile</h1>
-                <div className="flex space-x-3">
+              {/* Title and Buttons Container - Vertical on mobile, horizontal on desktop */}
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                {/* Title Section */}
+                <div className="flex justify-center md:justify-start">
+                  <h1 className="text-4xl font-semibold text-center md:text-left">{user.username}'s Profile</h1>
+                </div>
+
+                {/* Buttons Row - Centered on mobile, right-aligned on desktop */}
+                <div className="flex flex-row justify-center md:justify-end items-center gap-2">
                   <Button 
                     onClick={() => navigate(`/portfolio/${id}`)}
-                    className="bg-blue-600 text-white hover:bg-blue-700"
+                    className="bg-blue-600 text-white hover:bg-blue-700 text-sm md:text-base px-3 py-1.5"
                   >
                     View Portfolio
                   </Button>
                   <Button 
                     onClick={handleMessageUser}
                     disabled={isCreatingChat}
-                    className="bg-orange-500 text-white hover:bg-orange-600"
+                    className="bg-orange-500 text-white hover:bg-orange-600 text-sm md:text-base px-3 py-1.5"
                   >
                     {isCreatingChat ? (
                       <>
@@ -205,68 +211,73 @@ export default function Profile() {
                   {localStorage.getItem('userId') === id && (
                     <Button 
                       onClick={() => navigate(`/profile/${id}/edit`)}
-                      className="bg-green-500 text-white hover:bg-green-600"
+                      className="bg-green-500 text-white hover:bg-green-600 text-sm md:text-base px-3 py-1.5"
                     >
                       Edit Profile
                     </Button>
                   )}
                 </div>
               </div>
-              <div className="image-container">
-                <img 
-                  src={
-                    user.profile_image_display === 'url'
-                      ? user.profile_image_url
-                      : user.profile_image_upload
-                        ? `${API_URL.replace('/api', '')}/uploads/${user.profile_image_upload}`
-                        : '/placeholder.svg'
-                  } 
-                  alt="Profile" 
-                  className="profile-image"
-                />
-                <div className="flex justify-center items-center space-x-6 mt-4">
-                  <div className="flex flex-col items-center">
-                    <button 
-                      onClick={handleLikeToggle}
-                      disabled={isLoading}
-                      className={`flex items-center gap-1 text-sm ${
-                        liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
-                      } transition-colors`}
-                      aria-label={liked ? "Unlike" : "Like"}
-                    >
-                      <HeartIcon filled={liked} className="w-6 h-6" />
-                      <span className="font-medium">{likeCount}</span>
-                    </button>
-                    <span className="text-xs text-gray-500 mt-1">Likes</span>
-                  </div>
 
-                  <div className="flex flex-col items-center">
-                    <WatchButton 
-                      entityType="user"
-                      entityId={user.id}
-                      initialWatching={false}
-                      initialCount={user.watches_count || 0}
-                      showCount={true}
-                      size="lg"
-                      variant="ghost"
-                    />
-                    <span className="text-xs text-gray-500 mt-1">Watching</span>
-                  </div>
+              {/* Profile Image and Stats */}
+              <div className="flex flex-col items-center">
+                <div className="image-container">
+                  <img 
+                    src={
+                      user.profile_image_display === 'url'
+                        ? user.profile_image_url
+                        : user.profile_image_upload
+                          ? `${API_URL.replace('/api', '')}/uploads/${user.profile_image_upload}`
+                          : '/placeholder.svg'
+                    } 
+                    alt="Profile" 
+                    className="profile-image"
+                  />
+                  <div className="flex justify-center items-center space-x-6 mt-4">
+                    <div className="flex flex-col items-center">
+                      <button 
+                        onClick={handleLikeToggle}
+                        disabled={isLoading}
+                        className={`flex items-center gap-1 text-sm ${
+                          liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                        } transition-colors`}
+                        aria-label={liked ? "Unlike" : "Like"}
+                      >
+                        <HeartIcon filled={liked} className="w-6 h-6" />
+                        <span className="font-medium">{likeCount}</span>
+                      </button>
+                      <span className="text-xs text-gray-500 mt-1">Likes</span>
+                    </div>
 
-                  <div className="flex flex-col items-center">
-                    <FollowButton 
-                      entityType="user"
-                      entityId={user.id}
-                      initialFollowing={false}
-                      initialCount={user.followers_count || 0}
-                      showCount={true}
-                      size="lg"
-                      variant="ghost"
-                    />
-                    <span className="text-xs text-gray-500 mt-1">Followers</span>
+                    <div className="flex flex-col items-center">
+                      <WatchButton 
+                        entityType="user"
+                        entityId={user.id}
+                        initialWatching={false}
+                        initialCount={user.watches_count || 0}
+                        showCount={true}
+                        size="lg"
+                        variant="ghost"
+                      />
+                      <span className="text-xs text-gray-500 mt-1">Watching</span>
+                    </div>
+
+                    <div className="flex flex-col items-center">
+                      <FollowButton 
+                        entityType="user"
+                        entityId={user.id}
+                        initialFollowing={false}
+                        initialCount={user.followers_count || 0}
+                        showCount={true}
+                        size="lg"
+                        variant="ghost"
+                      />
+                      <span className="text-xs text-gray-500 mt-1">Followers</span>
+                    </div>
                   </div>
                 </div>
               </div>
+
               <div className="profile-grid">
                 <div className="info-group">
                   <label className="info-label">Username</label>
