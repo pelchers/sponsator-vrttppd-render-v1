@@ -188,7 +188,7 @@ return (
         {/* Group Title */}
         <h1 className="text-4xl font-bold tracking-tight text-center pt-16 mb-16">
           Platform Overview & Features
-        </h1>
+            </h1>
 
         {/* How It Works Section */}
         <section className="px-4 py-16">
@@ -199,23 +199,23 @@ return (
           <div className="hidden md:block w-full max-w-6xl mx-auto space-y-12">
             {/* Subsection Header */}
             <h3 className="text-xl font-bold text-center mb-8">Process Steps</h3>
-            <div className="grid grid-cols-3 gap-8">
-              {steps.map((step, index) => (
-                <div key={index} className="relative p-8 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-250 hover:scale-105">
-                  <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">
-                    {step.number}
-                  </div>
-                  <div className="text-4xl mb-4">{step.emoji}</div>
-                  <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
-                  <p className="text-gray-600 mb-4">{step.description}</p>
-                  <ul className="text-sm text-gray-500 space-y-2">
-                    {step.points.map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
+          <div className="grid grid-cols-3 gap-8">
+            {steps.map((step, index) => (
+              <div key={index} className="relative p-8 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-250 hover:scale-105">
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">
+                  {step.number}
                 </div>
-              ))}
-            </div>
+                <div className="text-4xl mb-4">{step.emoji}</div>
+                <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
+                <p className="text-gray-600 mb-4">{step.description}</p>
+                <ul className="text-sm text-gray-500 space-y-2">
+                  {step.points.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
 
             {/* New: Process Timeline */}
             <div className="mt-16 relative">
@@ -225,7 +225,7 @@ return (
                   <div key={phase} className="flex flex-col items-center">
                     <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center mb-4 relative z-10">
                       {index + 1}
-                    </div>
+        </div>
                     <h4 className="font-semibold text-center">{phase}</h4>
                     <p className="text-sm text-gray-600 text-center mt-2">
                       {getPhaseDescription(phase)}
@@ -257,20 +257,20 @@ return (
                 <li>• Success prediction</li>
                 <li>• Smart recommendations</li>
               </ul>
-            </div>
+                      </div>
 
             {/* Analytics & Metrics */}
             <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 h-full flex flex-col">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-bold mb-2">Analytics & Metrics</h3>
               <p className="text-gray-600 mb-4">Comprehensive real-time analytics system</p>
-              <ul className="text-sm text-gray-500 space-y-2">
+                      <ul className="text-sm text-gray-500 space-y-2">
                 <li>• Performance tracking</li>
                 <li>• Audience insights</li>
                 <li>• ROI measurement</li>
                 <li>• Growth analytics</li>
-              </ul>
-            </div>
+                      </ul>
+                    </div>
 
             {/* Secure Transactions */}
             <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 h-full flex flex-col">
@@ -283,7 +283,7 @@ return (
                 <li>• Milestone payments</li>
                 <li>• Dispute resolution</li>
               </ul>
-            </div>
+                  </div>
 
             {/* Collaboration Hub */}
             <div className="bg-white p-8 rounded-2xl shadow-lg transition-all duration-250 hover:scale-105 h-full flex flex-col">
@@ -296,8 +296,8 @@ return (
                 <li>• File sharing</li>
                 <li>• Task tracking</li>
               </ul>
+              </div>
             </div>
-          </div>
 
           {/* Advanced Features */}
           <div className="max-w-6xl mx-auto">
@@ -315,7 +315,7 @@ return (
                   <li>• Version control</li>
                   <li>• Publishing workflow</li>
                 </ul>
-              </div>
+            </div>
 
               {/* Communication Hub */}
               <div className="bg-white p-6 rounded-xl shadow-lg h-full">
@@ -342,9 +342,9 @@ return (
                   <li>• Safety checks</li>
                 </ul>
               </div>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
       </div>
 
       {/* Group 2: Value Proposition */}
@@ -452,17 +452,17 @@ return (
                         <div>
                           <h5 className="font-semibold">Creator Collaborations</h5>
                           <p className="text-sm text-blue-100">Partner with other creators for joint projects and cross-promotion</p>
-                        </div>
+                      </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🔨</span>
                         <div>
                           <h5 className="font-semibold">Service Access</h5>
                           <p className="text-sm text-blue-100">Find contractors and freelancers for production needs</p>
-                        </div>
+                      </div>
                       </li>
                     </ul>
-                  </div>
+                    </div>
                 </FeatureDropdown>
 
                 {/* Brand Opportunities Dropdown */}
@@ -477,10 +477,10 @@ return (
                         <div>
                           <h5 className="font-semibold">AI-matched brand deals</h5>
                           <p className="text-sm text-blue-100">Get matched with brands that align with your values</p>
-                        </div>
+                  </div>
                       </li>
                     </ul>
-                  </div>
+              </div>
                 </FeatureDropdown>
 
                 {/* Analytics Dropdown */}
@@ -495,7 +495,7 @@ return (
                       <li>• Performance insights</li>
                       <li>• Custom reporting</li>
                     </ul>
-                  </div>
+            </div>
                 </FeatureDropdown>
 
                 {/* Collaboration Tools Dropdown */}
@@ -561,7 +561,7 @@ return (
                   className="w-full h-48 object-cover rounded-xl mb-4"
                 />
                 <h3 className="text-4xl font-honk mb-4 animate-float">For Brands</h3>
-              </div>
+            </div>
               <div className="space-y-4 flex-grow">
                 {/* Connection Benefits Dropdown */}
                 <FeatureDropdown title="Connection Benefits" emoji="🤝">
@@ -575,14 +575,14 @@ return (
                         <div>
                           <h5 className="font-semibold">Creator Partnerships</h5>
                           <p className="text-sm text-blue-100">Access verified creators for brand deals and campaigns</p>
-                        </div>
+          </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🔨</span>
                         <div>
                           <h5 className="font-semibold">Service Access</h5>
                           <p className="text-sm text-blue-100">Find contractors and freelancers for your projects</p>
-                        </div>
+        </div>
                       </li>
                     </ul>
                   </div>
@@ -626,14 +626,14 @@ return (
                           <h5 className="font-semibold">Planning Tools</h5>
                           <p className="text-sm text-blue-100">Comprehensive campaign planning and tracking</p>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>💰</span>
                         <div>
                           <h5 className="font-semibold">Budget Management</h5>
                           <p className="text-sm text-blue-100">Track spending and ROI in real-time</p>
                         </div>
-                      </li>
+              </li>
                     </ul>
                   </div>
                 </FeatureDropdown>
@@ -651,15 +651,15 @@ return (
                           <h5 className="font-semibold">Performance Analysis</h5>
                           <p className="text-sm text-blue-100">Detailed metrics and ROI predictions</p>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>🛡️</span>
                         <div>
                           <h5 className="font-semibold">Brand Safety</h5>
                           <p className="text-sm text-blue-100">Automated content and audience verification</p>
                         </div>
-                      </li>
-                    </ul>
+              </li>
+            </ul>
                   </div>
                 </FeatureDropdown>
 
@@ -701,15 +701,15 @@ return (
                     <div className="text-sm text-blue-100">Time to Launch</div>
                   </div>
                 </div>
-                <Button 
-                  onClick={() => navigate('/register')}
-                  className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
+            <Button 
+              onClick={() => navigate('/register')}
+              className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
                             transition-all duration-250 hover:scale-105 mt-0"
-                >
+            >
                   Partner With Us
-                </Button>
+            </Button>
               </div>
-            </div>
+          </div>
 
             {/* Contractors Card */}
             <div className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
@@ -731,20 +731,20 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>🏢</span>
-                        <div>
+                <div>
                           <h5 className="font-semibold">Brand Services</h5>
                           <p className="text-sm text-blue-100">Provide professional services to established brands</p>
-                        </div>
+                </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🎥</span>
                         <div>
                           <h5 className="font-semibold">Creator Support</h5>
                           <p className="text-sm text-blue-100">Offer production and technical services to creators</p>
-                        </div>
+              </div>
                       </li>
                     </ul>
-                  </div>
+                </div>
                 </FeatureDropdown>
 
                 {/* Opportunity Access Dropdown */}
@@ -759,14 +759,14 @@ return (
                         <div>
                           <h5 className="font-semibold">Project Matching</h5>
                           <p className="text-sm text-blue-100">AI-powered project recommendations</p>
-                        </div>
+                </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🌟</span>
                         <div>
                           <h5 className="font-semibold">Portfolio Showcase</h5>
                           <p className="text-sm text-blue-100">Highlight your best work and services</p>
-                        </div>
+              </div>
                       </li>
                     </ul>
                   </div>
@@ -781,7 +781,7 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>📋</span>
-                        <div>
+              <div>
                           <h5 className="font-semibold">Project Tracking</h5>
                           <p className="text-sm text-blue-100">Manage timelines, tasks, and deliverables</p>
                         </div>
@@ -793,8 +793,8 @@ return (
                           <p className="text-sm text-blue-100">Secure, milestone-based payments</p>
                         </div>
                       </li>
-                    </ul>
-                  </div>
+                </ul>
+              </div>
                 </FeatureDropdown>
 
                 {/* Growth Tools Dropdown */}
@@ -809,17 +809,17 @@ return (
                         <div>
                           <h5 className="font-semibold">Performance Metrics</h5>
                           <p className="text-sm text-blue-100">Track success rates and client satisfaction</p>
-                        </div>
+            </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🏆</span>
                         <div>
                           <h5 className="font-semibold">Skill Endorsements</h5>
                           <p className="text-sm text-blue-100">Build credibility through verified reviews</p>
-                        </div>
+          </div>
                       </li>
                     </ul>
-                  </div>
+        </div>
                 </FeatureDropdown>
 
                 {/* Service Management Dropdown */}
@@ -831,29 +831,29 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>📦</span>
-                        <div>
+                <div>
                           <h5 className="font-semibold">Service Packaging</h5>
                           <p className="text-sm text-blue-100">Create and manage service offerings</p>
-                        </div>
+                </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>📝</span>
                         <div>
                           <h5 className="font-semibold">Contract Handling</h5>
                           <p className="text-sm text-blue-100">Automated agreements and terms</p>
-                        </div>
+              </div>
                       </li>
                     </ul>
-                  </div>
+                </div>
                 </FeatureDropdown>
-              </div>
+                </div>
 
               <div className="mt-auto">
                 <div className="grid grid-cols-2 gap-4 mb-4 mt-4">
                   <div className="bg-white/10 p-4 rounded-xl">
                     <div className="font-bold text-2xl">95%</div>
                     <div className="text-sm text-blue-100">Project Success</div>
-                  </div>
+              </div>
                   <div className="bg-white/10 p-4 rounded-xl">
                     <div className="font-bold text-2xl">4.8★</div>
                     <div className="text-sm text-blue-100">Avg Rating</div>
@@ -889,7 +889,7 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>🎯</span>
-                        <div>
+              <div>
                           <h5 className="font-semibold">Direct Client Access</h5>
                           <p className="text-sm text-blue-100">Work directly with brands and creators</p>
                         </div>
@@ -901,8 +901,8 @@ return (
                           <p className="text-sm text-blue-100">Access a steady stream of relevant work</p>
                         </div>
                       </li>
-                    </ul>
-                  </div>
+                </ul>
+              </div>
                 </FeatureDropdown>
 
                 {/* Service Offering Dropdown */}
@@ -917,14 +917,14 @@ return (
                         <div>
                           <h5 className="font-semibold">Service Packages</h5>
                           <p className="text-sm text-blue-100">Create custom service offerings</p>
-                        </div>
+            </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🎯</span>
                         <div>
                           <h5 className="font-semibold">Project Bidding</h5>
                           <p className="text-sm text-blue-100">Competitive proposal system</p>
-                        </div>
+          </div>
                       </li>
                     </ul>
                   </div>
@@ -943,14 +943,14 @@ return (
                           <h5 className="font-semibold">Time Management</h5>
                           <p className="text-sm text-blue-100">Track time and manage projects</p>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>📝</span>
                         <div>
                           <h5 className="font-semibold">Invoice Generation</h5>
                           <p className="text-sm text-blue-100">Automated billing and payments</p>
                         </div>
-                      </li>
+              </li>
                     </ul>
                   </div>
                 </FeatureDropdown>
@@ -968,15 +968,15 @@ return (
                           <h5 className="font-semibold">Performance Analytics</h5>
                           <p className="text-sm text-blue-100">Track your success and growth</p>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>🏆</span>
                         <div>
                           <h5 className="font-semibold">Skill Verification</h5>
                           <p className="text-sm text-blue-100">Build trust with verified credentials</p>
                         </div>
-                      </li>
-                    </ul>
+              </li>
+            </ul>
                   </div>
                 </FeatureDropdown>
 
@@ -1017,17 +1017,17 @@ return (
                     <div className="text-sm text-blue-100">Client Base</div>
                   </div>
                 </div>
-                <Button 
-                  onClick={() => navigate('/register')}
-                  className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
+            <Button 
+              onClick={() => navigate('/register')}
+              className="w-full bg-white text-blue-600 hover:bg-green-500 hover:text-white
                             transition-all duration-250 hover:scale-105 mt-0"
-                >
+            >
                   Start Freelancing
-                </Button>
+            </Button>
               </div>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
       </div>
 
       {/* Group 3: Platform Performance */}
@@ -1040,33 +1040,33 @@ return (
         {/* Platform Metrics Section */}
         <section className="px-4 py-16">
           <h2 className="text-4xl font-semibold text-center mb-16 text-white">Key Metrics</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
-            <div className="text-center">
-              <div className="text-4xl mb-2 animate-bounce">💰</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
+          <div className="text-center">
+            <div className="text-4xl mb-2 animate-bounce">💰</div>
               <div className="font-honk text-5xl text-white animate-float">10</div>
               <div className="text-lg mt-2 text-white">Million in Revenue</div>
-              <div className="text-sm text-blue-200">+127% This Year</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2 animate-bounce delay-100">🌍</div>
+            <div className="text-sm text-blue-200">+127% This Year</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl mb-2 animate-bounce delay-100">🌍</div>
               <div className="font-honk text-5xl text-white animate-float-delay-1">50</div>
               <div className="text-lg mt-2 text-white">Countries</div>
-              <div className="text-sm text-blue-200">Global Reach</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2 animate-bounce delay-200">🤝</div>
+            <div className="text-sm text-blue-200">Global Reach</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl mb-2 animate-bounce delay-200">🤝</div>
               <div className="font-honk text-5xl text-white animate-float-delay-2">95</div>
               <div className="text-lg mt-2 text-white">Success Rate</div>
-              <div className="text-sm text-blue-200">+5% vs Industry</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl mb-2 animate-bounce delay-300">⚡</div>
+            <div className="text-sm text-blue-200">+5% vs Industry</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl mb-2 animate-bounce delay-300">⚡</div>
               <div className="font-honk text-5xl text-white animate-float">24</div>
               <div className="text-lg mt-2 text-white">Hour Support</div>
-              <div className="text-sm text-blue-200">Always Online</div>
-            </div>
+            <div className="text-sm text-blue-200">Always Online</div>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Platform Statistics Section */}
         <section className="px-4 py-16">
@@ -1077,28 +1077,28 @@ return (
               <div className="font-honk text-5xl text-white animate-float">{siteStats?.totalUsers || '...'}</div>
               <div className="text-lg mt-2 text-white">Community Members</div>
               <div className="text-sm text-blue-200">Growing Daily</div>
-            </div>
+          </div>
             <div className="text-center">
               <div className="text-4xl mb-2 animate-bounce delay-100">🚀</div>
               <div className="font-honk text-5xl text-white animate-float-delay-1">{siteStats?.totalProjects || '...'}</div>
               <div className="text-lg mt-2 text-white">Total Projects</div>
               <div className="text-sm text-blue-200">Active Campaigns</div>
-            </div>
+          </div>
             <div className="text-center">
               <div className="text-4xl mb-2 animate-bounce delay-200">📝</div>
               <div className="font-honk text-5xl text-white animate-float-delay-2">{siteStats?.totalArticles || '...'}</div>
               <div className="text-lg mt-2 text-white">Total Articles</div>
               <div className="text-sm text-blue-200">Published Content</div>
-            </div>
+          </div>
             <div className="text-center">
               <div className="text-4xl mb-2 animate-bounce delay-300">📱</div>
               <div className="font-honk text-5xl text-white animate-float">{siteStats?.totalPosts || '...'}</div>
               <div className="text-lg mt-2 text-white">Total Posts</div>
               <div className="text-sm text-blue-200">Shared Updates</div>
-            </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+          </div>
 
       {/* Group 4: Company & Values */}
       <div className="bg-[#FFFEFF]">
@@ -1141,58 +1141,58 @@ return (
                 alt="Team at work" 
                 className="rounded-2xl shadow-lg"
               />
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Our Commitment Section */}
         <section className="px-4 py-16">
           <h2 className="text-2xl font-bold text-center mb-12">Our Commitment</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto px-4">
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold mb-6">Creator Code of Ethics</h3>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Authentic engagement only
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Transparent disclosure
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Quality content promise
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Audience trust priority
-                </li>
-              </ul>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold mb-6">Brand Standards</h3>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Fair compensation
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Clear expectations
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Timely communication
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Creator respect
-                </li>
-              </ul>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto px-4">
+          <div className="bg-white p-8 rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">Creator Code of Ethics</h3>
+            <ul className="space-y-4">
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Authentic engagement only
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Transparent disclosure
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Quality content promise
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Audience trust priority
+              </li>
+            </ul>
           </div>
-        </section>
+          <div className="bg-white p-8 rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold mb-6">Brand Standards</h3>
+            <ul className="space-y-4">
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Fair compensation
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Clear expectations
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Timely communication
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                Creator respect
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
       </div>
 
       {/* 11. Join Waitlist - Toggle visibility based on pre-signup vs launch phase */}
