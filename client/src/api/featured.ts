@@ -22,9 +22,20 @@ export const fetchFeaturedContent = async (options: FetchFeaturedContentOptions 
     const transformedResults = {
       users: data.results.users?.map((user: any) => ({
         ...user,
-        user_profile_image_url: user.profile_image_url || null,
-        user_profile_image_upload: user.profile_image_upload || null,
-        user_profile_image_display: user.profile_image_display || 'url'
+        profile_image: user.profile_image_url || user.profile_image_upload,
+        profile_image_url: user.profile_image_url,
+        profile_image_upload: user.profile_image_upload,
+        profile_image_display: user.profile_image_display || 'url',
+        bio: user.bio || '',
+        career_title: user.career_title || '',
+        likes_count: user.likes_count || 0,
+        follows_count: user.follows_count || 0,
+        followers_count: user.followers_count || 0,
+        watches_count: user.watches_count || 0,
+        users: {
+          username: user.username,
+          profile_image: user.profile_image_url || user.profile_image_upload
+        }
       })).filter(user => !featuredOnly || user.featured) || [],
       projects: data.results.projects?.map((project: any) => ({
         ...project,

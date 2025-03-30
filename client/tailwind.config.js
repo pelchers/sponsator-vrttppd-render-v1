@@ -105,7 +105,7 @@
  * </PageSection>
  */
 
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -217,25 +217,35 @@ export default {
         'bounce': 'bounce 2s infinite',
         'bounce-on-click': 'bounceClick 0.2s ease-in-out',
         'carousel': 'carousel 30s linear infinite',
+        'scroll': 'scroll 25s linear infinite',
+        'scroll-reverse': 'scroll-reverse 25s linear infinite'
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
+          '50%': { transform: 'translateY(-20px)' }
         },
         bounceClick: {
           '0%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-4px)' },
-          '100%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(0)' }
         },
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
         },
         carousel: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-300%)' }
         },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' }
+        },
+        'scroll-reverse': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' }
+        }
       },
       textShadow: {
         'lg': '4px 4px 0px rgba(37, 99, 235, 0.2)',

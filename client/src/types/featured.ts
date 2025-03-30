@@ -14,7 +14,11 @@ interface FeaturedItem {
   likes_count?: number;
   follows_count?: number;
   watches_count?: number;
+  followers_count?: number;
   mediaUrl?: string;
+  profile_image_url?: string | null;
+  profile_image_upload?: string | null;
+  profile_image_display?: string;
   tags?: string[];
   skills?: string[];
   timeline?: string;
@@ -26,6 +30,7 @@ interface FeaturedItem {
   text?: string;  // For comments
   entity_type?: string;  // For comments
   entity_id?: string;  // For comments
+  username?: string;
 }
 
 export interface FeaturedContent {

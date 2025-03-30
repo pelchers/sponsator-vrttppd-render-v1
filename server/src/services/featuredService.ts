@@ -19,6 +19,9 @@ export const getFeaturedContent = async (options: FeaturedOptions = {}) => {
           id: true,
           username: true,
           profile_image: true,
+          profile_image_url: true,
+          profile_image_upload: true,
+          profile_image_display: true,
           bio: true,
           user_type: true,
           career_title: true,
@@ -26,6 +29,7 @@ export const getFeaturedContent = async (options: FeaturedOptions = {}) => {
           likes_count: true,
           follows_count: true,
           watches_count: true,
+          followers_count: true,
           featured: true
         }
       }).catch(() => []),
