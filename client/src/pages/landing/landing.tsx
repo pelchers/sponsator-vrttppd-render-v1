@@ -615,6 +615,17 @@ export default function Landing() {
             </div>
           </div>
         </div>
+        <div className="mt-8 flex justify-center">
+  <Link to="/about#how-it-works">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      Full Process Breakdown
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
       </section>
 
       {/* 2. Success Stories Testimonials */}
@@ -774,6 +785,17 @@ export default function Landing() {
             </div>
           </div>
         </div>
+        <div className="mt-8 flex justify-center">
+  <Link to="/about#platform-features">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      Explore All Features
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
       </section>
 
       {/* Group 2: Value Proposition */}
@@ -844,6 +866,17 @@ export default function Landing() {
               </ul>
             </div>
           </div>
+          <div className="mt-8 flex justify-center">
+  <Link to="/about#why-choose-us">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      See all Benefits
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
         </section>
 
         {/* Top Brands Logo Banner */}
@@ -1543,6 +1576,17 @@ export default function Landing() {
               </div>
           </div>
         </div>
+        <div className="mt-8 flex justify-center">
+  <Link to="/about#tailored-solutions">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      Go in Depth on how Sponsator Works for You
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
       </section>
       </div>
 
@@ -1830,6 +1874,17 @@ export default function Landing() {
             </ul>
           </div>
         </div>
+        <div className="mt-8 flex justify-center">
+  <Link to="/about#about-platform">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      Learn about our Past, Future, and Mission
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
       </section>
       </div>
 

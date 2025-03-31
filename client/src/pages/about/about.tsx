@@ -191,7 +191,7 @@ return (
             </h1>
 
         {/* How It Works Section */}
-        <section className="px-4 py-16">
+        <section id="how-it-works" className="px-4 py-16">
           {/* Section Header */}
           <h2 className="text-2xl font-bold text-center mb-12">How It Works</h2>
           
@@ -284,8 +284,8 @@ return (
                       <div>
                         <h4 className="text-xl font-semibold text-blue-600">{phase.title}</h4>
                         <p className="text-gray-600">{phase.description}</p>
-                      </div>
-                    </div>
+        </div>
+                  </div>
                     
                     <div className="grid md:grid-cols-2 gap-6">
                       {phase.details.map((detail, idx) => (
@@ -376,7 +376,7 @@ return (
         </section>
 
         {/* Platform Features Section */}
-        <section className="py-16 px-4">
+        <section id="platform-features" className="py-16 px-4">
           {/* Section Header */}
           <h2 className="text-2xl font-bold text-center mb-12">Platform Features</h2>
           
@@ -633,8 +633,8 @@ return (
                   </ol>
                 </div>
               ))}
+              </div>
             </div>
-          </div>
 
           {/* Advanced Features */}
           <div className="max-w-6xl mx-auto">
@@ -692,7 +692,7 @@ return (
         </h1>
 
         {/* Why Choose Us Section - Expanded */}
-        <section className="px-4 py-16">
+        <section id="why-choose-us" className="px-4 py-16">
           {/* Section Header */}
           <h2 className="text-2xl font-bold text-center mb-12">Why Choose Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -939,7 +939,7 @@ return (
         </section>
 
         {/* Tailored Solutions Section */}
-        <section className="px-4 py-16">
+        <section id="tailored-solutions" className="px-4 py-16 text-white">
           {/* Section Header */}
           <h2 className="text-2xl font-bold text-center mb-12">Tailored Solutions</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
@@ -987,7 +987,7 @@ return (
                             <li>• Cross-promotion scheduling</li>
                             <li>• Joint analytics tracking</li>
                           </ul>
-                        </div>
+                      </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🔨</span>
@@ -1001,7 +1001,7 @@ return (
                             <li>• Service quality ratings</li>
                             <li>• Project milestone tracking</li>
                           </ul>
-                        </div>
+                      </div>
                       </li>
                     </ul>
                     </div>
@@ -1043,7 +1043,7 @@ return (
                             <li>• Performance reporting</li>
                             <li>• Brand communication tools</li>
                           </ul>
-                        </div>
+                  </div>
                       </li>
                     </ul>
               </div>
@@ -1183,7 +1183,7 @@ return (
                             <li>• Direct creator communication</li>
                             <li>• Campaign coordination tools</li>
                           </ul>
-                        </div>
+          </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🔨</span>
@@ -1197,7 +1197,7 @@ return (
                             <li>• Quality assurance tools</li>
                             <li>• Performance tracking</li>
                           </ul>
-                        </div>
+        </div>
                       </li>
                     </ul>
                   </div>
@@ -1263,7 +1263,7 @@ return (
                             <li>• Multi-channel coordination</li>
                           </ul>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>💰</span>
                         <div>
@@ -1277,7 +1277,7 @@ return (
                             <li>• Performance analytics</li>
                           </ul>
                         </div>
-                      </li>
+              </li>
                     </ul>
                   </div>
                 </FeatureDropdown>
@@ -1302,7 +1302,7 @@ return (
                             <li>• Campaign impact assessment</li>
                           </ul>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>🛡️</span>
                         <div>
@@ -1316,8 +1316,8 @@ return (
                             <li>• Safety score updates</li>
                           </ul>
                         </div>
-                      </li>
-                    </ul>
+              </li>
+            </ul>
                   </div>
                 </FeatureDropdown>
 
@@ -1389,7 +1389,7 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>🏢</span>
-                        <div>
+                <div>
                           <h5 className="font-semibold">Brand Services</h5>
                           <p className="text-sm text-blue-100">Provide professional services to established brands</p>
                           <ul className="mt-2 space-y-1 text-xs text-blue-100/80">
@@ -1399,7 +1399,7 @@ return (
                             <li>• Portfolio showcase</li>
                             <li>• Client relationship tools</li>
                           </ul>
-                        </div>
+                </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🎥</span>
@@ -1413,10 +1413,10 @@ return (
                             <li>• Collaboration features</li>
                             <li>• Resource scheduling</li>
                           </ul>
-                        </div>
+              </div>
                       </li>
                     </ul>
-                  </div>
+                </div>
                 </FeatureDropdown>
 
                 {/* Opportunity Access Dropdown */}
@@ -1439,7 +1439,7 @@ return (
                             <li>• Priority notifications</li>
                             <li>• Custom search parameters</li>
                           </ul>
-                        </div>
+                </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🌟</span>
@@ -1453,7 +1453,7 @@ return (
                             <li>• Performance metrics</li>
                             <li>• Skills verification</li>
                           </ul>
-                        </div>
+              </div>
                       </li>
                     </ul>
                   </div>
@@ -1468,7 +1468,7 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>📋</span>
-                        <div>
+              <div>
                           <h5 className="font-semibold">Project Tracking</h5>
                           <p className="text-sm text-blue-100">Manage timelines, tasks, and deliverables</p>
                           <ul className="mt-2 space-y-1 text-xs text-blue-100/80">
@@ -1495,8 +1495,8 @@ return (
                           </ul>
                         </div>
                       </li>
-                    </ul>
-                  </div>
+                </ul>
+              </div>
                 </FeatureDropdown>
 
                 {/* Growth Tools Dropdown */}
@@ -1518,7 +1518,7 @@ return (
                             <li>• Growth tracking</li>
                             <li>• Performance trends</li>
                           </ul>
-                        </div>
+            </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🏆</span>
@@ -1532,10 +1532,10 @@ return (
                             <li>• Industry certifications</li>
                             <li>• Expert status tracking</li>
                           </ul>
-                        </div>
+          </div>
                       </li>
                     </ul>
-                  </div>
+        </div>
                 </FeatureDropdown>
 
                 {/* Service Management Dropdown */}
@@ -1547,20 +1547,20 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>📦</span>
-                        <div>
+                <div>
                           <h5 className="font-semibold">Service Packaging</h5>
                           <p className="text-sm text-blue-100">Create and manage service offerings</p>
-                        </div>
+                </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>📝</span>
                         <div>
                           <h5 className="font-semibold">Contract Handling</h5>
                           <p className="text-sm text-blue-100">Automated agreements and terms</p>
-                        </div>
+              </div>
                       </li>
                     </ul>
-                  </div>
+                </div>
                 </FeatureDropdown>
                 </div>
 
@@ -1605,7 +1605,7 @@ return (
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <span>🎯</span>
-                        <div>
+              <div>
                           <h5 className="font-semibold">Direct Client Access</h5>
                           <p className="text-sm text-blue-100">Work directly with brands and creators</p>
                           <ul className="mt-2 space-y-1 text-xs text-blue-100/80">
@@ -1631,8 +1631,8 @@ return (
                           </ul>
                         </div>
                       </li>
-                    </ul>
-                  </div>
+                </ul>
+              </div>
                 </FeatureDropdown>
 
                 {/* Service Offering Dropdown */}
@@ -1655,7 +1655,7 @@ return (
                             <li>• Custom proposals</li>
                             <li>• Delivery timeline setup</li>
                           </ul>
-                        </div>
+            </div>
                       </li>
                       <li className="flex items-start gap-2">
                         <span>🎯</span>
@@ -1669,7 +1669,7 @@ return (
                             <li>• Success rate analytics</li>
                             <li>• Client budget matching</li>
                           </ul>
-                        </div>
+          </div>
                       </li>
                     </ul>
                   </div>
@@ -1695,7 +1695,7 @@ return (
                             <li>• Availability settings</li>
                           </ul>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>📝</span>
                         <div>
@@ -1709,7 +1709,7 @@ return (
                             <li>• Multi-currency support</li>
                           </ul>
                         </div>
-                      </li>
+              </li>
                     </ul>
                   </div>
                 </FeatureDropdown>
@@ -1734,7 +1734,7 @@ return (
                             <li>• Performance benchmarks</li>
                           </ul>
                         </div>
-                      </li>
+              </li>
                       <li className="flex items-start gap-2">
                         <span>🏆</span>
                         <div>
@@ -1748,8 +1748,8 @@ return (
                             <li>• Experience validation</li>
                           </ul>
                         </div>
-                      </li>
-                    </ul>
+              </li>
+            </ul>
                   </div>
                 </FeatureDropdown>
 
@@ -1825,7 +1825,7 @@ return (
         </h1>
 
         {/* Platform Metrics Section */}
-        <section className="px-4 py-16">
+        <section id="platform-metrics" className="px-4 py-16">
           <h2 className="text-4xl font-semibold text-center mb-16 text-white">Key Metrics</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto px-4">
           <div className="text-center">
@@ -1895,7 +1895,7 @@ return (
         </h1>
 
         {/* About Platform Section */}
-        <section className="px-4 py-16">
+        <section id="about-platform" className="px-4 py-16">
           <h2 className="text-2xl font-bold text-center mb-12">About Our Platform</h2>
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left Column - Story & Stats */}
@@ -2109,14 +2109,14 @@ return (
                   </div>
                 ))}
               </div>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
       </div>
 
-      {/* Our Commitment Section */}
-      <section className="px-4 py-16">
-        <h2 className="text-2xl font-bold text-center mb-12">Our Commitment</h2>
+        {/* Our Commitment Section */}
+        <section id="our-commitment" className="px-4 py-16">
+          <h2 className="text-2xl font-bold text-center mb-12">Our Commitment</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto px-4">
           {/* Creator Code of Ethics */}
           <div className="bg-white p-8 rounded-2xl shadow-lg">
@@ -2125,35 +2125,35 @@ return (
               <h3 className="text-2xl font-bold">Creator Code of Ethics</h3>
             </div>
             <div className="space-y-6">
-              <ul className="space-y-4">
+            <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Authentic Engagement Only</h4>
                     <p className="text-sm text-gray-600">We maintain strict policies against fake engagement and ensure all interactions are genuine and meaningful.</p>
                   </div>
-                </li>
+              </li>
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Transparent Disclosure</h4>
                     <p className="text-sm text-gray-600">Clear disclosure of partnerships and sponsored content to maintain trust with audiences.</p>
                   </div>
-                </li>
+              </li>
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Quality Content Promise</h4>
                     <p className="text-sm text-gray-600">Commitment to maintaining high content standards and creative integrity in all partnerships.</p>
                   </div>
-                </li>
+              </li>
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Audience Trust Priority</h4>
                     <p className="text-sm text-gray-600">Putting audience interests first in all partnership decisions and content creation.</p>
                   </div>
-                </li>
+              </li>
               </ul>
 
               {/* New: Verification Process */}
@@ -2164,8 +2164,8 @@ return (
                   <li>• Engagement pattern analysis</li>
                   <li>• Content quality reviews</li>
                   <li>• Audience authenticity checks</li>
-                </ul>
-              </div>
+            </ul>
+          </div>
             </div>
           </div>
 
@@ -2176,35 +2176,35 @@ return (
               <h3 className="text-2xl font-bold">Brand Standards</h3>
             </div>
             <div className="space-y-6">
-              <ul className="space-y-4">
+            <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Fair Compensation</h4>
                     <p className="text-sm text-gray-600">Market-aligned rates and transparent payment structures for all creators.</p>
                   </div>
-                </li>
+              </li>
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Clear Expectations</h4>
                     <p className="text-sm text-gray-600">Detailed project briefs and well-defined deliverables for every partnership.</p>
                   </div>
-                </li>
+              </li>
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Timely Communication</h4>
                     <p className="text-sm text-gray-600">Responsive support and clear communication channels throughout projects.</p>
                   </div>
-                </li>
+              </li>
                 <li className="flex items-start gap-3">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mt-2"></span>
                   <div>
                     <h4 className="font-semibold mb-1">Creator Respect</h4>
                     <p className="text-sm text-gray-600">Valuing creative freedom and protecting creator intellectual property.</p>
                   </div>
-                </li>
+              </li>
               </ul>
 
               {/* New: Quality Assurance */}
@@ -2215,11 +2215,11 @@ return (
                   <li>• Content review process</li>
                   <li>• Performance tracking</li>
                   <li>• Satisfaction surveys</li>
-                </ul>
-              </div>
-            </div>
+            </ul>
           </div>
         </div>
+          </div>
+      </div>
 
         {/* New: Additional Commitments */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4 mt-8">
