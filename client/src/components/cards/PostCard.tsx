@@ -192,7 +192,7 @@ export default function PostCard({
             <div>
               {title && (
                 <h3 className="font-semibold text-lg">
-                  <Link to={`/posts/${post.id}`} className="hover:text-green-500">
+                  <Link to={`/post/${post.id}`} className="hover:text-green-500">
                     {title}
                   </Link>
                 </h3>
@@ -296,7 +296,7 @@ export default function PostCard({
   // GRID VIEW COMPONENT (UNCHANGED)
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
-      <Link to={`/posts/${post.id}`} className="flex-grow group">
+      <Link to={`/post/${post.id}`} className="flex-grow group">
         {(post.post_image_url || post.post_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
             <PostImage

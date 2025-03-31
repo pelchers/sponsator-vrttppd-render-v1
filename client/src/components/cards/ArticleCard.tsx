@@ -182,7 +182,7 @@ export default function ArticleCard({
           <div className="flex justify-between items-start">
             <div>
               <h3 className="font-semibold text-lg">
-                <Link to={`/articles/${article.id}`} className="hover:text-green-500">
+                <Link to={`/article/${article.id}`} className="hover:text-green-500">
                   {title}
                 </Link>
               </h3>
@@ -286,7 +286,7 @@ export default function ArticleCard({
   // GRID VIEW COMPONENT (UNCHANGED)
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
-      <Link to={`/articles/${article.id}`} className="flex-grow group">
+      <Link to={`/article/${article.id}`} className="flex-grow group">
         {(article.article_image_url || article.article_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
             <ArticleImage
