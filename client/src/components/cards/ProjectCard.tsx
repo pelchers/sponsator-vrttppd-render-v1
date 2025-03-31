@@ -91,14 +91,18 @@ interface ProjectCardProps {
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
   userIsWatching?: boolean;
+  viewMode?: 'grid' | 'list';
 }
 
 export default function ProjectCard({ 
   project, 
   userHasLiked = false,
   userIsFollowing = false,
-  userIsWatching = false
+  userIsWatching = false,
+  viewMode = 'grid'
 }: ProjectCardProps) {
+  const isList = viewMode === 'list';
+  
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
   
@@ -226,6 +230,174 @@ export default function ProjectCard({
     mediaUrl: project.project_image // check if we have legacy data
   });
 
+  // LIST VIEW COMPONENT
+  if (isList) {
+    return (
+      <div className="flex flex-row bg-white rounded-lg shadow hover:shadow-md transition-shadow p-4">
+        {/* Left side - Project Image */}
+        <div className="mr-4 flex-shrink-0">
+          <div className="w-24 h-24 rounded-lg overflow-hidden">
+            <ProjectImage 
+              project={project}
+              className="w-full h-full object-cover"
+              fallback={
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400 text-xs">No image</span>
+                </div>
+              }
+            />
+          </div>
+        </div>
+        
+        {/* Right side - Content */}
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-semibold text-lg">
+                <Link to={`/projects/${project.id}`} className="hover:text-green-500">
+                  {title}
+                </Link>
+              </h3>
+              
+              {/* Creator info */}
+              <div className="flex items-center mt-1">
+                <div className="w-5 h-5 mr-2">
+                  <UserImage 
+                    user={{
+                      profile_image_url: project.user_profile_image_url,
+                      profile_image_upload: project.user_profile_image_upload,
+                      profile_image_display: project.user_profile_image_display
+                    }}
+                    className="w-5 h-5 rounded-full object-cover"
+                    fallback={<DefaultAvatar className="w-5 h-5" />}
+                  />
+                </div>
+                <span className="text-sm text-gray-600">{username}</span>
+                <span className="text-xs text-gray-500 ml-2">{timeAgo}</span>
+              </div>
+            </div>
+            
+            {/* Interaction buttons */}
+            <div className="flex space-x-3 text-sm">
+              <button
+                onClick={handleLikeToggle}
+                disabled={isLoading}
+                className={`flex items-center gap-1 ${
+                  liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                } transition-colors`}
+              >
+                <HeartIcon filled={liked} className="w-4 h-4" />
+                <span className="text-sm">{likeCount}</span>
+              </button>
+              <WatchButton 
+                entityType="project"
+                entityId={project.id}
+                initialWatching={watching}
+                initialCount={watchCount}
+                showCount={true}
+                size="sm"
+                variant="ghost"
+              />
+              <FollowButton 
+                entityType="project"
+                entityId={project.id}
+                initialFollowing={following}
+                initialCount={followCount}
+                showCount={true}
+                size="sm"
+                variant="ghost"
+              />
+            </div>
+          </div>
+          
+          {/* Description */}
+          <p className="text-gray-600 mt-2 line-clamp-2">
+            {description || 'No description available'}
+          </p>
+          
+          {/* Project type and category */}
+          <div className="flex gap-4 mt-2 text-xs">
+            {project.project_type && (
+              <div>
+                <span className="text-gray-600">Type:</span>{' '}
+                <span className="font-medium">{project.project_type}</span>
+              </div>
+            )}
+            {project.project_category && (
+              <div>
+                <span className="text-gray-600">Category:</span>{' '}
+                <span className="font-medium">{project.project_category}</span>
+              </div>
+            )}
+            {project.budget && (
+              <div>
+                <span className="text-gray-600">Budget:</span>{' '}
+                <span className="font-medium">{project.budget}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Tags */}
+          <div className="mt-3 flex flex-wrap gap-1">
+            {/* Project Tags */}
+            {project.project_tags?.slice(0, 2).map((tag, index) => (
+              <span 
+                key={`tag-${index}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-orange-light text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+            
+            {/* Skills Required */}
+            {project.skills_required?.slice(0, 2).map((skill, index) => (
+              <span 
+                key={`skill-${index}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-yellow-100 text-black border border-black"
+              >
+                {skill}
+              </span>
+            ))}
+            
+            {/* Industry Tags */}
+            {project.industry_tags?.slice(0, 1).map((tag, index) => (
+              <span 
+                key={`ind-${index}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-blue-100 text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+            
+            {/* Technology Tags */}
+            {project.technology_tags?.slice(0, 1).map((tag, index) => (
+              <span 
+                key={`tech-${index}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-purple-100 text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+            
+            {/* Show count of remaining tags if there are more */}
+            {(
+              (project.project_tags?.length || 0) + 
+              (project.industry_tags?.length || 0) + 
+              (project.technology_tags?.length || 0) + 
+              (project.skills_required?.length || 0) + 
+              (project.expertise_needed?.length || 0)
+            ) > 6 && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
+                +more
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // GRID VIEW COMPONENT (UNCHANGED)
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
       <Link to={`/projects/${project.id}`} className="flex-grow group">
@@ -271,6 +443,22 @@ export default function ProjectCard({
               {truncatedDescription}
             </p>
           )}
+          
+          {/* Project type and category */}
+          <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+            {project.project_type && (
+              <div>
+                <span className="text-gray-600">Type:</span>
+                <p className="font-medium">{project.project_type}</p>
+              </div>
+            )}
+            {project.project_category && (
+              <div>
+                <span className="text-gray-600">Category:</span>
+                <p className="font-medium">{project.project_category}</p>
+              </div>
+            )}
+          </div>
           
           {project.budget && (
             <div className="text-sm text-gray-600 mb-2">

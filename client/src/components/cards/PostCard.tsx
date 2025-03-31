@@ -42,14 +42,18 @@ interface PostCardProps {
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
   userIsWatching?: boolean;
+  viewMode?: 'grid' | 'list';
 }
 
 export default function PostCard({
   post,
   userHasLiked = false,
   userIsFollowing = false,
-  userIsWatching = false
+  userIsWatching = false,
+  viewMode = 'grid'
 }: PostCardProps) {
+  const isList = viewMode === 'list';
+  
   const [liked, setLiked] = useState(userHasLiked);
   const [likeCount, setLikeCount] = useState(post.likes_count || 0);
   
@@ -62,18 +66,19 @@ export default function PostCard({
   const [isLoading, setIsLoading] = useState(false);
 
   // Add safe fallbacks for all properties
-  const title = post?.title || 'Untitled Post';
-  const content = post?.description || '';
+  const title = post?.title || '';
+  const description = post?.description || '';
   const createdAt = post?.created_at ? new Date(post.created_at) : new Date();
   const userId = post?.user_id || '';
   const username = post?.username || 'Anonymous';
   const profileImage = post?.user_profile_image_url || '/placeholder-avatar.png';
   const tags = post?.tags || [];
+  const comments = post?.comments || 0;
   
-  // Safely truncate content
-  const truncatedContent = content.length > 150 
-    ? content.slice(0, 150) + '...' 
-    : content;
+  // Safely truncate description
+  const truncatedDescription = description && description.length > 150 
+    ? description.slice(0, 150) + '...' 
+    : description;
   
   // Format the date without date-fns
   const formatDate = (date: Date) => {
@@ -162,17 +167,140 @@ export default function PostCard({
     }
   };
 
+  // LIST VIEW COMPONENT
+  if (isList) {
+    return (
+      <div className="flex flex-row bg-white rounded-lg shadow hover:shadow-md transition-shadow p-4">
+        {/* Left side - Post Image */}
+        <div className="mr-4 flex-shrink-0">
+          <div className="w-24 h-24 rounded-lg overflow-hidden">
+            <PostImage 
+              post={post}
+              className="w-full h-full object-cover"
+              fallback={
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400 text-xs">No image</span>
+                </div>
+              }
+            />
+          </div>
+        </div>
+        
+        {/* Right side - Content */}
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              {title && (
+                <h3 className="font-semibold text-lg">
+                  <Link to={`/posts/${post.id}`} className="hover:text-green-500">
+                    {title}
+                  </Link>
+                </h3>
+              )}
+              
+              {/* Author info */}
+              <div className="flex items-center mt-1">
+                <div className="w-5 h-5 mr-2">
+                  <UserImage 
+                    user={{
+                      profile_image_url: post.user_profile_image_url,
+                      profile_image_upload: post.user_profile_image_upload,
+                      profile_image_display: post.user_profile_image_display
+                    }}
+                    className="w-5 h-5 rounded-full object-cover"
+                    fallback={<DefaultAvatar className="w-5 h-5" />}
+                  />
+                </div>
+                <span className="text-sm text-gray-600">{username}</span>
+                <span className="text-xs text-gray-500 ml-2">{timeAgo}</span>
+              </div>
+            </div>
+            
+            {/* Interaction buttons */}
+            <div className="flex space-x-3 text-sm">
+              <button
+                onClick={handleLikeToggle}
+                disabled={isLoading}
+                className={`flex items-center gap-1 ${
+                  liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                } transition-colors`}
+              >
+                <HeartIcon filled={liked} className="w-4 h-4" />
+                <span className="text-sm">{likeCount}</span>
+              </button>
+              <WatchButton 
+                entityType="post"
+                entityId={post.id}
+                initialWatching={watching}
+                initialCount={watchCount}
+                showCount={true}
+                size="sm"
+                variant="ghost"
+              />
+              <FollowButton 
+                entityType="post"
+                entityId={post.id}
+                initialFollowing={following}
+                initialCount={followCount}
+                showCount={true}
+                size="sm"
+                variant="ghost"
+              />
+            </div>
+          </div>
+          
+          {/* Description */}
+          <p className="text-gray-600 mt-2 line-clamp-2">
+            {description || 'No description available'}
+          </p>
+          
+          {/* Post metadata */}
+          <div className="flex gap-4 mt-2 text-xs">
+            {comments > 0 && (
+              <div>
+                <span className="text-gray-600">Comments:</span>
+                <span className="font-medium">{comments}</span>
+              </div>
+            )}
+            {post.featured && (
+              <div className="text-blue-600 font-medium">
+                Featured
+              </div>
+            )}
+          </div>
+          
+          {/* Tags */}
+          <div className="mt-3 flex flex-wrap gap-1">
+            {/* Post Tags */}
+            {post.tags?.slice(0, 4).map((tag, index) => (
+              <span 
+                key={`tag-${index}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-green-100 text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+            
+            {/* Show count of remaining tags if there are more */}
+            {post.tags && post.tags.length > 4 && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
+                +{post.tags.length - 4} more
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // GRID VIEW COMPONENT (UNCHANGED)
   return (
     <Card className="h-full flex flex-col overflow-hidden transition-all duration-250 hover:scale-105 hover:shadow-lg">
-      <Link to={`/post/${post.id}`} className="flex-grow group">
+      <Link to={`/posts/${post.id}`} className="flex-grow group">
         {(post.post_image_url || post.post_image_upload) && (
           <div className="aspect-video w-full overflow-hidden">
             <PostImage
-              post={{
-                post_image_url: post.post_image_url,
-                post_image_upload: post.post_image_upload,
-                post_image_display: post.post_image_display
-              }}
+              post={post}
               className="w-full h-full object-cover rounded-2xl"
               fallback={
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -195,26 +323,48 @@ export default function PostCard({
             />
             <div>
               <Link 
-                to={`/profile/${post.user_id}`}
-                className="font-medium text-gray-900 hover:text-green-500"
+                to={`/profile/${userId}`} 
+                className="font-medium text-gray-900 hover:text-green-500 transition-colors duration-250"
               >
-                {post.username}
+                {username}
               </Link>
               <p className="text-sm text-gray-500">{timeAgo}</p>
             </div>
           </div>
-          <h3 className="text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors duration-250">
-            {title}
-          </h3>
-          <p className="text-gray-700 group-hover:text-gray-900 transition-colors duration-250">
-            {truncatedContent}
-          </p>
+          
+          {title && (
+            <h3 className="text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors duration-250">
+              {title}
+            </h3>
+          )}
+          
+          {description && (
+            <p className="text-gray-700 mb-3 group-hover:text-gray-900 transition-colors duration-250">
+              {truncatedDescription}
+            </p>
+          )}
+          
+          {/* Post metadata */}
+          <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+            {comments > 0 && (
+              <div>
+                <span className="text-gray-600">Comments:</span>
+                <p className="font-medium">{comments}</p>
+              </div>
+            )}
+            {post.featured && (
+              <div className="text-blue-600 font-medium">
+                Featured
+              </div>
+            )}
+          </div>
+          
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-0.5 justify-start mb-3">
               {tags.map((tag, index) => (
                 <span 
                   key={index}
-                  className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-turquoise-light text-black border border-black transition-all duration-250 hover:scale-105"
+                  className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-green-100 text-black border border-black transition-all duration-250 hover:scale-105"
                 >
                   {tag}
                 </span>
@@ -229,6 +379,24 @@ export default function PostCard({
             Post
           </span>
           <div className="flex items-center gap-4">
+            <WatchButton 
+              entityType="post"
+              entityId={post.id}
+              initialWatching={watching}
+              initialCount={watchCount}
+              showCount={true}
+              size="sm"
+              variant="ghost"
+            />
+            <FollowButton 
+              entityType="post"
+              entityId={post.id}
+              initialFollowing={following}
+              initialCount={followCount}
+              showCount={true}
+              size="sm"
+              variant="ghost"
+            />
             <button 
               onClick={handleLikeToggle}
               disabled={isLoading}
