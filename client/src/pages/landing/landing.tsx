@@ -274,7 +274,6 @@ export default function Landing() {
                         key={user.id}
                         user={{
                           ...user,
-                          profile_image: user.profile_image_url || user.profile_image_upload,
                           bio: user.bio || '',
                           career_title: user.career_title || '',
                           likes_count: user.likes_count || 0,
@@ -296,11 +295,11 @@ export default function Landing() {
                         key={project.id}
                         project={{
                           ...project,
-                          description: project.description || '',
+                          project_description: project.description || '',
                           likes_count: project.likes_count || 0,
                           follows_count: project.follows_count || 0,
                           watches_count: project.watches_count || 0,
-                          mediaUrl: project.mediaUrl || project.project_image_url || project.project_image_upload
+                          mediaUrl: project.mediaUrl || project.profile_image_url || project.profile_image_upload
                         }}
                         variant="white"
                       />
@@ -321,9 +320,8 @@ export default function Landing() {
                           likes_count: article.likes_count || 0,
                           follows_count: article.follows_count || 0,
                           watches_count: article.watches_count || 0,
-                          mediaUrl: article.mediaUrl || article.cover_image
+                          mediaUrl: article.mediaUrl
                         }}
-                        variant="white"
                       />
                     ))}
                   </div>
@@ -338,11 +336,12 @@ export default function Landing() {
                         key={post.id}
                         post={{
                           ...post,
+                          user_id: post.user_id || '',
                           description: post.description || '',
                           likes_count: post.likes_count || 0,
                           follows_count: post.follows_count || 0,
                           watches_count: post.watches_count || 0,
-                          mediaUrl: post.mediaUrl || post.image_url
+                          mediaUrl: post.mediaUrl
                         }}
                         variant="white"
                       />
@@ -367,7 +366,7 @@ export default function Landing() {
                           />
                           <div>
                             <Link 
-                              to={`/profile/${comment.users.id}`}
+                              to={`/profile/${comment.users?.username}`}
                               className="font-medium text-gray-900 hover:text-blue-600"
                             >
                               {comment.users.username}
@@ -410,7 +409,6 @@ export default function Landing() {
                         key={user.id}
                         user={{
                           ...user,
-                          profile_image: user.profile_image_url || user.profile_image_upload,
                           bio: user.bio || '',
                           career_title: user.career_title || '',
                           likes_count: user.likes_count || 0,
@@ -432,11 +430,11 @@ export default function Landing() {
                         key={project.id}
                         project={{
                           ...project,
-                          description: project.description || '',
+                          project_description: project.description || '',
                           likes_count: project.likes_count || 0,
                           follows_count: project.follows_count || 0,
                           watches_count: project.watches_count || 0,
-                          mediaUrl: project.mediaUrl || project.project_image_url || project.project_image_upload
+                          mediaUrl: project.mediaUrl || project.profile_image_url || project.profile_image_upload
                         }}
                         variant="white"
                       />
@@ -457,9 +455,8 @@ export default function Landing() {
                           likes_count: article.likes_count || 0,
                           follows_count: article.follows_count || 0,
                           watches_count: article.watches_count || 0,
-                          mediaUrl: article.mediaUrl || article.cover_image
+                          mediaUrl: article.mediaUrl
                         }}
-                        variant="white"
                       />
                     ))}
                   </div>
@@ -474,11 +471,12 @@ export default function Landing() {
                         key={post.id}
                         post={{
                           ...post,
+                          user_id: post.user_id || '',
                           description: post.description || '',
                           likes_count: post.likes_count || 0,
                           follows_count: post.follows_count || 0,
                           watches_count: post.watches_count || 0,
-                          mediaUrl: post.mediaUrl || post.image_url
+                          mediaUrl: post.mediaUrl
                         }}
                         variant="white"
                       />
