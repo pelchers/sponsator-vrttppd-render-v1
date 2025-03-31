@@ -1098,6 +1098,17 @@ export default function Landing() {
                 >
                   Start Creating
                 </Button>
+                <div className="mt-8 flex justify-center">
+  <Link to="/about#creator-card">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      More Creator Benefits
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
               </div>
             </div>
 
@@ -1257,6 +1268,17 @@ export default function Landing() {
             >
                   Partner With Us
             </Button>
+            <div className="mt-8 flex justify-center">
+  <Link to="/about#brand-card">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      More Brand Benefits
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
               </div>
           </div>
 
@@ -1415,6 +1437,17 @@ export default function Landing() {
                 >
                   Start Contracting
                 </Button>
+                <div className="mt-8 flex justify-center">
+  <Link to="/about#contractor-card">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      More Contractor Benefits
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
               </div>
             </div>
 
@@ -1573,6 +1606,17 @@ export default function Landing() {
             >
                   Start Freelancing
             </Button>
+            <div className="mt-8 flex justify-center">
+  <Link to="/about#freelancer-card">
+    <Button 
+      variant="spring"
+      className="transition-all duration-250 hover:scale-105 font-medium flex items-center gap-2"
+    >
+      More Freelancer Benefits
+      <span className="text-lg">→</span>
+    </Button>
+  </Link>
+</div>
               </div>
           </div>
         </div>

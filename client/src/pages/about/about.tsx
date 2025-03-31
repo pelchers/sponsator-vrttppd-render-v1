@@ -956,7 +956,7 @@ return (
               <div className="space-y-4 flex-grow">
                 {/* Creators Card Dropdowns */}
                 <FeatureDropdown title="Connection Benefits" emoji="🤝">
-                  <div className="space-y-4">
+                  <div id="creator-card" className="space-y-4">
                     <p className="text-sm text-blue-200 italic border-b border-white/10 pb-2">
                       Build valuable partnerships with brands, collaborate with fellow creators, and access professional services all in one place.
                     </p>
@@ -1154,7 +1154,7 @@ return (
             </div>
 
             {/* Brands Card */}
-            <div className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
+            <div id="brand-card" className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
               <div className="mb-6">
                 <img 
                   src="https://picsum.photos/200/200?random=2" 
@@ -1370,7 +1370,7 @@ return (
           </div>
 
             {/* Contractors Card */}
-            <div className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
+            <div id="contractor-card" className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
               <div className="mb-6">
                 <img 
                   src="https://picsum.photos/200/200?random=3" 
@@ -1586,7 +1586,7 @@ return (
             </div>
 
             {/* For Freelancers Card */}
-            <div className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
+            <div id="freelancer-card" className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl h-full flex flex-col">
               <div className="mb-6">
                 <img 
                   src="https://picsum.photos/200/200?random=4" 
