@@ -8,6 +8,8 @@ import { fetchUserPortfolio } from '@/api/userContent';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SortSelect } from '@/components/sort/SortSelect';
 import { SortOrder } from '@/components/sort/SortOrder';
+import { GridIcon } from '@/components/icons/GridIcon';
+import { ListIcon } from '@/components/icons/ListIcon';
 
 // Define content types for "Show" filter
 const contentTypes = [
@@ -59,6 +61,9 @@ export default function PortfolioPage() {
   // Add state for sorting
   const [sortBy, setSortBy] = useState('created');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Inside the component, add the view mode state
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   // Fetch user info if viewing someone else's portfolio
   useEffect(() => {
@@ -245,19 +250,39 @@ export default function PortfolioPage() {
         </div>
       )}
       
-      {/* Add sort controls */}
+      {/* Add view toggle UI right before the ResultsGrid component */}
       {selectedContentTypes.length > 0 && (
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm text-gray-500">Sort by:</span>
-          <SortSelect 
-            value={sortBy} 
-            onValueChange={handleSortChange} 
-            className="w-40"
-          />
-          <SortOrder 
-            order={sortOrder} 
-            onChange={handleSortOrderChange}
-          />
+        <div className="flex justify-between items-center mb-4">
+         
+          
+          <div className="inline-flex rounded-md shadow-sm" role="group">
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`px-4 py-2 text-sm font-medium rounded-l-lg border ${
+                viewMode === 'grid'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+              }`}
+              aria-current={viewMode === 'grid' ? 'page' : undefined}
+              aria-label="Grid view"
+            >
+              <GridIcon className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`px-4 py-2 text-sm font-medium rounded-r-lg border ${
+                viewMode === 'list'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+              }`}
+              aria-current={viewMode === 'list' ? 'page' : undefined}
+              aria-label="List view"
+            >
+              <ListIcon className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       )}
       
@@ -271,6 +296,7 @@ export default function PortfolioPage() {
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
           onSortOrderChange={handleSortOrderChange}
+          viewMode={viewMode}
         />
       )}
       
@@ -280,7 +306,7 @@ export default function PortfolioPage() {
           <Button 
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || loading}
-            variant="outline"
+            variant="ghost"
           >
             Previous
           </Button>
@@ -290,7 +316,7 @@ export default function PortfolioPage() {
           <Button 
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages || loading}
-            variant="outline"
+            variant="ghost"
           >
             Next
           </Button>

@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import { HeartIcon } from '@/components/icons/HeartIcon';
 import { SortSelect } from '@/components/sort/SortSelect';
 import { SortOrder } from '@/components/sort/SortOrder';
+import { GridIcon } from '@/components/icons/GridIcon';
+import { ListIcon } from '@/components/icons/ListIcon';
 
 // Define content types for "Show" filter
 const contentTypes = [
@@ -61,6 +63,9 @@ export default function MyStuffPage() {
     posts: 0,
     likes: 0
   });
+  
+  // Inside the component, add the view mode state
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   // Handle content type filter change
   const handleContentTypeChange = (selected: string[]) => {
@@ -253,7 +258,39 @@ export default function MyStuffPage() {
         </div>
       )}
       
-     
+      {/* View mode toggle */}
+      {selectedContentTypes.length > 0 && selectedInteractionTypes.length > 0 && (
+        <div className="flex justify-end mb-4">
+          <div className="inline-flex rounded-md shadow-sm" role="group">
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`px-4 py-2 text-sm font-medium rounded-l-lg border ${
+                viewMode === 'grid'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+              }`}
+              aria-current={viewMode === 'grid' ? 'page' : undefined}
+              aria-label="Grid view"
+            >
+              <GridIcon className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`px-4 py-2 text-sm font-medium rounded-r-lg border ${
+                viewMode === 'list'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+              }`}
+              aria-current={viewMode === 'list' ? 'page' : undefined}
+              aria-label="List view"
+            >
+              <ListIcon className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
       
       {/* Results */}
       {selectedContentTypes.length > 0 && selectedInteractionTypes.length > 0 && (
@@ -265,6 +302,7 @@ export default function MyStuffPage() {
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
           onSortOrderChange={handleSortOrderChange}
+          viewMode={viewMode}
         />
       )}
       
@@ -274,7 +312,7 @@ export default function MyStuffPage() {
           <Button 
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || loading}
-            variant="outline"
+            variant="ghost"
           >
             Previous
           </Button>
@@ -284,7 +322,7 @@ export default function MyStuffPage() {
           <Button 
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages || loading}
-            variant="outline"
+            variant="ghost"
           >
             Next
           </Button>
