@@ -70,15 +70,18 @@ interface UserCardProps {
   userHasLiked?: boolean;
   userIsFollowing?: boolean;
   userIsWatching?: boolean;
+  viewMode?: 'grid' | 'list';
 }
 
 export default function UserCard({
   user,
   userHasLiked = false,
   userIsFollowing = false,
-  userIsWatching = false
+  userIsWatching = false,
+  viewMode = 'grid'
 }: UserCardProps) {
-  // Add this debug log
+  const isList = viewMode === 'list';
+
   useEffect(() => {
     console.log('UserCard received user data:', {
       id: user.id,
@@ -175,6 +178,167 @@ export default function UserCard({
       setIsLoading(false);
     }
   };
+
+  if (isList) {
+    return (
+      <div className="flex flex-row items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+        <div className="mr-4 flex-shrink-0">
+          <div className="w-16 h-16">
+            <UserImage 
+              user={user}
+              className="w-16 h-16 rounded-full object-cover"
+              fallback={<DefaultAvatar className="w-16 h-16" />}
+            />
+          </div>
+        </div>
+        
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-semibold text-lg">
+                <Link to={`/profile/${user.id}`} className="hover:text-green-500">
+                  {user.username}
+                </Link>
+              </h3>
+              <p className="text-gray-600 text-sm">{user.user_type || 'User'}</p>
+            </div>
+            
+            <div className="flex space-x-3 text-sm">
+              <button
+                onClick={handleLikeToggle}
+                disabled={isLoading}
+                className={`flex items-center gap-1 ${
+                  liked ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                } transition-colors`}
+              >
+                <HeartIcon filled={liked} className="w-4 h-4" />
+                <span className="text-sm">{likeCount}</span>
+              </button>
+              <WatchButton 
+                entityType="user"
+                entityId={user.id}
+                initialWatching={watching}
+                initialCount={watchCount}
+                showCount={true}
+                size="sm"
+                variant="ghost"
+              />
+              <FollowButton 
+                entityType="user"
+                entityId={user.id}
+                initialFollowing={following}
+                initialCount={followCount}
+                showCount={true}
+                size="sm"
+                variant="ghost"
+              />
+            </div>
+          </div>
+          
+          <p className="text-gray-600 mt-2 line-clamp-2">
+            {user.bio || 'No bio available'}
+          </p>
+          
+          <div className="flex gap-4 mt-2 text-xs">
+            <div>
+              <span className="text-gray-600">Work Status:</span>{' '}
+              <span className="font-medium">{user.work_status || 'Not specified'}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">Seeking:</span>{' '}
+              <span className="font-medium">{user.seeking || 'Not specified'}</span>
+            </div>
+          </div>
+          
+          <div className="mt-3 flex flex-wrap gap-1">
+            {/* Target Audience Tags */}
+            {user.target_audience?.slice(0, 2).map((tag) => (
+              <span 
+                key={`target-${tag}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-800 border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+
+            {/* Solutions Offered Tags */}
+            {user.solutions_offered?.slice(0, 2).map((tag) => (
+              <span 
+                key={`solution-${tag}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-800 border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+
+            {/* Skills Tags */}
+            {user.skills?.slice(0, 2).map((skill) => (
+              <span 
+                key={`skill-${skill}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-green-100 text-black border border-black"
+              >
+                {skill}
+              </span>
+            ))}
+
+            {/* Expertise Tags */}
+            {user.expertise?.slice(0, 1).map((item) => (
+              <span 
+                key={`expertise-${item}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-green-100 text-black border border-black"
+              >
+                {item}
+              </span>
+            ))}
+
+            {/* Interest Tags */}
+            {user.interest_tags?.slice(0, 1).map((tag) => (
+              <span 
+                key={`interest-${tag}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-yellow-100 text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+            
+            {/* Experience Tags */}
+            {user.experience_tags?.slice(0, 1).map((tag) => (
+              <span 
+                key={`exp-${tag}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-blue-100 text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+
+            {/* Education Tags */}
+            {user.education_tags?.slice(0, 1).map((tag) => (
+              <span 
+                key={`edu-${tag}`}
+                className="inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-blue-100 text-black border border-black"
+              >
+                {tag}
+              </span>
+            ))}
+
+            {(
+              (user.target_audience?.length || 0) + 
+              (user.solutions_offered?.length || 0) + 
+              (user.skills?.length || 0) + 
+              (user.expertise?.length || 0) + 
+              (user.interest_tags?.length || 0) + 
+              (user.experience_tags?.length || 0) + 
+              (user.education_tags?.length || 0)
+            ) > 9 && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
+                +more
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Card className="flex flex-col items-center text-center">

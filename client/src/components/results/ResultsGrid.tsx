@@ -30,6 +30,7 @@ interface ResultsGridProps {
   sortOrder?: 'asc' | 'desc';
   onSortChange?: (sortBy: string) => void;
   onSortOrderChange?: (order: 'asc' | 'desc') => void;
+  viewMode?: 'grid' | 'list';
 }
 
 export default function ResultsGrid({ 
@@ -42,7 +43,8 @@ export default function ResultsGrid({
   sortBy = '',
   sortOrder = 'desc',
   onSortChange,
-  onSortOrderChange
+  onSortOrderChange,
+  viewMode = 'grid'
 }: ResultsGridProps) {
   // Ensure all arrays exist
   const safeResults = {
@@ -115,7 +117,10 @@ export default function ResultsGrid({
         {showUsers && sortedResults.users.length > 0 && (
           <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h3 className="text-2xl font-bold mb-6">Users</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={viewMode === 'grid' 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
+              : "flex flex-col space-y-4"
+            }>
               {showUsers && sortedResults.users.map((user, index) => (
                 <UserCard 
                   key={`user-${user.id || index}`} 
@@ -141,6 +146,7 @@ export default function ResultsGrid({
                     notification_preferences_digest: user.notification_preferences_digest ?? true,
                     account_status: user.account_status || 'active'
                   }} 
+                  viewMode={viewMode}
                 />
               ))}
             </div>
@@ -151,7 +157,10 @@ export default function ResultsGrid({
         {showProjects && sortedResults.projects.length > 0 && (
           <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h3 className="text-2xl font-bold mb-6">Projects</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={viewMode === 'grid' 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
+              : "flex flex-col space-y-4"
+            }>
               {showProjects && sortedResults.projects.map((project, index) => (
                 <ProjectCard
                   key={`project-${project.id || index}`}
@@ -186,6 +195,7 @@ export default function ResultsGrid({
                   userHasLiked={likeStatuses?.projects[project.id] || false}
                   userIsFollowing={followStatuses?.projects[project.id] || false}
                   userIsWatching={watchStatuses?.projects[project.id] || false}
+                  viewMode={viewMode}
                 />
               ))}
             </div>
@@ -196,7 +206,10 @@ export default function ResultsGrid({
         {showArticles && sortedResults.articles.length > 0 && (
           <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h3 className="text-2xl font-bold mb-6">Articles</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={viewMode === 'grid' 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
+              : "flex flex-col space-y-4"
+            }>
               {showArticles && sortedResults.articles.map((article, index) => (
                 <ArticleCard
                   key={`article-${article.id || index}`}
@@ -218,6 +231,7 @@ export default function ResultsGrid({
                   userHasLiked={likeStatuses?.articles[article.id] || false}
                   userIsFollowing={followStatuses?.articles[article.id] || false}
                   userIsWatching={watchStatuses?.articles[article.id] || false}
+                  viewMode={viewMode}
                 />
               ))}
             </div>
@@ -228,7 +242,10 @@ export default function ResultsGrid({
         {showPosts && sortedResults.posts.length > 0 && (
           <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h3 className="text-2xl font-bold mb-6">Posts</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={viewMode === 'grid' 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
+              : "flex flex-col space-y-4"
+            }>
               {showPosts && sortedResults.posts.map((post, index) => (
                 <PostCard
                   key={`post-${post.id || index}`}
@@ -247,6 +264,7 @@ export default function ResultsGrid({
                   userHasLiked={likeStatuses?.posts[post.id] || false}
                   userIsFollowing={followStatuses?.posts[post.id] || false}
                   userIsWatching={watchStatuses?.posts[post.id] || false}
+                  viewMode={viewMode}
                 />
               ))}
             </div>
