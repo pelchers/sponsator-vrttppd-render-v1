@@ -100,6 +100,9 @@ model users {
   sent_messages         messages[]             @relation("MessageSender")
   message_read_receipts message_read_receipts[] @relation("MessageReadUser")
 
+  // Add the relation to testimonials
+  testimonials         testimonials[]
+
   @@map("users")
 }
 
@@ -546,4 +549,22 @@ model message_media {
   message         messages  @relation(fields: [message_id], references: [id], onDelete: Cascade)
   
   @@map("message_media")
+}
+
+model testimonials {
+  id              String    @id @default(uuid())
+  user_id         String
+  title           String?
+  content         String
+  rating          Int       @default(5)
+  company         String?
+  position        String?
+  created_at      DateTime  @default(now())
+  is_approved     Boolean   @default(false)
+  is_featured     Boolean   @default(false)
+  
+  // Relationship to users
+  users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("testimonials")
 }

@@ -15,6 +15,9 @@ import ArticleCard from '@/components/cards/ArticleCard';
 import PostCard from '@/components/cards/PostCard';
 import { UserImage } from '@/components/UserImage';
 import { DefaultAvatar } from '@/components/icons/DefaultAvatar';
+// Import our testimonial components
+import TestimonialsList from '@/components/testimonials/TestimonialsList';
+import TestimonialForm from '@/components/testimonials/TestimonialForm';
 
 export default function Testimonials() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -173,13 +176,49 @@ export default function Testimonials() {
                   onClick={() => setCurrentStory(index)}
                   className={`w-2 h-2 rounded-full transition-all duration-250 
                     ${currentStory === index 
-                      ? 'bg-blue-600 w-6' 
-                      : 'bg-blue-600/50 hover:bg-blue-600/80'}`}
+                      ? 'bg-white w-6' 
+                      : 'bg-white/50 hover:bg-white/80'}`}
                   aria-label={`Go to story ${index + 1}`}
                 />
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* User Testimonials Section */}
+      <section className="py-16 px-4 bg-[#FFFEFF]">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
+          
+          {/* Display testimonials from our database */}
+          <TestimonialsList 
+            featured={false} 
+            limit={6}
+            showAll={true}
+            className="mb-12"
+          />
+          
+          <div className="text-center">
+            <Button 
+              className="bg-spring text-black px-6 py-2 rounded-full border-2 border-black"
+              onClick={() => document.getElementById('submit-testimonial')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Share Your Story
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Submit Testimonial Form */}
+      <section id="submit-testimonial" className="py-16 px-4 bg-gray-50">
+        <div className="container mx-auto max-w-3xl">
+          <h2 className="text-3xl font-bold text-center mb-8">Share Your Experience</h2>
+          <p className="text-center text-gray-600 mb-12">
+            We'd love to hear about your success using our platform. Your story could inspire others!
+          </p>
+          
+          <TestimonialForm />
         </div>
       </section>
     </div>
