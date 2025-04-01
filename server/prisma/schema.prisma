@@ -93,15 +93,14 @@ model users {
   likes     likes[]
   follows   follows[]
   watches   watches[]
+  testimonials testimonials[]
+  suggestions suggestions[]
 
   // Add these relation fields to match the ones in the chat tables
   created_chats         chats[]                @relation("ChatCreator")
   chat_participations   chat_participants[]    @relation("ChatParticipant")
   sent_messages         messages[]             @relation("MessageSender")
   message_read_receipts message_read_receipts[] @relation("MessageReadUser")
-
-  // Add the relation to testimonials
-  testimonials         testimonials[]
 
   @@map("users")
 }
@@ -567,4 +566,23 @@ model testimonials {
   users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("testimonials")
+}
+
+model suggestions {
+  id              String    @id @default(uuid())
+  user_id         String
+  title           String
+  description     String
+  category        String?
+  priority        String?   @default("medium")
+  status          String?   @default("pending")
+  admin_comments  String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now())
+  is_public       Boolean   @default(true)
+  
+  // Relationship to users
+  users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("suggestions")
 }

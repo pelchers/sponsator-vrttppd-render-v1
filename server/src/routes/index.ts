@@ -11,6 +11,7 @@ import commentRoutes from './commentRoutes';
 import statsRoutes from './statsRoutes';
 import featuredRoutes from './featuredRoutes';
 import testimonialRoutes from './testimonialRoutes';
+import suggestionRoutes from './suggestionRoutes';
 
 const router = Router();
 
@@ -26,5 +27,5 @@ router.use('/user', userRoutes);
 router.use('/stats', statsRoutes);
 router.use('/featured', featuredRoutes);
 router.use('/testimonials', testimonialRoutes);
-
+router.use('/suggestions', suggestionRoutes);
 export default router; 

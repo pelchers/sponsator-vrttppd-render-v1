@@ -27,6 +27,9 @@ import PortfolioPage from '@/pages/portfolio/portfolio'
 import Landing from '../pages/landing/Landing'
 import About from '@/pages/about/about'
 import Testimonials from '@/pages/testimonials/testimonials'
+// Import suggestions pages
+import SuggestionsPage from '@/pages/suggestions'
+import SuggestionDetail from '@/pages/suggestions/suggestion-detail'
 
 export const router = createBrowserRouter([
   {
@@ -143,6 +146,15 @@ export const router = createBrowserRouter([
   {
     path: '/testimonials',
     element: <Layout><Testimonials /></Layout>,
+  },
+  // Add suggestions routes
+  {
+    path: '/suggestions',
+    element: <Layout><SuggestionsPage /></Layout>,
+  },
+  {
+    path: '/suggestions/:id',
+    element: <Layout><SuggestionDetail /></Layout>,
   }
 ])
 
