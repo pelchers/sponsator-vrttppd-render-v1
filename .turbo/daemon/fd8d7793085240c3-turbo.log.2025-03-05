@@ -1,0 +1,69 @@
+2025-03-05T22:45:35.225275Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2025-03-05T22:45:37.128928Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client"), AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1741214737036-5f77ad9336171.mjs")}
+2025-03-05T22:45:37.128994Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:45:37.526833Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1741214737036-5f77ad9336171.mjs")}
+2025-03-05T22:45:37.526858Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:45:37.636406Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client")}
+2025-03-05T22:45:37.636426Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:45:37.636518Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-05T22:46:33.931164Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\index.css")}
+2025-03-05T22:46:33.931192Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:36.633091Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\tailwind.config.js")}
+2025-03-05T22:46:36.633118Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:37.728171Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\sections\\CategorySection.tsx")}
+2025-03-05T22:46:37.728323Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:37.824235Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-05T22:46:43.638005Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\input\\forms\\ProjectEditFormV3.tsx")}
+2025-03-05T22:46:43.638044Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:43.695262Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-05T22:46:44.036381Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\styles\\forms.css"), AnchoredSystemPathBuf("client\\src\\styles")}
+2025-03-05T22:46:44.036408Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:45.528397Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\sections\\CategorySection.tsx")}
+2025-03-05T22:46:45.528420Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:47.325930Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\styles\\forms.css")}
+2025-03-05T22:46:47.325963Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:46:48.929984Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\input\\forms\\ProjectEditFormV3.tsx")}
+2025-03-05T22:46:48.930009Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:47:02.930207Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\index.css"), AnchoredSystemPathBuf("client\\src\\styles\\forms.css"), AnchoredSystemPathBuf("client\\src\\components\\sections\\PageSection.tsx"), AnchoredSystemPathBuf("client\\tailwind.config.js"), AnchoredSystemPathBuf("client\\src\\components\\input\\forms\\ProjectEditFormV3.tsx"), AnchoredSystemPathBuf("client\\src\\components\\sections\\CategorySection.tsx")}
+2025-03-05T22:47:02.930270Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-05T22:47:03.014271Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-05T22:49:14.634683Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T22:49:14.634700Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T22:49:14.733501Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T22:49:14.733520Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T22:49:15.227651Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers")}
+2025-03-05T22:49:15.227678Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T22:49:16.833351Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T22:49:16.833371Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T22:49:16.929370Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T22:49:16.929419Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T22:51:12.729209Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T22:51:12.729231Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:04:52.351355Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:04:52.351958Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:07:03.457599Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:07:03.457627Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:08:13.439773Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:08:13.440159Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:08:41.744882Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:08:41.744900Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:19.541482Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:19.541505Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:21.252628Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:21.252653Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:22.942725Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:22.942749Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:24.835396Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:24.835418Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:24.949056Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:24.949077Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:26.743406Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:26.743439Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:28.736562Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:28.736583Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:30.644289Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:30.644315Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:36.136655Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:36.136677Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-05T23:09:36.237809Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\explainers\\tailwind-fix.md")}
+2025-03-05T23:09:36.237834Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))

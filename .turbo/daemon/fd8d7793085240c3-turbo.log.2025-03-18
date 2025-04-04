@@ -1,0 +1,321 @@
+2025-03-18T18:09:47.311845Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client"), AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1742321387240-40c417f75c356.mjs")}
+2025-03-18T18:09:47.311877Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:09:47.709278Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client"), AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1742321387240-40c417f75c356.mjs")}
+2025-03-18T18:09:47.709290Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:11:21.712185Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\utils\\sorting.ts"), AnchoredSystemPathBuf("client\\src\\components\\results\\ResultsGrid.tsx"), AnchoredSystemPathBuf("server\\src\\services\\likeService.ts")}
+2025-03-18T18:11:21.712314Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }, WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:11:21.766849Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:13:56.012387Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\sort\\SortSelect.tsx")}
+2025-03-18T18:13:56.012410Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:13:57.014964Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\sort\\SortOrder.tsx")}
+2025-03-18T18:13:57.014985Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:13:58.109949Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\utils\\sorting.ts")}
+2025-03-18T18:13:58.109972Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:13:59.108093Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\results\\ResultsGrid.tsx")}
+2025-03-18T18:13:59.108117Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:13:59.309756Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:13:59.309782Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:13:59.512477Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\likeService.ts")}
+2025-03-18T18:13:59.512497Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:24:25.707787Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T18:24:25.707805Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T18:24:26.314121Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step")}
+2025-03-18T18:24:26.314136Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T18:24:27.716966Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T18:24:27.716988Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T18:25:07.211756Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T18:25:07.211775Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T18:29:54.012013Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\utils\\sorting.ts")}
+2025-03-18T18:29:54.012039Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:30:00.404896Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\sort\\SortSelect.tsx")}
+2025-03-18T18:30:00.404965Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:30:03.714933Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\sort\\SortOrder.tsx")}
+2025-03-18T18:30:03.714958Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:30:11.707176Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\explore\\Explore.tsx")}
+2025-03-18T18:30:11.707198Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:33:15.908092Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\explore.ts")}
+2025-03-18T18:33:15.908113Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T18:33:23.710104Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\exploreController.ts")}
+2025-03-18T18:33:23.710162Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:33:39.211302Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\explore.ts"), AnchoredSystemPathBuf("server\\src\\controllers\\exploreController.ts")}
+2025-03-18T18:33:39.211343Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }, WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:33:39.285488Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:33:39.285540Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:35:03.703810Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:35:03.703832Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:35:56.016453Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:35:56.016476Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:35:56.066805Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:39:26.710264Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:39:26.710297Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:41:03.510515Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:41:03.510545Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:41:03.557454Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:44:13.216299Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\exploreController.ts")}
+2025-03-18T18:44:13.216321Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:44:21.014720Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:44:21.014745Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:44:25.002675Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:44:25.002704Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:44:25.014138Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:44:27.006245Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:44:27.006271Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:46:42.303816Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:46:42.303830Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:46:42.303872Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:59:48.513286Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:59:48.513314Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:59:50.008334Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:59:50.008357Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T18:59:50.018598Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T18:59:52.011819Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T18:59:52.011842Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:00:28.201000Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:00:28.201024Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:00:28.219749Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:01:09.106999Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\explore\\Explore.tsx")}
+2025-03-18T19:01:09.107020Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:01:13.902284Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:01:13.902304Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:01:15.201686Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:01:15.201716Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:01:15.215013Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:01:17.308160Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:01:17.308182Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:01:55.905824Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:01:55.905848Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:01:55.946183Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:05:14.400457Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:05:14.400475Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:06:42.814192Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\exploreService.ts")}
+2025-03-18T19:06:42.814211Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:06:42.814274Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:09:08.606212Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:09:08.606231Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:03.102885Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:03.102910Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:07.508104Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:07.508123Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:13.301259Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:13.301281Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:20.709151Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:20.709169Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:41.100947Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:41.100975Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:44.300809Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:44.300826Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:11:49.099504Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:11:49.099523Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:03.208393Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:03.208411Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:05.812401Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:05.812421Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:11.001999Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:11.002016Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:14.401701Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:14.401733Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:17.506432Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:17.506453Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:34.710779Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:34.710800Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:12:37.910281Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:12:37.910304Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:13:00.099024Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:13:00.099045Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:13:00.207459Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:13:00.207494Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:14:05.207818Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:14:05.207838Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:14:42.707594Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("@docs\\step-by-step\\sort-fixes-guide.md")}
+2025-03-18T19:14:42.707613Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-03-18T19:24:12.112459Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:24:12.112492Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:24:12.406503Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:24:12.406536Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:24:13.203632Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:24:13.203650Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:24:13.298664Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:24:13.298677Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:24:13.298735Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:24:21.209828Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts")}
+2025-03-18T19:24:21.209849Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:24:41.006625Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T19:24:41.006651Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:24:56.808934Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx"), AnchoredSystemPathBuf("server\\src\\services\\userService.ts"), AnchoredSystemPathBuf("client\\src\\api\\userContent.ts"), AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts")}
+2025-03-18T19:24:56.809009Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }, WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:26:10.003549Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:26:10.003594Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:26:11.208013Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:26:11.208036Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:26:19.805669Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts")}
+2025-03-18T19:26:19.805703Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:26:25.900242Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T19:26:25.900300Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:26:54.104834Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx"), AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts"), AnchoredSystemPathBuf("server\\src\\services\\userService.ts"), AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:26:54.104997Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }, WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:27:43.506281Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:27:43.506355Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:41:02.609518Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:41:02.609544Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:41:50.108341Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:41:50.108367Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:41:52.305292Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:41:52.305315Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:43:31.600062Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts"), AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:43:31.600092Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:43:31.600247Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:44:25.808135Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:44:25.808161Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:46:23.801383Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\mystuff\\mystuff.tsx")}
+2025-03-18T19:46:23.801410Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:46:23.848815Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:47:52.006608Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx")}
+2025-03-18T19:47:52.006631Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:47:53.599228Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:47:53.599253Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:48:06.109589Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T19:48:06.109613Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:48:19.299945Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts"), AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx"), AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T19:48:19.299971Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }, WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:48:19.317241Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:48:19.317320Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:50:18.697094Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx")}
+2025-03-18T19:50:18.697128Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:13.493563Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:54:13.493600Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:13.804202Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T19:54:13.804234Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:54:13.894459Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx")}
+2025-03-18T19:54:13.894481Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:14.154821Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx")}
+2025-03-18T19:54:14.154846Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:14.154928Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:54:40.194039Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages"), AnchoredSystemPathBuf("client\\src\\pages\\posts"), AnchoredSystemPathBuf("client\\src\\pages\\posts\\posts.tsx")}
+2025-03-18T19:54:40.194064Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:45.997995Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\posts\\posts.tsx")}
+2025-03-18T19:54:45.998013Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:46.107077Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\posts\\posts.tsx")}
+2025-03-18T19:54:46.107097Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:46.107232Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:54:48.896693Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\projects"), AnchoredSystemPathBuf("client\\src\\pages\\projects\\projects.tsx"), AnchoredSystemPathBuf("client\\src\\pages")}
+2025-03-18T19:54:48.896718Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:52.506782Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\projects\\projects.tsx")}
+2025-03-18T19:54:52.506810Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:54:57.698526Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages"), AnchoredSystemPathBuf("client\\src\\pages\\articles\\articles.tsx"), AnchoredSystemPathBuf("client\\src\\pages\\articles")}
+2025-03-18T19:54:57.698542Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:55:03.198287Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\articles\\articles.tsx")}
+2025-03-18T19:55:03.198307Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:55:06.701941Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\posts.ts")}
+2025-03-18T19:55:06.701968Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:55:08.202491Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\projects.ts")}
+2025-03-18T19:55:08.202518Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:55:10.693107Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\articles.ts")}
+2025-03-18T19:55:10.693128Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:46.595137Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\posts\\posts.tsx")}
+2025-03-18T19:56:46.595189Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:46.726433Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\posts\\posts.tsx"), AnchoredSystemPathBuf("client\\src\\pages\\posts")}
+2025-03-18T19:56:46.726455Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:46.726526Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:56:46.902140Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\projects\\projects.tsx")}
+2025-03-18T19:56:46.902159Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:46.998053Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\projects")}
+2025-03-18T19:56:46.998090Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:46.998254Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:56:47.202828Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\articles"), AnchoredSystemPathBuf("client\\src\\pages\\articles\\articles.tsx")}
+2025-03-18T19:56:47.202847Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:48.295603Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\posts.ts")}
+2025-03-18T19:56:48.295628Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:48.426210Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\posts.ts")}
+2025-03-18T19:56:48.426228Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:48.426320Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:56:48.497609Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\projects.ts")}
+2025-03-18T19:56:48.497636Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:48.608537Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\projects.ts")}
+2025-03-18T19:56:48.608563Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:56:48.608772Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:56:49.697098Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\articles.ts")}
+2025-03-18T19:56:49.697112Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:57:23.500290Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx")}
+2025-03-18T19:57:23.500378Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:57:29.992422Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts")}
+2025-03-18T19:57:29.992438Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T19:57:37.996674Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts")}
+2025-03-18T19:57:37.996693Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:57:51.398349Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T19:57:51.398372Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:58:03.805071Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userContent.ts"), AnchoredSystemPathBuf("client\\src\\pages\\portfolio\\portfolio.tsx"), AnchoredSystemPathBuf("server\\src\\services\\userService.ts"), AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts")}
+2025-03-18T19:58:03.805445Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }, WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T19:58:03.881131Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T19:58:03.900380Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:52:18.492310Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1742341938475-4085b27103189.mjs"), AnchoredSystemPathBuf("client")}
+2025-03-18T23:52:18.492342Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:52:18.606188Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client"), AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1742341938475-4085b27103189.mjs")}
+2025-03-18T23:52:18.606203Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:55:24.002984Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\userController.ts")}
+2025-03-18T23:55:24.003017Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.204901Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\userService.ts")}
+2025-03-18T23:55:24.204924Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.296905Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\statsService.ts"), AnchoredSystemPathBuf("server\\src\\services")}
+2025-03-18T23:55:24.296938Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.497840Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers"), AnchoredSystemPathBuf("server\\src\\controllers\\statsController.ts")}
+2025-03-18T23:55:24.497860Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.606128Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\statsRoutes.ts")}
+2025-03-18T23:55:24.606148Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.758696Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes"), AnchoredSystemPathBuf("server\\src\\routes\\statsRoutes.ts")}
+2025-03-18T23:55:24.758710Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.758759Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:55:24.795417Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\index.ts")}
+2025-03-18T23:55:24.795436Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:24.904985Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\stats.ts")}
+2025-03-18T23:55:24.905053Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:55:25.034744Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\stats.ts"), AnchoredSystemPathBuf("client\\src\\api")}
+2025-03-18T23:55:25.034764Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:55:25.034826Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:55:26.095054Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\home\\Home.tsx")}
+2025-03-18T23:55:26.095078Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:55:26.204327Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\userRoutes.ts")}
+2025-03-18T23:55:26.204360Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:27.305552Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\userstats.ts")}
+2025-03-18T23:55:27.305575Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:55:27.507862Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\index.ts")}
+2025-03-18T23:55:27.507888Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:27.802327Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client"), AnchoredSystemPathBuf("client\\vite.config.ts"), AnchoredSystemPathBuf("client\\vite.config.ts.timestamp-1742342127766-68e9624c6842.mjs")}
+2025-03-18T23:55:27.802365Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:55:49.906681Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\statsController.ts")}
+2025-03-18T23:55:49.906718Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:50.035737Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers")}
+2025-03-18T23:55:50.035753Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:50.035789Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:55:53.798678Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\controllers\\statsController.ts")}
+2025-03-18T23:55:53.798691Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:54.295689Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\statsService.ts")}
+2025-03-18T23:55:54.295710Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:54.404168Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services")}
+2025-03-18T23:55:54.404191Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:54.404443Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:55:55.196867Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\statsRoutes.ts")}
+2025-03-18T23:55:55.196888Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:55.360942Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\statsRoutes.ts"), AnchoredSystemPathBuf("server\\src\\routes")}
+2025-03-18T23:55:55.360961Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:55.361030Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:55:58.402166Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\services\\statsService.ts")}
+2025-03-18T23:55:58.402188Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:55:58.604155Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api"), AnchoredSystemPathBuf("client\\src\\api\\stats.ts")}
+2025-03-18T23:55:58.604172Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:56:00.199091Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\statsRoutes.ts")}
+2025-03-18T23:56:00.199120Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:56:01.202059Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("server\\src\\routes\\index.ts")}
+2025-03-18T23:56:01.202081Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("server"), path: AnchoredSystemPathBuf("server") }}))
+2025-03-18T23:56:02.901491Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\stats.ts")}
+2025-03-18T23:56:02.901517Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:56:09.003690Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\home\\Home.tsx")}
+2025-03-18T23:56:09.003721Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:58:37.402754Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\pages\\home\\Home.tsx")}
+2025-03-18T23:58:37.402774Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:58:37.522063Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-03-18T23:59:23.507297Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components"), AnchoredSystemPathBuf("client\\src\\components\\stats\\StatCard.tsx"), AnchoredSystemPathBuf("client\\src\\components\\stats")}
+2025-03-18T23:59:23.507319Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:59:28.301312Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\components\\stats\\StatCard.tsx")}
+2025-03-18T23:59:28.301420Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))
+2025-03-18T23:59:31.399064Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("client\\src\\api\\stats.ts")}
+2025-03-18T23:59:31.399103Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("client"), path: AnchoredSystemPathBuf("client") }}))

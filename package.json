@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "start": "node server/dist/index.js",
     "studio": "cd server && npx prisma studio"
   },
   "devDependencies": {

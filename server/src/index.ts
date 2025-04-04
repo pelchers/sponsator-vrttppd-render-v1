@@ -22,7 +22,9 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: '*', // In production, specify your frontend domain
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL || 'https://your-frontend-domain.com' 
+    : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -125,7 +127,7 @@ app.post('/api/register', async (req, res) => {
     console.log('Generating JWT token');
     const token = jwt.sign(
       { id: newUser.id, email: newUser.email },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || 'fallback-secret-key-for-development-only',
       { expiresIn: '24h' }
     );
     
@@ -184,7 +186,7 @@ app.post('/api/login', async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || 'fallback-secret-key-for-development-only',
       { expiresIn: '24h' }
     );
     

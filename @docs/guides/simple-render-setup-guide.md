@@ -210,6 +210,39 @@ For Stripe integration, add these environment variables to your Render service:
 
 Remember to never commit sensitive information like database credentials to your repository. Always use environment variables for configuration.
 
+## 11. Final Configuration After Deployment
+
+After your application is deployed on Render, you'll need to update several environment variables with Render-specific values:
+
+1. **Update FRONTEND_URL**:
+   - Go to your Render dashboard
+   - Find your deployed web service
+   - Copy the service URL (e.g., `https://your-app-name.onrender.com`)
+   - Go to the Environment tab in your service settings
+   - Set `FRONTEND_URL` to this URL
+
+2. **Update Stripe Webhook Endpoints** (if using Stripe):
+   - Log in to your Stripe dashboard
+   - Go to Developers → Webhooks
+   - Add a new endpoint with your Render URL:
+     `https://your-app-name.onrender.com/api/webhooks/stripe`
+   - Select the events you need to listen for
+   - Save and copy the signing secret
+   - Add this as `STRIPE_WEBHOOK_SECRET` in your Render environment variables
+
+3. **Test the Deployed Application**:
+   - Visit your Render URL
+   - Test authentication flows
+   - Verify database connections using the `/api/db-test` endpoint
+   - Test Stripe integration if applicable
+
+4. **Monitor Logs**:
+   - Check the Render logs for any errors
+   - Address any configuration issues that appear
+   - Verify CORS is working correctly between your frontend and backend
+
+These final configuration steps ensure your application is properly connected to all services and working correctly in the Render environment.
+
 ## Avoiding Conflicts Between Local and Render Environments
 
 Since we're maintaining separate environments for local development and Render deployment, it's important to avoid conflicts:

@@ -3,15 +3,13 @@ node_modules
 .pnp
 .pnp.js
 
-# Testing
-coverage
-
-# Production
+# Build outputs
 dist
 build
+.next
+out
 
-# Misc
-.DS_Store
+# Environment variables
 .env
 .env.local
 .env.development.local
@@ -23,25 +21,25 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Turbo
-.turbo
-
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
+.vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw? 
+*.sw?
 
-# Uploaded files
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploads directory content (but keep the directory structure)
 server/uploads/profiles/*
-!server/uploads/profiles/.gitkeep
 server/uploads/projects/*
-!server/uploads/projects/.gitkeep
-server/uploads/posts/*
-!server/uploads/posts/.gitkeep
 server/uploads/articles/*
-!server/uploads/articles/.gitkeep 
+server/uploads/posts/*
+!server/uploads/profiles/.gitkeep
+!server/uploads/projects/.gitkeep
+!server/uploads/articles/.gitkeep
+!server/uploads/posts/.gitkeep 
