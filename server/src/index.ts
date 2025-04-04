@@ -51,6 +51,9 @@ app.use((req, res, next) => {
   if (req.method === 'POST' || req.method === 'PUT') {
     console.log('Request body:', JSON.stringify(req.body, null, 2));
   }
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('Frontend URL:', process.env.FRONTEND_URL);
+  console.log('Using database:', process.env.DATABASE_URL ? 'Production DB' : 'Local DB');
   next();
 });
 
@@ -396,4 +399,25 @@ app.get('/api/db-test', async (req, res) => {
     console.error('Database connection error:', error);
     res.status(500).json({ message: 'Database connection failed', error: error.message });
   }
+});
+
+// Add a database connection check
+app.get('/api/db-check', async (req, res) => {
+  try {
+    // Try to query the database
+    const userCount = await prisma.user.count();
+    res.json({ status: 'connected', userCount });
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Add a test route to verify API connectivity
+app.get('/api/ping', (req, res) => {
+  res.json({
+    message: 'API is working',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
+  });
 }); 
