@@ -38,12 +38,16 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.error('API Error:', error.response?.status, error.response?.data);
+    
     // Handle unauthorized errors (redirect to login)
     if (error.response && error.response.status === 401) {
+      console.log('Unauthorized access, redirecting to login');
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       window.location.href = '/login';
     }
+    
     return Promise.reject(error);
   }
 ); 

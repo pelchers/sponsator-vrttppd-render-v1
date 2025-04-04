@@ -42,9 +42,15 @@ app.use('/uploads/articles', express.static(path.join(__dirname, '../uploads/art
 // Add posts directory to static file serving
 app.use('/uploads/posts', express.static(path.join(__dirname, '../uploads/posts')));
 
+// Serve static assets like SVGs
+app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
+
 // Add logging middleware
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - IP: ${req.ip}`);
+  if (req.method === 'POST' || req.method === 'PUT') {
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+  }
   next();
 });
 
