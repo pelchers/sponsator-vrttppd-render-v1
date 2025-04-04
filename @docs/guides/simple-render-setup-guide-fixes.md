@@ -2,6 +2,18 @@
 
 This guide documents the fixes implemented to resolve deployment issues on Render for both the frontend and backend services.
 
+## Key Insights and Lessons Learned
+
+Before diving into specific fixes, here are the key insights from our deployment process:
+
+1. **Environment Detection**: Properly detecting whether the application is running in development or production is crucial.
+2. **CORS Configuration**: CORS must be configured to accept requests from both development and production environments.
+3. **JWT Secret Consistency**: Using the same JWT secret in development and production ensures authentication tokens work consistently.
+4. **Enhanced Logging**: Detailed logging helps diagnose issues in production environments.
+5. **Database Connection**: Verifying database connections early helps identify configuration issues.
+6. **Static Assets**: Properly configuring static asset paths ensures images and other assets load correctly.
+7. **Diagnostic Endpoints**: Adding simple diagnostic endpoints helps verify API connectivity.
+
 ## Frontend Fixes
 
 ### 1. Case Sensitivity Issues
@@ -324,6 +336,11 @@ For proper monorepo support, we followed Render's guidelines:
 3. **Monorepo Configuration**: Follow Render's monorepo guidelines for proper deployment.
 4. **Path Aliases**: Use path aliases (@/) consistently to avoid relative path issues.
 5. **Barrel Files**: Create barrel files (index.ts) to export components with consistent naming.
+6. **Environment Detection**: Properly detect and log the current environment.
+7. **Detailed Logging**: Add comprehensive logging for easier debugging.
+8. **Diagnostic Endpoints**: Create simple endpoints to verify connectivity.
+9. **Static Asset Management**: Properly configure static asset paths.
+10. **Error Handling**: Implement robust error handling with detailed error messages.
 
 ## Troubleshooting Common Issues
 
@@ -331,6 +348,9 @@ For proper monorepo support, we followed Render's guidelines:
 2. **404 Not Found**: Verify API routes and CORS configuration.
 3. **Build Failures**: Check for missing dependencies and build script configuration.
 4. **API Connection Issues**: Ensure environment variables are correctly set.
+5. **Authentication Failures**: Verify JWT secret and token handling.
+6. **Missing Assets**: Check static asset paths and file existence.
+7. **Database Errors**: Verify database connection string and permissions.
 
 By implementing these fixes, we were able to successfully deploy both the frontend and backend services on Render.
 
@@ -372,11 +392,17 @@ Create a configuration module to handle environment-specific settings:
 interface Config {
   apiUrl: string;
   // Add other environment-specific variables here
+  isProduction: boolean;
 }
 
 const config: Config = {
   apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:4100/api',
+  isProduction: import.meta.env.PROD || false,
 };
+
+// Log the environment
+console.log('Running in', config.isProduction ? 'PRODUCTION' : 'DEVELOPMENT', 'mode');
+console.log('API URL:', config.apiUrl);
 
 export default config;
 ```
@@ -410,6 +436,26 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Add a response interceptor to handle common errors
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', error.response?.status, error.response?.data);
+    
+    // Handle unauthorized errors (redirect to login)
+    if (error.response && error.response.status === 401) {
+      console.log('Unauthorized access, redirecting to login');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      window.location.href = '/login';
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
 // Export API methods
 export default {
   // Auth
@@ -419,4 +465,166 @@ export default {
   getUser: (id) => api.get(`/users/${id}`),
   // Add other API methods...
 };
-``` 
+```
+
+## Enhanced Logging and Diagnostics
+
+### 1. Request Logging
+
+Add detailed request logging to help diagnose issues:
+
+```typescript
+// Add logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - IP: ${req.ip}`);
+  if (req.method === 'POST' || req.method === 'PUT') {
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+  }
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('Frontend URL:', process.env.FRONTEND_URL);
+  console.log('Using database:', process.env.DATABASE_URL ? 'Production DB' : 'Local DB');
+  next();
+});
+```
+
+### 2. Authentication Logging
+
+Add detailed logging for authentication:
+
+```typescript
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    console.log('Login attempt for email:', email);
+    
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    
+    if (!user) {
+      console.log('User not found for email:', email);
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    console.log('Password validation result:', isPasswordValid);
+    
+    // ... rest of the login logic
+  } catch (error) {
+    console.error('Login error:', error.message, error.stack);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+```
+
+### 3. JWT Authentication Middleware
+
+Enhance the JWT authentication middleware with better logging:
+
+```typescript
+export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  console.log('Auth header:', authHeader);
+  
+  if (!token) {
+    console.log('No token provided');
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || '2322');
+    console.log('Token verified for user:', decoded.userId);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error('Token verification failed:', error.message);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+```
+
+### 4. Diagnostic Endpoints
+
+Add diagnostic endpoints to verify API connectivity and database connections:
+
+```typescript
+// Add a database connection check
+app.get('/api/db-check', async (req, res) => {
+  try {
+    // Try to query the database
+    const userCount = await prisma.user.count();
+    res.json({ status: 'connected', userCount });
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Add a test route to verify API connectivity
+app.get('/api/ping', (req, res) => {
+  res.json({
+    message: 'API is working',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
+  });
+});
+```
+
+## Static Assets Configuration
+
+Ensure static assets are properly served:
+
+```typescript
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// For specific subdirectories
+app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
+app.use('/uploads/projects', express.static(path.join(__dirname, '../uploads/projects')));
+app.use('/uploads/articles', express.static(path.join(__dirname, '../uploads/articles')));
+app.use('/uploads/posts', express.static(path.join(__dirname, '../uploads/posts')));
+
+// Serve static assets like SVGs
+app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
+```
+
+## Troubleshooting Common Issues
+
+### 1. Missing SVG Files
+
+If you see 404 errors for SVG files, ensure the files exist in the correct directory:
+
+```bash
+# Create the public/assets directory on the server
+mkdir -p server/public/assets
+
+# Add SVG files to this directory
+# Example: copy SVG files from your local project
+cp -r client/src/assets/*.svg server/public/assets/
+```
+
+### 2. Database Connection Issues
+
+If you're experiencing database connection issues:
+
+1. Verify the `DATABASE_URL` environment variable is correctly set in Render
+2. Check that the database user has the correct permissions
+3. Ensure the database is accessible from Render's IP addresses
+4. Use the `/api/db-check` endpoint to verify connectivity
+
+### 3. Authentication Issues
+
+If users can't log in:
+
+1. Verify the `JWT_SECRET` is set to `2322` in both environments
+2. Check the logs for login attempts and password validation results
+3. Ensure the CORS configuration allows credentials
+4. Verify the token is being properly stored and sent with requests
+
+By implementing these fixes, we were able to successfully deploy both the frontend and backend services on Render. 
