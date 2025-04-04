@@ -99,4 +99,86 @@ function processFilesForImportFixes(dir) {
 
 processFilesForImportFixes(srcDir);
 
+// Add this function to specifically fix the ProfileEditForm.tsx file
+function fixProfileEditFormImports() {
+  const filePath = path.join(__dirname, 'src', 'components', 'input', 'forms', 'ProfileEditForm.tsx');
+  if (fs.existsSync(filePath)) {
+    console.log("Fixing imports in ProfileEditForm.tsx...");
+    let content = fs.readFileSync(filePath, 'utf8');
+    
+    // Replace Layout import with lowercase
+    content = content.replace(
+      /import Layout from ['"]@\/components\/layout\/Layout['"]/g,
+      "import Layout from '@/components/layout/layout'"
+    );
+    
+    // Also replace any other uppercase imports
+    content = content.replace(
+      /import Layout from ['"]\.\.\/\.\.\/\.\.\/components\/layout\/Layout['"]/g,
+      "import Layout from '../../../components/layout/layout'"
+    );
+    
+    fs.writeFileSync(filePath, content);
+    console.log("Fixed imports in ProfileEditForm.tsx");
+  }
+}
+
+// Call this function after processing all files
+fixProfileEditFormImports();
+
+// Add this function to fix Layout imports in all files
+function fixLayoutImportsInAllFiles() {
+  console.log("Fixing Layout imports in all files...");
+  
+  function processDirectory(dir) {
+    const files = fs.readdirSync(dir, { withFileTypes: true });
+    
+    for (const file of files) {
+      const fullPath = path.join(dir, file.name);
+      
+      if (file.isDirectory()) {
+        processDirectory(fullPath);
+      } else if (file.name.endsWith('.tsx') || file.name.endsWith('.ts')) {
+        let content = fs.readFileSync(fullPath, 'utf8');
+        let modified = false;
+        
+        // Fix Layout imports
+        if (content.includes('layout/Layout')) {
+          content = content.replace(
+            /from ['"](@\/components\/layout\/Layout|\.\.\/\.\.\/\.\.\/components\/layout\/Layout)['"]/g,
+            (match) => match.replace('Layout', 'layout')
+          );
+          modified = true;
+        }
+        
+        if (modified) {
+          fs.writeFileSync(fullPath, content);
+          console.log(`Fixed Layout imports in: ${fullPath}`);
+        }
+      }
+    }
+  }
+  
+  processDirectory(path.join(__dirname, 'src'));
+}
+
+// Call this function after processing all files
+fixLayoutImportsInAllFiles();
+
+// Create a symlink for Layout.tsx
+function createLayoutSymlink() {
+  const layoutDir = path.join(__dirname, 'src', 'components', 'layout');
+  const layoutFile = path.join(layoutDir, 'layout.tsx');
+  const layoutUpperFile = path.join(layoutDir, 'Layout.tsx');
+  
+  if (fs.existsSync(layoutFile) && !fs.existsSync(layoutUpperFile)) {
+    console.log("Creating symlink for Layout.tsx...");
+    fs.copyFileSync(layoutFile, layoutUpperFile);
+    console.log("Created symlink for Layout.tsx");
+  }
+}
+
+// Call this function after processing all files
+createLayoutSymlink();
+
 console.log("Prebuild process completed successfully!"); 
