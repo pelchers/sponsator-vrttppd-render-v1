@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Don't exclude .env.production as we want it to be committed for Render
