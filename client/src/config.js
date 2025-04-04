@@ -8,4 +8,5 @@ const config = {
   VERSION: '1.0.0',
 };
 
-export default config; 
+export default config;
+export const API_URL = config.API_URL; 
