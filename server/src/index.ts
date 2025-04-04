@@ -23,10 +23,9 @@ dotenv.config();
 const app = express();
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || 'https://your-frontend-domain.com' 
-    : '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    ? process.env.FRONTEND_URL // Your Render frontend URL
+    : ['http://localhost:5173', 'http://localhost:5373'], // Your local development frontend URLs
+  credentials: true,
 }));
 app.use(express.json());
 

@@ -1,15 +1,16 @@
 import axios from 'axios';
 import config from '../config';
 
-// Create an axios instance with default config
+// Create an axios instance with environment-specific config
 export const api = axios.create({
-  baseURL: config.API_URL,
+  baseURL: config.apiUrl,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // If you're using cookies for auth
 });
 
-// Add a request interceptor to include the auth token
+// Add request interceptor for auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -18,10 +19,18 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
+
+// Export API methods
+export default {
+  // Auth
+  login: (credentials) => api.post('/login', credentials),
+  register: (userData) => api.post('/register', userData),
+  // Users
+  getUser: (id) => api.get(`/users/${id}`),
+  // Add other API methods...
+};
 
 // Add a response interceptor to handle common errors
 api.interceptors.response.use(
