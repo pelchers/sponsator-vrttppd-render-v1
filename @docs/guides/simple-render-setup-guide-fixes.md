@@ -594,6 +594,123 @@ app.use('/uploads/posts', express.static(path.join(__dirname, '../uploads/posts'
 app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
 ```
 
+## File Upload Configuration
+
+### Option 1: Using Render Disk Storage
+
+For persistent file storage on Render, create a disk:
+
+1. Go to your backend service in the Render dashboard
+2. Navigate to "Disks" in the left sidebar
+3. Click "Create Disk"
+4. Configure the disk:
+    - Name: `uploads-disk`
+    - Mount Path: `/opt/render/project/src/server/uploads`
+    - Size: Choose an appropriate size (e.g., 1 GB)
+5. Click "Create"
+
+Then update your server code to use this path:
+
+```typescript
+// Update the uploads directory path
+const uploadsDir = process.env.NODE_ENV === 'production'
+  ? '/opt/render/project/src/server/uploads'
+  : path.join(__dirname, '../uploads');
+
+// Ensure the uploads directory exists
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Create subdirectories if they don't exist
+const subdirs = ['profiles', 'projects', 'articles', 'posts'];
+for (const subdir of subdirs) {
+  const subdirPath = path.join(uploadsDir, subdir);
+  if (!fs.existsSync(subdirPath)) {
+    fs.mkdirSync(subdirPath, { recursive: true });
+  }
+}
+
+// Update static file serving
+app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads/profiles', express.static(path.join(uploadsDir, 'profiles')));
+app.use('/uploads/projects', express.static(path.join(uploadsDir, 'projects')));
+app.use('/uploads/articles', express.static(path.join(uploadsDir, 'articles')));
+app.use('/uploads/posts', express.static(path.join(uploadsDir, 'posts')));
+```
+
+### Option 2: Using Cloud Storage (Recommended)
+
+For a more scalable solution, use a cloud storage service like Cloudinary:
+
+1. Install the necessary packages:
+
+```bash
+npm install cloudinary multer-storage-cloudinary
+```
+
+2. Configure the upload middleware:
+
+```typescript
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+
+// Configure Cloudinary (only in production)
+if (process.env.NODE_ENV === 'production') {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
+}
+
+// Create storage engine based on environment
+const storage = process.env.NODE_ENV === 'production'
+  ? new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: 'sponsator',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        transformation: [{ width: 1200, crop: 'limit' }]
+      }
+    })
+  : multer.diskStorage({
+      destination: (req, file, cb) => {
+        // Local storage logic
+        let uploadPath = path.join(__dirname, '../../uploads');
+        
+        // Determine subdirectory based on route
+        if (req.originalUrl.includes('/profiles')) {
+          uploadPath = path.join(uploadPath, 'profiles');
+        } else if (req.originalUrl.includes('/projects')) {
+          uploadPath = path.join(uploadPath, 'projects');
+        } else if (req.originalUrl.includes('/articles')) {
+          uploadPath = path.join(uploadPath, 'articles');
+        } else if (req.originalUrl.includes('/posts')) {
+          uploadPath = path.join(uploadPath, 'posts');
+        }
+        
+        cb(null, uploadPath);
+      },
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+      }
+    });
+
+export const upload = multer({ storage });
+```
+
+3. Add the necessary environment variables to Render:
+    - `CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name
+    - `CLOUDINARY_API_KEY`: Your Cloudinary API key
+    - `CLOUDINARY_API_SECRET`: Your Cloudinary API secret
+
+This approach ensures that your file uploads work in both development (storing files locally) and production (storing files in the cloud).
+
 ## Troubleshooting Common Issues
 
 ### 1. Missing SVG Files

@@ -1,6 +1,8 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 // Ensure directories exist
 const uploadsDir = path.join(__dirname, '../../uploads');
@@ -25,57 +27,47 @@ if (!fs.existsSync(postsDir)) {
   fs.mkdirSync(postsDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // Determine the destination based on the route
-    const url = req.originalUrl;
-    let destination = uploadsDir;
-    
-    if (url.includes('/users/') || url.includes('/profile/')) {
-      destination = profilesDir;
-    } else if (url.includes('/projects/') || url.includes('/project/')) {
-      destination = projectsDir;
-    } else if (url.includes('/articles/')) {
-      destination = articlesDir;
-    } else if (url.includes('/posts/')) {
-      destination = postsDir;
-    }
-    
-    console.log('File upload destination:', {
-      url: req.originalUrl,
-      destination,
-      file: file.originalname
-    });
-    
-    cb(null, destination);
-  },
-  filename: function (req, file, cb) {
-    // Create a unique filename with appropriate prefix
-    const url = req.originalUrl;
-    let prefix = 'file';
-    
-    if (url.includes('/users/') || url.includes('/profile/')) {
-      prefix = 'profile';
-    } else if (url.includes('/projects/') || url.includes('/project/')) {
-      prefix = 'project';
-    } else if (url.includes('/articles/')) {
-      prefix = 'article';
-    } else if (url.includes('/posts/')) {
-      prefix = 'post';
-    }
-    
-    const uniqueSuffix = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-    const filename = `${uniqueSuffix}${path.extname(file.originalname)}`;
-    
-    console.log('Generated filename:', filename);
-    
-    cb(null, filename);
-  }
-});
+// Configure Cloudinary (only in production)
+if (process.env.NODE_ENV === 'production') {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
+}
 
-export const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit for articles
-  }
-}); 
+// Create storage engine based on environment
+const storage = process.env.NODE_ENV === 'production'
+  ? new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: 'sponsator',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        transformation: [{ width: 1200, crop: 'limit' }]
+      }
+    })
+  : multer.diskStorage({
+      destination: (req, file, cb) => {
+        // Local storage logic
+        let uploadPath = path.join(__dirname, '../../uploads');
+        
+        // Determine subdirectory based on route
+        if (req.originalUrl.includes('/profiles')) {
+          uploadPath = path.join(uploadPath, 'profiles');
+        } else if (req.originalUrl.includes('/projects')) {
+          uploadPath = path.join(uploadPath, 'projects');
+        } else if (req.originalUrl.includes('/articles')) {
+          uploadPath = path.join(uploadPath, 'articles');
+        } else if (req.originalUrl.includes('/posts')) {
+          uploadPath = path.join(uploadPath, 'posts');
+        }
+        
+        cb(null, uploadPath);
+      },
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+      }
+    });
+
+export const upload = multer({ storage }); 

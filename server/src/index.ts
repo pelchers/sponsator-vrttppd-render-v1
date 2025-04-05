@@ -17,6 +17,7 @@ import routes from './routes';
 import chatRoutes from './routes/chatRoutes';
 import permissionRoutes from './routes/permissionRoutes';
 import { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -29,18 +30,31 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Serve static files from the uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Update the uploads directory path
+const uploadsDir = process.env.NODE_ENV === 'production'
+  ? '/opt/render/project/src/server/uploads'
+  : path.join(__dirname, '../uploads');
 
-// For specific subdirectories
-app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
-app.use('/uploads/projects', express.static(path.join(__dirname, '../uploads/projects')));
+// Ensure the uploads directory exists
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-// Add articles directory to static file serving
-app.use('/uploads/articles', express.static(path.join(__dirname, '../uploads/articles')));
+// Create subdirectories if they don't exist
+const subdirs = ['profiles', 'projects', 'articles', 'posts'];
+for (const subdir of subdirs) {
+  const subdirPath = path.join(uploadsDir, subdir);
+  if (!fs.existsSync(subdirPath)) {
+    fs.mkdirSync(subdirPath, { recursive: true });
+  }
+}
 
-// Add posts directory to static file serving
-app.use('/uploads/posts', express.static(path.join(__dirname, '../uploads/posts')));
+// Update static file serving
+app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads/profiles', express.static(path.join(uploadsDir, 'profiles')));
+app.use('/uploads/projects', express.static(path.join(uploadsDir, 'projects')));
+app.use('/uploads/articles', express.static(path.join(uploadsDir, 'articles')));
+app.use('/uploads/posts', express.static(path.join(uploadsDir, 'posts')));
 
 // Serve static assets like SVGs
 app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
