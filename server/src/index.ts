@@ -18,6 +18,7 @@ import chatRoutes from './routes/chatRoutes';
 import permissionRoutes from './routes/permissionRoutes';
 import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
+import { checkDiskAccess } from './middleware/upload';
 
 dotenv.config();
 
@@ -434,4 +435,33 @@ app.get('/api/ping', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
   });
+});
+
+// Add a test endpoint to verify file uploads
+app.get('/api/test-disk', (req, res) => {
+  try {
+    // Check disk access
+    const isWritable = checkDiskAccess();
+    
+    // Try to create a test file
+    const testFile = path.join(uploadsDir, 'test.txt');
+    fs.writeFileSync(testFile, 'Test file created at ' + new Date().toISOString());
+    
+    // Return success response
+    res.json({ 
+      message: 'Test file created successfully',
+      path: testFile,
+      isWritable,
+      uploadsDir,
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    console.error('Error creating test file:', error);
+    res.status(500).json({ 
+      message: 'Error creating test file',
+      error: error.message,
+      stack: error.stack,
+      uploadsDir
+    });
+  }
 }); 

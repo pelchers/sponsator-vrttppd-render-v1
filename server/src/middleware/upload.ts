@@ -4,8 +4,15 @@ import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
+// Get the uploads directory path based on environment
+const getUploadsDir = () => {
+  return process.env.NODE_ENV === 'production'
+    ? '/opt/render/project/src/server/uploads'
+    : path.join(__dirname, '../../uploads');
+};
+
 // Ensure directories exist
-const uploadsDir = path.join(__dirname, '../../uploads');
+const uploadsDir = getUploadsDir();
 const profilesDir = path.join(uploadsDir, 'profiles');
 const projectsDir = path.join(uploadsDir, 'projects');
 const articlesDir = path.join(uploadsDir, 'articles');
@@ -38,12 +45,32 @@ if (process.env.NODE_ENV === 'production') {
 
 // Create storage engine based on environment
 const storage = process.env.NODE_ENV === 'production'
-  ? new CloudinaryStorage({
-      cloudinary: cloudinary,
-      params: {
-        folder: 'sponsator',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
-        transformation: [{ width: 1200, crop: 'limit' }]
+  ? multer.diskStorage({
+      destination: (req, file, cb) => {
+        // Production storage logic using Render Disk
+        let uploadPath = getUploadsDir();
+        
+        // Determine subdirectory based on route
+        if (req.originalUrl.includes('/profiles')) {
+          uploadPath = path.join(uploadPath, 'profiles');
+        } else if (req.originalUrl.includes('/projects')) {
+          uploadPath = path.join(uploadPath, 'projects');
+        } else if (req.originalUrl.includes('/articles')) {
+          uploadPath = path.join(uploadPath, 'articles');
+        } else if (req.originalUrl.includes('/posts')) {
+          uploadPath = path.join(uploadPath, 'posts');
+        }
+        
+        // Ensure the directory exists
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        
+        cb(null, uploadPath);
+      },
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
       }
     })
   : multer.diskStorage({
@@ -70,4 +97,31 @@ const storage = process.env.NODE_ENV === 'production'
       }
     });
 
-export const upload = multer({ storage }); 
+// Add file size and type limits
+export const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB file size limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept images only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|PNG|JPG|JPEG|GIF)$/i)) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  }
+});
+
+// Add a diagnostic function to check disk access
+export const checkDiskAccess = () => {
+  const uploadsDir = getUploadsDir();
+  console.log('Checking disk permissions for:', uploadsDir);
+  try {
+    fs.accessSync(uploadsDir, fs.constants.W_OK);
+    console.log('✅ Disk is writable');
+    return true;
+  } catch (err) {
+    console.error('❌ Disk is not writable:', err);
+    return false;
+  }
+}; 

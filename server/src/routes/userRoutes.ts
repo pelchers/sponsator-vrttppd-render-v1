@@ -78,7 +78,44 @@ router.get('/:id', userController.getUserById);
 router.put('/:id', authenticate, userController.updateUser);
 
 // Upload profile image
-router.post('/:id/profile-image', authenticate, profileUpload.single('profile_image'), userController.uploadProfileImage);
+router.post('/:id/profile-image', upload.single('image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const file = req.file;
+    
+    if (!file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    
+    console.log('File uploaded:', file);
+    
+    // Handle both Windows and Unix paths
+    const uploadsDir = process.env.NODE_ENV === 'production'
+      ? '/opt/render/project/src/server/uploads'
+      : path.join(__dirname, '../../uploads');
+    
+    const relativePath = path.relative(uploadsDir, file.path);
+    const filePath = relativePath.replace(/\\/g, '/'); // Convert Windows backslashes to forward slashes
+    
+    // Update the user's profile image in the database
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        profile_image: `/uploads/${filePath}`
+      }
+    });
+    
+    console.log('Updated user profile image:', `/uploads/${filePath}`);
+    
+    res.json({
+      message: 'Profile image uploaded successfully',
+      imageUrl: `/uploads/${filePath}`
+    });
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    res.status(500).json({ message: 'Error uploading profile image' });
+  }
+});
 
 // Add a test endpoint to check database connection
 router.get('/test-db', async (req, res) => {
