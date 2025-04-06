@@ -369,6 +369,14 @@ app.use(cors({
 }));
 ```
 
+In plain English: This code sets up the basic server and its security settings:
+- It creates a web server using Express
+- It sets the port number (4100 for local development, or whatever is set on Render)
+- It determines which website can talk to our server (CORS security)
+- In production, it only allows our official website to connect
+- In development, it allows connections from our local development servers
+- The "credentials" setting allows login information to be included in requests
+
 ### 2. Environment Variables
 
 Create environment-specific configuration files:
@@ -382,6 +390,13 @@ VITE_API_URL=http://localhost:4100/api
 ```
 VITE_API_URL=https://sponsator-vrttppd-render-v1.onrender.com/api
 ```
+
+In plain English: These files contain environment-specific settings:
+- The development file tells the app to use your local server during development
+- The production file tells the app to use your Render-hosted server in production
+- The frontend automatically uses the right file based on whether you're building for development or production
+- This means you don't have to change any code when deploying - just build with the right environment
+- These environment variables are accessed through the config.ts file we saw earlier
 
 ### 3. Configuration Module
 
@@ -576,6 +591,14 @@ app.get('/api/ping', (req, res) => {
 });
 ```
 
+In plain English: This code creates special testing endpoints to check if everything is working:
+- The "/api/ping" endpoint lets you verify the server is running and responding
+- It tells you which environment it's running in and the current time
+- The "/api/db-check" endpoint tests if the database connection is working
+- It tries to count the users in the database and returns the result
+- If there's a problem connecting to the database, it returns an error message
+- These endpoints are extremely helpful for troubleshooting deployment issues
+
 ## Static Assets Configuration
 
 Ensure static assets are properly served:
@@ -638,6 +661,13 @@ app.use('/uploads/projects', express.static(path.join(uploadsDir, 'projects')));
 app.use('/uploads/articles', express.static(path.join(uploadsDir, 'articles')));
 app.use('/uploads/posts', express.static(path.join(uploadsDir, 'posts')));
 ```
+
+In plain English: This creates persistent storage for uploaded files:
+- Render Disk is like an external hard drive for your application
+- Without it, any uploaded files would be lost when your service restarts
+- The mount path tells Render where to make this storage available to your app
+- This path matches what we configured in the upload middleware
+- The size limit prevents runaway storage usage (you can increase it later if needed)
 
 ### Option 2: Using Cloud Storage (Recommended)
 

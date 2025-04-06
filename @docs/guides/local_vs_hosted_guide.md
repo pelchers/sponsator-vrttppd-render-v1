@@ -15,6 +15,11 @@ console.log('Frontend URL:', process.env.FRONTEND_URL);
 console.log('Using database:', process.env.DATABASE_URL ? 'Production DB' : 'Local DB');
 ```
 
+In plain English: This code prints out information about where the app is running:
+- It shows whether we're in development or production mode
+- It shows what website URL will be allowed to connect to our server
+- It tells us if we're using the online database or the local one on our computer
+
 - In local development: `NODE_ENV` is undefined or set to `development`
 - In production: `NODE_ENV` is set to `production` (configured in Render)
 
@@ -39,6 +44,11 @@ console.log('API URL:', config.apiUrl);
 
 - In local development: Vite sets `import.meta.env.PROD` to `false`
 - In production: Vite sets `import.meta.env.PROD` to `true`
+- In plain English: This code sets up the configuration for our frontend app:
+- It decides where to send API requests based on our environment settings
+- If no setting is provided, it defaults to our local development server
+- It checks if we're running in production (on the internet) or development (on our computer)
+- It prints out this information so we can verify it's using the right settings
 
 ## Connection Flow
 
@@ -71,6 +81,12 @@ console.log('API URL:', config.apiUrl);
    }));
    ```
 
+In plain English: This code controls which websites are allowed to talk to our server:
+- If we're running in production (on the internet), it only allows our official website to connect
+- If we're running in development (on our computer), it allows connections from our local development servers
+- This is a security feature that prevents random websites from accessing our server
+- The "credentials" setting allows the connection to include login information
+
 5. **File Storage**:
    ```typescript
    // server/src/middleware/upload.ts
@@ -80,6 +96,12 @@ console.log('API URL:', config.apiUrl);
        : path.join(__dirname, '../../uploads');
    };
    ```
+
+In plain English: This code decides where to store uploaded files:
+- If we're running in production (on the internet), it uses a special folder on the Render server
+- If we're running in development (on our computer), it uses a folder in our project directory
+- This ensures files are saved in the right place regardless of where the app is running
+- The production path is specific to Render's file storage system
 
 ### Hosted Production Flow
 
@@ -255,11 +277,23 @@ console.log('API URL:', config.apiUrl);
    VITE_API_URL=https://sponsator-vrttppd-render-v1.onrender.com/api
    ```
 
+In plain English: This setting tells our production app where to find the server:
+- When running on the internet, the app needs to know the exact web address of our API
+- This URL points to our server running on Render's hosting service
+- The frontend will use this address for all its API requests
+- This is different from development, where we use localhost addresses
+
 3. **Database Connection**:
    ```
    // Render Environment Variable
    DATABASE_URL=postgresql://sponsator_vrttppd_db_user:ux5mWfjnPRGQi3C33MszjlmfaL0kP9MY@dpg-cvnl8d95pdvs73b9acag-a.virginia-postgres.render.com/sponsator_vrttppd_db
    ```
+
+In plain English: This setting tells our server how to connect to the online database:
+- It contains all the information needed: username, password, server address, and database name
+- This is a connection string for PostgreSQL, our database system
+- In production, we use Render's hosted database instead of a local one
+- This string is kept secret and set in the Render dashboard, not in our code files
 
 4. **CORS Configuration**:
    ```typescript
@@ -301,6 +335,13 @@ export const api = axios.create({
 });
 ```
 
+In plain English: This code sets up our system for making API requests:
+- It creates a pre-configured tool for talking to our server
+- It uses the API URL we determined earlier (either local or production)
+- It sets up the proper format for sending data (JSON)
+- The "withCredentials" setting ensures login information is included with requests
+- This same code works in both development and production because it uses our config settings
+
 - In development: `baseURL` is `http://localhost:4100/api`
 - In production: `baseURL` is `https://sponsator-vrttppd-render-v1.onrender.com/api`
 
@@ -326,6 +367,12 @@ app.use('/uploads/profiles', express.static(path.join(uploadsDir, 'profiles')));
 
 - In development: Serves files from `server/uploads/`
 - In production: Serves files from `/opt/render/project/src/server/uploads`
+In plain English: This code handles serving uploaded files like images:
+- It decides where to find uploaded files based on our environment
+- It makes sure the upload folders exist, creating them if needed
+- It sets up routes so files can be accessed through web URLs
+- For example, a file at "/uploads/profiles/photo.jpg" can be accessed in a browser
+- This works the same way in both development and production, just with different file locations
 
 ### 3. File Upload Middleware
 
@@ -358,6 +405,13 @@ const storage = process.env.NODE_ENV === 'production'
 
 - In development: Stores uploaded files in local directories
 - In production: Stores uploaded files on the Render Disk
+- In plain English: This code handles file uploads from users:
+- It creates a system for storing files that users upload
+- In production, it saves files to Render's persistent storage
+- In development, it saves files to our local project folder
+- It organizes files into subfolders based on what they're for (profiles, projects, etc.)
+- It generates unique filenames to prevent overwriting existing files
+- The core logic is the same in both environments, just with different storage locations
 
 ### 4. JWT Authentication
 
@@ -380,6 +434,13 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 
 - In both environments: Uses `JWT_SECRET` environment variable with fallback to `'2322'`
 - In production: `JWT_SECRET` is set in Render environment variables
+- In plain English: This code checks if a user is properly logged in:
+- It examines the authentication token sent with the request
+- It uses a secret key to verify the token is legitimate
+- If the token is valid, it identifies the user and allows the request to proceed
+- If the token is invalid or missing, it rejects the request
+- It uses the same secret key in both development and production (from environment settings)
+- This ensures only authenticated users can access protected features
 
 ### 5. Database Connection
 
@@ -404,6 +465,13 @@ async function testDatabaseConnection() {
 
 - In development: Connects to local PostgreSQL database
 - In production: Connects to Render PostgreSQL database using the `DATABASE_URL` environment variable
+- In plain English: This code sets up our connection to the database:
+- It creates a client that can talk to our PostgreSQL database
+- It enables logging so we can see database operations for debugging
+- It tests the connection when the server starts up
+- It reports whether the connection was successful
+- The same code works in both environments because the connection details come from environment settings
+- In development it connects to our local database, in production it connects to Render's database
 
 ## File Path Handling for Uploads
 
@@ -443,6 +511,14 @@ This code:
 2. Calculates the relative path from the uploads directory to the file
 3. Normalizes path separators (important for Windows development environments)
 4. Stores the normalized path in the database
+5. In plain English: This code handles profile picture uploads:
+- It receives an image file from the user
+- It figures out where the file is stored based on our environment
+- It calculates the relative path to the file (how to find it from the base uploads folder)
+- It converts any Windows-style backslashes to forward slashes for web URLs
+- It saves the path to the database so we can find the image later
+- This ensures file paths work correctly regardless of operating system or environment
+- The same image URL format works in both development and production
 
 ## Diagnostic Tools
 
@@ -495,6 +571,13 @@ app.get('/api/test-disk', (req, res) => {
 ```
 
 These endpoints provide valuable information about the current environment, database connectivity, and file system access.
+In plain English: This code creates special testing endpoints:
+- The "/api/ping" endpoint lets us check if the server is running
+- It tells us which environment it's running in and when we made the request
+- The "/api/db-check" endpoint tests if the database connection is working
+- It counts the number of users in the database to verify it can read data
+- These endpoints help us quickly identify problems in either environment
+- They're especially useful when deploying to production to verify everything is working
 
 ## Environment-Specific Logging
 
