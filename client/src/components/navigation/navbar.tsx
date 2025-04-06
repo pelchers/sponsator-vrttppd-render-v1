@@ -19,6 +19,20 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const handleProfileClick = () => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    
+    if (!token || !userId) {
+      // Redirect to login if not logged in
+      navigate('/login', { state: { from: `/profile/${userId || ''}` } });
+      return;
+    }
+    
+    // Navigate to the user's profile if logged in
+    navigate(`/profile/${userId}`);
+  };
+
   // Updated button and dropdown styles
   const navButtonClass = "transition-all duration-250 hover:scale-105 font-medium";
   const dropdownItemClass = "transition-all duration-250 hover:bg-spring-light text-black rounded-md";
@@ -156,7 +170,7 @@ export default function Navbar() {
                     My Account
                   </DropdownMenuLabel>
                   <DropdownMenuItem 
-                    onClick={() => navigate(`/profile/${userId}`)}
+                    onClick={handleProfileClick}
                     className={dropdownItemClass}
                   >
                     Profile

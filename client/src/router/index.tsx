@@ -6,6 +6,7 @@ import Signup from '@/pages/auth/signup'
 import { Profile as ProfilePage } from '@/pages/profile'
 import { ProfileEdit as ProfileEditPage } from '@/pages/profile'
 import { MessagesListPage, ChatPage } from '@/pages/messages'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 // Import project pages directly with full path
 import { ProjectsListPage, ProjectPage, ProjectEditPage } from '@/pages/project'
@@ -43,20 +44,20 @@ export const router = createBrowserRouter([
   },
   {
     path: "/profile/:id",
-    element: <Layout><ProfilePage /></Layout>,
+    element: <Layout><ProtectedRoute><ProfilePage /></ProtectedRoute></Layout>,
   },
   {
     path: "/profile/:id/edit",
-    element: <Layout><ProfileEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><ProfileEditPage /></ProtectedRoute></Layout>,
   },
-  // Messages routes
+  // Messages routes - also protected
   {
     path: "/messages",
-    element: <Layout><MessagesListPage /></Layout>,
+    element: <Layout><ProtectedRoute><MessagesListPage /></ProtectedRoute></Layout>,
   },
   {
     path: "/messages/:chatId",
-    element: <Layout><ChatPage /></Layout>,
+    element: <Layout><ProtectedRoute><ChatPage /></ProtectedRoute></Layout>,
   },
   // Project routes with leading slash
   {
@@ -65,7 +66,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/projects/new",
-    element: <Layout><ProjectEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><ProjectEditPage /></ProtectedRoute></Layout>,
   },
   {
     path: "/projects/:id",
@@ -73,7 +74,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/projects/:id/edit",
-    element: <Layout><ProjectEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><ProjectEditPage /></ProtectedRoute></Layout>,
   },
   {
     path: "/test",
@@ -85,11 +86,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/article/edit/new',
-    element: <Layout><ArticleEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><ArticleEditPage /></ProtectedRoute></Layout>,
   },
   {
     path: '/article/edit/:id',
-    element: <Layout><ArticleEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><ArticleEditPage /></ProtectedRoute></Layout>,
   },
   {
     path: '/article/:id',
@@ -102,11 +103,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/post/edit/new',
-    element: <Layout><PostEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><PostEditPage /></ProtectedRoute></Layout>,
   },
   {
     path: '/post/edit/:id',
-    element: <Layout><PostEditPage /></Layout>,
+    element: <Layout><ProtectedRoute><PostEditPage /></ProtectedRoute></Layout>,
   },
   {
     path: '/post/:id',
@@ -118,11 +119,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/likes',
-    element: <Layout><LikesPage /></Layout>,
+    element: <Layout><ProtectedRoute><LikesPage /></ProtectedRoute></Layout>,
   },
   {
     path: '/mystuff',
-    element: <Layout><MyStuffPage /></Layout>,
+    element: <Layout><ProtectedRoute><MyStuffPage /></ProtectedRoute></Layout>,
   },
   {
     path: '/portfolio',

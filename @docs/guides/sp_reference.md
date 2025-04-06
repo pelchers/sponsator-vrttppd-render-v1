@@ -57,6 +57,19 @@ This document provides a reference for all savepoint branches in the project, ex
 
 **Status**: Complete working deployment with enhanced documentation for developers.
 
+### render-deploy-4-sp1
+**Purpose**: Implemented protected routes and fixed upload middleware.
+
+**Key Features**:
+- Added ProtectedRoute component for router-level authentication
+- Updated router to protect sensitive routes
+- Fixed upload middleware to work in all environments
+- Improved authentication flow with better redirects
+- Added Cloudinary as a fallback option (disabled by default)
+- Fixed API endpoint paths in auth service
+
+**Status**: Complete working deployment with enhanced authentication and file upload functionality.
+
 ## Feature-Specific Branches
 
 ### dual-deploy-1

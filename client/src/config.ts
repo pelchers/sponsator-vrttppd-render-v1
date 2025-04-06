@@ -14,4 +14,5 @@ const config: Config = {
 console.log('Running in', config.isProduction ? 'PRODUCTION' : 'DEVELOPMENT', 'mode');
 console.log('API URL:', config.apiUrl);
 
-export default config; 
+export default config;
+export const API_URL = config.apiUrl; 

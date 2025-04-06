@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { login } from '@/api/auth';
 
@@ -8,6 +8,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the page the user was trying to access
+  const from = location.state?.from || `/profile/${localStorage.getItem('userId') || ''}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +29,8 @@ const Login = () => {
       // Store user ID
       localStorage.setItem('userId', data.user.id);
       
-      // Redirect to profile page
-      navigate(`/profile/${data.user.id}`);
+      // Redirect to profile page or the page they were trying to access
+      navigate(from);
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'Invalid credentials');

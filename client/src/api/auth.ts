@@ -1,5 +1,24 @@
 import axios from 'axios';
-import { API_BASE_URL } from './config';
+import config from '../config';
+
+const api = axios.create({
+  baseURL: config.API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add auth token to requests
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 interface LoginCredentials {
   email: string;
@@ -18,47 +37,45 @@ interface AuthResponse {
 // Login user
 export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
+    // Log the API URL for debugging
+    console.log('Login attempt with URL:', `${config.API_URL}/login`);
     
-    // Store token in localStorage
-    if (response.data.token) {
+    // Use the correct endpoint path
+    const response = await api.post('/login', credentials);
+    
+    if (response.data && response.data.token) {
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('userId', response.data.user.id);
     }
     
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Login failed');
-    }
-    throw error;
+    console.error('Login error:', error);
+    throw new Error('Login failed');
   }
 }
 
 // Register new user
 export async function register(data: RegisterData): Promise<AuthResponse> {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/register`, data);
+    const response = await api.post('/register', data);
     
-    // Store token in localStorage
-    if (response.data.token) {
+    if (response.data && response.data.token) {
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('userId', response.data.user.id);
     }
     
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Registration failed');
-    }
-    throw error;
+    console.error('Registration error:', error);
+    throw new Error('Registration failed');
   }
 }
 
 // Logout user
 export function logout() {
   localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  localStorage.removeItem('userId');
 }
 
 // Check if user is authenticated
@@ -75,4 +92,14 @@ export function getCurrentUser() {
 // Get auth token
 export function getToken(): string | null {
   return localStorage.getItem('token');
-} 
+}
+
+export const fetchUserProfile = async (userId, token) => {
+  try {
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
+}; 
